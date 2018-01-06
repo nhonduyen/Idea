@@ -1,0 +1,132 @@
+﻿body {
+    background-color:#B6B7BC;
+}
+/* override nav bar*/
+.navbar-nav > li > a, .navbar-brand {padding-top:5px !important; padding-bottom:0 !important; height: 30px; } .navbar {min-height:30px !important;}
+.banner {
+    position: relative;
+    padding: 40px 15px 15px 0;
+    /*  padding: 30px 15px 15px 0; */
+    text-align: center;
+    color: rgba(255,255,255,.8);
+    background-color: #00BCD4;
+    background-image: url(./img/bg.png);
+    /*margin-bottom: 40px;*/
+    margin-bottom: 0px;
+    font-size: 20px;
+}
+
+@media (min-width: 768px) {
+    .banner {
+        padding-top: 20px;
+        /*padding-bottom: 60px;*/
+        text-align: left;
+        font-size: 12px;
+    }
+}
+
+footer {
+    padding: 10px 0;
+    position: relative;
+    color: rgba(255,255,255,.8);
+    background-color: #00BCD4;
+    font-size: 20px;
+}
+.content {
+    width: 100%;
+    background-color:#fff;
+    margin-top: 0px;
+}
+
+.dataTables_wrapper {
+    position: relative;
+    clear: both;
+}
+
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc,
+table.dataTable thead .sorting_asc_disabled,
+table.dataTable thead .sorting_desc_disabled {
+    background: 0 0;
+}
+
+table.dataTable thead .sorting_asc:after {
+    content: "\f0de";
+    float: right;
+    font-family: fontawesome;
+}
+
+table.dataTable thead .sorting_desc:after {
+    content: "\f0dd";
+    float: right;
+    font-family: fontawesome;
+}
+
+table.dataTable thead .sorting:after {
+    content: "\f0dc";
+    float: right;
+    font-family: fontawesome;
+    color: rgba(50,50,50,.5);
+}
+
+.borderless tbody tr td, .borderless tbody tr th, .borderless thead tr th {
+    border: none;
+}
+
+.tdleft {
+    text-align:center;
+    background-color: #9EC2F2;
+}
+.fix-head {
+    margin-top: 0px;
+}
+.margin0 {
+    margin-bottom:0px;
+}
+
+.toUpperCase {
+    text-transform: uppercase;
+}
+
+.mylabel {
+    margin-top: 5px;
+}
+
+.tbheader {
+    background-color: #9EC2F2;
+    text-align:center;
+}
+th {
+    font-size:11px;
+}
+#tbMain th {
+text-align:center;
+}
+.morecontent span {
+    display: none;
+}
+.morelink {
+    display:inline;
+}
+a {
+    color: #0254EB
+}
+a:visited {
+    color: #0254EB
+}
+a.morelink {
+    text-decoration:none;
+    outline: none;
+}
+.morecontent span {
+    display: none;
+}
+.comment {
+width:200px;
+    margin: 10px;
+}
+#tbSum >tbody>tr>td{
+  height:20px;
+  padding:0px;
+}
