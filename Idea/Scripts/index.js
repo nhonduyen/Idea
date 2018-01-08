@@ -21,7 +21,7 @@
                 ajax: {
                     type: "POST",
                     contentType: "application/json",
-                    url: $('#tbMainDefault').attr('data-url'),
+                    url: $('#hdUrl').val().replace("Action","GetMainProject"),
                     data: function (d) {
                         // note: d is created by datatable, the structure of d is the same with DataTableParameters model above
 
@@ -39,7 +39,7 @@
                 ajax: {
                     type: "POST",
                     contentType: "application/json",
-                    url: $('#tbNewIdea').attr('data-url'),
+                    url: $('#hdUrl').val().replace("Action", "GetIdea"),
                     data: function (d) {
                         // note: d is created by datatable, the structure of d is the same with DataTableParameters model above
 
@@ -57,7 +57,7 @@
                ajax: {
                    type: "POST",
                    contentType: "application/json",
-                   url: $('#tbNewPrj').attr('data-url'),
+                   url: $('#hdUrl').val().replace("Action", "GetNewProject"),
                    data: function (d) {
                        // note: d is created by datatable, the structure of d is the same with DataTableParameters model above
                        return JSON.stringify({ dataTableParameters: d });
@@ -157,7 +157,7 @@
 
         var seq = parseInt($('#tbReply tr:last-child td:first-child').text());
         $.ajax({
-            url: $('#tbReply').attr('data-url'),
+            url: $('#hdUrl').val().replace("Action", "InsertIdeaComment"),
             data: JSON.stringify({
                 reply: reply
             }),
@@ -200,7 +200,7 @@
 
         var seq = parseInt($('#tbReply1 tr:last-child td:first-child').text());
         $.ajax({
-            url: $(this).attr('data-url'),
+            url: $('#hdUrl').val().replace("Action", "InsertPrjComment"),
             data: JSON.stringify({
                 reply: reply
             }),
@@ -248,10 +248,11 @@
                 return false;
             }
             $.ajax({
-                url: $('#btnRegIdea').attr('data-url'),
+                url: $('#hdUrl').val().replace("Action", "RegIdea"),
                 data: JSON.stringify({
                     idea: idea,
                     division: division,
+                    department:department,
                     action: action
                 }),
                 type: 'POST',
@@ -275,7 +276,7 @@
         }
         else {
             $.ajax({
-                url: $('#btnRegIdea').attr('data-url'),
+                url: $('#hdUrl').val().replace("Action", "RegIdea"),
                 data: JSON.stringify({
                     idea: idea,
                     division: division,
@@ -316,7 +317,7 @@
         $('#cNow').text(moment().format('YYYY-MM-DD HH:mm:ss'));
         $('#frmRegIdea')[0].reset();
         $.ajax({
-            url: $('#tbNewIdea').attr('data-url-getreply'),
+            url: $('#hdUrl').val().replace("Action", "GetIdeaReply"),
             data: JSON.stringify({
                 ID: id
             }),
@@ -338,7 +339,7 @@
             },
         });
         $.ajax({
-            url: $('#tbNewIdea').attr('data-GetIdeaById'),
+            url: $('#hdUrl').val().replace("Action", "GetIdeaById"),
             data: JSON.stringify({
                 ID: id
             }),
@@ -387,7 +388,7 @@
         $('#cNow1').text(moment().format('YYYY-MM-DD HH:mm:ss'));
         $('#frmProcess')[0].reset();
         $.ajax({
-            url: $('#tbReply1').attr('data-getreply'),
+            url: $('#hdUrl').val().replace("Action", "GetProgressReply"),
             data: JSON.stringify({
                 ID: id
             }),
@@ -409,7 +410,7 @@
             },
         });
         $.ajax({
-            url: $('#tbProcess').attr('data-plan'),
+            url: $('#hdUrl').val().replace("Action", "GetPlan"),
             data: JSON.stringify({
                 ID: id
             }),
@@ -463,7 +464,7 @@
 
         });
         $.ajax({
-            url: $('#tbProcess').attr('data-kpi'),
+            url: $('#hdUrl').val().replace("Action", "GetKPI"),
             data: JSON.stringify({
                 ID: id
             }),
@@ -492,7 +493,7 @@
             },
         });
         $.ajax({
-            url: $('#tbProcess').attr('data-getprj'),
+            url: $('#hdUrl').val().replace("Action", "GetProjectById"),
             data: JSON.stringify({
                 ID: id
             }),
@@ -618,7 +619,7 @@
             }
         });
         $.ajax({
-            url: $('#frmRegPrj').attr('data-url'),
+            url: $('#hdUrl').val().replace("Action", "RegPrj"),
             data: JSON.stringify({
                 Project: project,
                 Plans: plans,
@@ -705,7 +706,7 @@
         });
       
         $.ajax({
-            url: $(this).attr('data-url'),
+            url: $('#hdUrl').val().replace("Action", "UpdateProject"),
             data: JSON.stringify({
                 Project: project,
                 Plans: plans,
@@ -736,7 +737,7 @@
         $('.target1,.result1').text('');
         var id = $(this).attr('data-id');
         $.ajax({
-            url: $('#tbMainDefault').attr('data-kpi'),
+            url: $('#hdUrl').val().replace("Action", "GetKPI"),
             data: JSON.stringify({
                 ID: id
             }),

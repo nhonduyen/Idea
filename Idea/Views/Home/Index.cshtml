@@ -19,7 +19,7 @@
         overflow-y: auto;
     }
 </style>
-
+@Html.Hidden("hdUrl",Url.Action("Action","Home"))
 <div class="panel-group" id="total">
     <div class="panel panel-info">
         <div class="panel-heading">
@@ -28,7 +28,7 @@
         </div>
         <div class="panel-body">
             <div class="table-responsive">
-                <table id="tbMainDefault" class="table table-bordered" data-url="@Url.Action("GetMainProject", "Home")" data-kpi="@Url.Action("GetKPI", "Home")">
+                <table id="tbMainDefault" class="table table-bordered">
                     <thead>
                         <tr class="tbheader">
                             <th rowspan="2">Division</th>
@@ -65,7 +65,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="table-responsive">
-                        <table id="tbNewIdea" class="table table-bordered" data-GetIdeaById="@Url.Action("GetIdeaById", "Home")" data-url-getreply="@Url.Action("GetIdeaReply", "Home")" data-url="@Url.Action("GetIdea", "Home")">
+                        <table id="tbNewIdea" class="table table-bordered">
                             <thead>
                                 <tr class="tbheader">
                                     <th>Title</th>
@@ -90,7 +90,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="table-responsive">
-                        <table id="tbNewPrj" class="table table-bordered" data-url="@Url.Action("GetNewProject", "Home")">
+                        <table id="tbNewPrj" class="table table-bordered">
                             <thead>
                                 <tr class="tbheader">
                                     <th>Title</th>
@@ -126,7 +126,7 @@
                         <div class="col-sm-9"></div>
                         <div class="col-sm-3">
                             <button id="btnSetProject" type="button" class="btn btn-primary">Make Project</button>
-                            <button id="btnRegIdea" class="btn btn-primary" type="submit" data-url="@Url.Action("RegIdea", "Home")" data-action="0" data-emp="">Save</button>
+                            <button id="btnRegIdea" class="btn btn-primary" type="submit" data-action="0" data-emp="">Save</button>
                         </div>
                     </div>
                     <table class="table table-bordered">
@@ -195,7 +195,7 @@
                 </form>
                 <button id="Reply" data-id="" class="btn btn-primary">Reply</button>
                 <div class="table-responsive">
-                    <table id="tbReply" class="table table-bordered" data-url="@Url.Action("InsertIdeaComment", "Home")">
+                    <table id="tbReply" class="table table-bordered">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -235,7 +235,7 @@
                 <h4 class="modal-title"><span class="glyphicon glyphicon-envelope"></span>&nbsp;Register Project</h4>
             </div>
             <div class="modal-body">
-                <form id="frmRegPrj" role="form" data-url="@Url.Action("RegPrj", "Home")" data-id="">
+                <form id="frmRegPrj" role="form" data-id="">
                     <button id="btnRegPrj" class="btn btn-primary" data-emp="" type="submit" style="float: right">Save</button>
                     <table id="tbRegPrj" class="table table-bordered">
                         <tbody>
@@ -393,9 +393,9 @@
                 <h4 class="modal-title"><span class="glyphicon glyphicon-envelope"></span>&nbsp;Progress Management</h4>
             </div>
             <div class="modal-body">
-                <form id="frmProcess" role="form" data-emp="" data-id="" data-url="@Url.Action("UpdateProject", "Home")">
+                <form id="frmProcess" role="form" data-emp="" data-id="">
                     <button id="btnSaveProcess" class="btn btn-primary" type="submit" style="float: right">Save</button>
-                    <table id="tbProcess" class="table table-bordered" data-plan="@Url.Action("GetPlan", "Home")" data-kpi="@Url.Action("GetKPI", "Home")" data-getprj="@Url.Action("GetProjectById", "Home")">
+                    <table id="tbProcess" class="table table-bordered">
                         <tbody>
                             <tr>
                                 <td class="tdleft">
@@ -517,9 +517,9 @@
                         </tbody>
                     </table>
                 </form>
-                <button id="Reply1" class="btn btn-primary" data-url="@Url.Action("InsertPrjComment", "Home")">Reply</button>
+                <button id="Reply1" class="btn btn-primary">Reply</button>
                 <div class="table-responsive">
-                    <table id="tbReply1" class="table table-bordered" data-getreply="@Url.Action("GetProgressReply", "Home")">
+                    <table id="tbReply1" class="table table-bordered">
                         <thead>
                             <tr>
                                 <th>No</th>
