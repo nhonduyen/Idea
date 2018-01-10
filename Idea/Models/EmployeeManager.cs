@@ -18,13 +18,13 @@ namespace Idea
         }
         public List<EMPLOYEE> GetDepartment()
         {
-            var sql = "SELECT DISTINCT(DEPARTMENT) FROM EMPLOYEE";
+            var sql = "SELECT DISTINCT(DEPARTMENT) FROM EMPLOYEE WHERE DEPARTMENT IS NOT NULL AND DEPARTMENT <> ''";
             return DBManager<EMPLOYEE>.ExecuteReader(sql);
         }
 
         public List<EMPLOYEE> GetDivision()
         {
-            var sql = "SELECT DISTINCT(DIVISION) FROM EMPLOYEE";
+            var sql = "SELECT DISTINCT(DIVISION) FROM EMPLOYEE WHERE DIVISION IS NOT NULL AND DIVISION <> ''";
             return DBManager<EMPLOYEE>.ExecuteReader(sql);
         }
 

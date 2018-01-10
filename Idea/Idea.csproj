@@ -132,9 +132,11 @@
     <Compile Include="Models\IDEA_REPLY.cs" />
     <Compile Include="Models\KPI.cs" />
     <Compile Include="Models\KpiManager.cs" />
+    <Compile Include="Models\LikeManager.cs" />
     <Compile Include="Models\Paging\DataTableResultSet.cs" />
     <Compile Include="Models\Paging\DataTables.cs" />
     <Compile Include="Models\PlanManager.cs" />
+    <Compile Include="Models\PRJ_LIKE.cs" />
     <Compile Include="Models\PRJ_REPLY.cs" />
     <Compile Include="Models\PROJECT.cs" />
     <Compile Include="Models\ProjectManager.cs" />

@@ -18,6 +18,25 @@ namespace Idea.Controllers
             ViewBag.Divisions = employeeManager.GetDivision();
             ViewBag.Departments = employeeManager.GetDepartment();
             ViewBag.Units = pm.GetKPIUnit();
+
+            var from = DateTime.Now;
+            var to = from.AddMonths(11);
+            var colspan1 = 0;
+            var colspan2 = 0;
+            for (DateTime d = from; d <= to; d = d.AddMonths(1))
+            {
+                if (d.Year == from.Year)
+                    colspan1++;
+                if (d.Year == to.Year)
+                    colspan2++;
+            }
+            if (from.Year == to.Year)
+            {
+                colspan1 = 12;
+                colspan2 = 0;
+            }
+            ViewBag.Colspan1 = colspan1;
+            ViewBag.Colspan2 = colspan2;
             return View();
         }
 
@@ -82,8 +101,7 @@ namespace Idea.Controllers
             string existID = prj.IsExist(Project.IDEA_ID);
             if (string.IsNullOrEmpty(existID))
             {
-                result = prj.Insert(Project.IDEA_ID, Project.EMP_ID, Project.IDEA_TITLE, Project.PRJECT_GRADE, Project.KPI_NAME,
-                    Project.KPI_UNIT, Project.BACKGROUND, Project.NAME);
+                result = prj.InsertProject(Project);
                 if (result > 0)
                 {
                     foreach (var p in Plans)
@@ -98,6 +116,7 @@ namespace Idea.Controllers
             }
             else
             {
+
             }
             return Json(result);
 
@@ -112,41 +131,61 @@ namespace Idea.Controllers
             resultSet.draw = dataTableParameters.Draw;
             var lst = prj.GetMainProject(dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1);
             resultSet.recordsTotal = resultSet.recordsFiltered = prj.GetCount(1);
-            var seq = 0;
+            var seq = dataTableParameters.Start + 1;
+
             foreach (var i in lst)
             {
-                seq++;
                 var columns = new List<string>();
+                columns.Add(seq.ToString());
                 columns.Add(i.DIVISION.Trim());
                 columns.Add(i.DEPARTMENT.Trim());
-                columns.Add("<a class='title' href='#' data-id='" + i.IDEA_ID + "'>" + i.IDEA_TITLE.Trim() + "</a>");
+                columns.Add("<a class='title' href='#' data-emp='"+i.EMP_ID+"' data-id='" + i.IDEA_ID + "'>" + i.IDEA_TITLE.Trim() + "</a>");
+                columns.Add(i.PRJECT_GRADE.Trim());
                 columns.Add(i.KPI_NAME.Trim());
                 columns.Add(i.KPI_UNIT.Trim());
                 columns.Add(i.FINAL.ToString());
                 columns.Add("<a class='res' href='#' data-id='" + i.IDEA_ID + "'>View</a>");
                 resultSet.data.Add(columns);
+                seq++;
             }
             return Json(resultSet);
 
         }
 
         [HttpPost]
-        public JsonResult GetNewProject(DataTableParameters dataTableParameters)
+        public JsonResult GetNewProject(DataTableParameters dataTableParameters, string div, string dep, string grade)
         {
             ProjectManager prj = ProjectManager.GetInstance();
 
             var resultSet = new DataTableResultSet();
             resultSet.draw = dataTableParameters.Draw;
-            var lst = prj.SelectPaging(dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1);
-            resultSet.recordsTotal = resultSet.recordsFiltered = prj.GetCount();
-
-            foreach (var i in lst)
+            if (!string.IsNullOrWhiteSpace(div) || !string.IsNullOrWhiteSpace(dep) || !string.IsNullOrWhiteSpace(grade))
             {
-                var columns = new List<string>();
-                columns.Add("<a class='title' href='#' data-id='" + i.IDEA_ID + "'>" + i.IDEA_TITLE.Trim() + "</a>");
-                columns.Add(i.NAME);
-                if (i.INS_DT == null) columns.Add(""); else columns.Add(i.INS_DT.ToShortDateString());
-                resultSet.data.Add(columns);
+                var lst = prj.SearchNewPrj(div, dep, grade, dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1);
+                resultSet.recordsTotal = resultSet.recordsFiltered = prj.GetSearchCount(div, dep, grade);
+
+                foreach (var i in lst)
+                {
+                    var columns = new List<string>();
+                    columns.Add("<a class='title' href='#' data-id='" + i.IDEA_ID + "' data-emp='" + i.EMP_ID.Trim() + "'>" + i.IDEA_TITLE.Trim() + "</a>");
+                    columns.Add(i.NAME);
+                    if (i.INS_DT == null) columns.Add(""); else columns.Add(i.INS_DT.ToShortDateString());
+                    resultSet.data.Add(columns);
+                }
+            }
+            else
+            {
+                var lst = prj.SelectPaging(dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1);
+                resultSet.recordsTotal = resultSet.recordsFiltered = prj.GetCount();
+
+                foreach (var i in lst)
+                {
+                    var columns = new List<string>();
+                    columns.Add("<a class='title' href='#' data-id='" + i.IDEA_ID + "' data-emp='" + i.EMP_ID.Trim() + "'>" + i.IDEA_TITLE.Trim() + "</a>");
+                    columns.Add(i.NAME);
+                    if (i.INS_DT == null) columns.Add(""); else columns.Add(i.INS_DT.ToShortDateString());
+                    resultSet.data.Add(columns);
+                }
             }
             return Json(resultSet);
 
@@ -164,12 +203,14 @@ namespace Idea.Controllers
             foreach (var i in lst)
             {
                 var columns = new List<string>();
-                columns.Add("<a class='title' href='#' id='" + i.ID + "'>" + i.IDEA_TITLE.Trim() + "</a>");
+
+                columns.Add("<a class='title' href='#' id='" + i.ID + "' data-emp='" + i.EMP_ID.Trim() + "'>" + i.IDEA_TITLE.Trim() + "</a>");
                 columns.Add(i.EMP_NAME.Trim());
                 if (i.DATE == null) columns.Add(""); else columns.Add(i.DATE.ToShortDateString());
-                columns.Add("<span class='badge badge-pill badge-primary'>" + i.REP.ToString() + "</span>");
-
+                columns.Add("<a href='#' class='rep' title='Reply' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.REP.ToString() + "</span></a>");
+                columns.Add("<a href='#' class='like' title='Like' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.L.ToString() + "</span></a>");
                 resultSet.data.Add(columns);
+
             }
             return Json(resultSet);
 
@@ -241,7 +282,7 @@ namespace Idea.Controllers
         [HttpPost]
         public JsonResult GetProjectById(string ID)
         {
-          
+
             ProjectManager pm = ProjectManager.GetInstance();
             var project = pm.GetProject(ID);
             return Json(project);
@@ -274,9 +315,9 @@ namespace Idea.Controllers
             string existID = prj.IsExist(Project.IDEA_ID);
             if (!string.IsNullOrEmpty(existID))
             {
-                result = prj.UpdatePrj(Project.IDEA_ID, Project.EMP_ID, Project.IDEA_TITLE, Project.KPI_NAME, Project.KPI_UNIT, 
-                    Project.REMARK, Project.NAME);
-               
+                result = prj.UpdatePrj(Project.IDEA_ID, Project.EMP_ID, Project.IDEA_TITLE, Project.KPI_NAME, Project.KPI_UNIT,
+                    Project.REMARK, Project.NAME, Project.PRJ_CURR, Project.CURR_VALUE);
+
                 if (result > 0)
                 {
                     if (Plans != null)
@@ -290,12 +331,19 @@ namespace Idea.Controllers
                     {
                         foreach (var kpi in KPIs)
                         {
-                            km.Update(kpi.IDEA_ID, kpi.PRJ_MONTH, kpi.TARGET_VALUE, kpi.RESULT_VALUE, kpi.ID);
+                            if (!string.IsNullOrWhiteSpace(kpi.ID))
+                            {
+                                km.Update(kpi.IDEA_ID, kpi.PRJ_MONTH, kpi.TARGET_VALUE, kpi.RESULT_VALUE, kpi.ID);
+                            }
+                            else
+                            {
+                                km.InsertKPI(kpi.IDEA_ID, kpi.PRJ_MONTH, kpi.TARGET_VALUE, kpi.RESULT_VALUE);
+                            }
                         }
                     }
                 }
             }
-         
+
             return Json(result);
         }
 
@@ -304,6 +352,31 @@ namespace Idea.Controllers
         {
             EmployeeManager manager = EmployeeManager.GetInstance();
             return Json(manager.Login(emp.EMP_ID, emp.EMP_PW));
+        }
+
+        [HttpPost]
+        public JsonResult Like(EMPLOYEE EMP, string IDEA_ID)
+        {
+            LikeManager manager = LikeManager.GetInstance();
+            bool checkLiked = manager.CheckLike(EMP.EMP_ID, IDEA_ID);
+            if (checkLiked)
+                return Json(-1);
+            return Json(manager.Insert(IDEA_ID, EMP.EMP_ID, EMP.EMP_NAME));
+        }
+
+        [HttpPost]
+        public JsonResult GetLikeDetail(string IDEA_ID)
+        {
+            LikeManager manager = LikeManager.GetInstance();
+            return Json(manager.GetLike(IDEA_ID));
+        }
+
+        [HttpPost]
+        public JsonResult GetRepDetail(string IDEA_ID)
+        {
+
+            IdeaReplyManager manager = IdeaReplyManager.GetInstance();
+            return Json(manager.GetReplyDetail(IDEA_ID));
         }
     }
 }

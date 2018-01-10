@@ -39,8 +39,11 @@ namespace Idea
 
         public virtual dynamic SelectPaging(int start=0, int end=10)
         {
-            var sql = string.Format(@"SELECT * FROM(SELECT ROW_NUMBER() OVER (order by id desc) AS ROWNUM, I.*, E.EMP_NAME,
-(SELECT COUNT(1) FROM IDEA_REPLY WHERE IDEA_ID=I.ID) AS REP FROM IDEA AS I INNER JOIN EMPLOYEE AS E ON I.EMP_ID=E.EMP_ID
+            var sql = string.Format(@"
+SELECT * FROM(SELECT ROW_NUMBER() OVER (order by id desc) AS ROWNUM, I.*, E.EMP_NAME,
+(SELECT COUNT(1) FROM IDEA_REPLY WHERE IDEA_ID=I.ID) AS REP,
+(SELECT COUNT(1) FROM PRJ_LIKE WHERE IDEA_ID=I.ID) AS L 
+FROM IDEA AS I INNER JOIN EMPLOYEE AS E ON I.EMP_ID=E.EMP_ID
 WHERE NOT EXISTS(SELECT IDEA_ID FROM PROJECT WHERE IDEA_ID=I.ID))
 as u  WHERE   RowNum >= @start   AND RowNum < @end ORDER BY RowNum;");
 

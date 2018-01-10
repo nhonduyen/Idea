@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Idea
 {
-    public class KpiManager:KPI
+    public class KpiManager : KPI
     {
         private static KpiManager instance = new KpiManager();
 
@@ -41,7 +41,21 @@ namespace Idea
         {
             var ID = GenerateId();
             var sql = "INSERT INTO KPI(ID,IDEA_ID,PRJ_MONTH,TARGET_VALUE) VALUES(@ID,@IDEA_ID,@PRJ_MONTH,@TARGET_VALUE)";
-            return DBManager<KPI>.Execute(sql, new { ID=ID, IDEA_ID = IDEA_ID, PRJ_MONTH = PRJ_MONTH, TARGET_VALUE = TARGET_VALUE });
+            return DBManager<KPI>.Execute(sql, new { ID = ID, IDEA_ID = IDEA_ID, PRJ_MONTH = PRJ_MONTH, TARGET_VALUE = TARGET_VALUE });
+        }
+
+        public int InsertKPI(string IDEA_ID, string PRJ_MONTH, int TARGET_VALUE, int RESULT_VALUE)
+        {
+            var ID = GenerateId();
+            var sql = "INSERT INTO KPI(ID,IDEA_ID,PRJ_MONTH,TARGET_VALUE,RESULT_VALUE) VALUES(@ID,@IDEA_ID,@PRJ_MONTH,@TARGET_VALUE,@RESULT_VALUE)";
+            return DBManager<KPI>.Execute(sql, new
+            {
+                ID = ID,
+                IDEA_ID = IDEA_ID,
+                PRJ_MONTH = PRJ_MONTH,
+                TARGET_VALUE = TARGET_VALUE,
+                RESULT_VALUE = RESULT_VALUE
+            });
         }
     }
 }

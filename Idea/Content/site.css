@@ -115,18 +115,3 @@ a {
 a:visited {
     color: #0254EB
 }
-a.morelink {
-    text-decoration:none;
-    outline: none;
-}
-.morecontent span {
-    display: none;
-}
-.comment {
-width:200px;
-    margin: 10px;
-}
-#tbSum >tbody>tr>td{
-  height:20px;
-  padding:0px;
-}

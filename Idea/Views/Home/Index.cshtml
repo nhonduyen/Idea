@@ -12,6 +12,11 @@
 
     #tbKpi, #tbKpi1 td {
         text-align: center;
+        margin-bottom: 0px;
+    }
+
+    .result, .target, .kmonth {
+        padding: 6px;
     }
 
     .modal-body {
@@ -19,7 +24,7 @@
         overflow-y: auto;
     }
 </style>
-@Html.Hidden("hdUrl",Url.Action("Action","Home"))
+@Html.Hidden("hdUrl", Url.Action("Action", "Home"))
 <div class="panel-group" id="total">
     <div class="panel panel-info">
         <div class="panel-heading">
@@ -31,9 +36,11 @@
                 <table id="tbMainDefault" class="table table-bordered">
                     <thead>
                         <tr class="tbheader">
+                            <th rowspan="2" style="width:10px;">#</th>
                             <th rowspan="2">Division</th>
                             <th rowspan="2">Dept</th>
-                            <th rowspan="2">Title</th>
+                            <th rowspan="2" style="white-space: nowrap;">Title</th>
+                            <th rowspan="2">Grade</th>
                             <th colspan="4">KPI</th>
                         </tr>
                         <tr>
@@ -68,14 +75,16 @@
                         <table id="tbNewIdea" class="table table-bordered">
                             <thead>
                                 <tr class="tbheader">
-                                    <th>Title</th>
+                                    <th style="white-space: nowrap;">Title</th>
                                     <th>Name</th>
                                     <th>Date</th>
-                                    <th>Reply</th>
+                                    <th>Rep</th>
+                                    <th>Like</th>
                                 </tr>
                             </thead>
                             <tbody>
                             </tbody>
+                            <tfoot></tfoot>
                         </table>
                     </div>
                 </div>
@@ -89,11 +98,41 @@
                     <strong>Project</strong>
                 </div>
                 <div class="panel-body">
+                    <div class="row" id="filter">
+                        <div class="col-sm-4">
+                            <select class="form-control" id="filterDivsion">
+                                <option value="">DIVISION</option>
+                                @foreach (var div in ViewBag.Divisions)
+                                {
+                                    <option value="@div.DIVISION.Trim()">@div.DIVISION.Trim()</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <select class="form-control" id="filterDepartment">
+                                <option value="">DEPARMENT</option>
+                                @foreach (var dep in ViewBag.Departments)
+                                {
+                                    <option value="@dep.DEPARTMENT.Trim()">@dep.DEPARTMENT.Trim()</option>
+                                }
+                            </select>
+
+                        </div>
+                        <div class="col-sm-4">
+                            <select class="form-control" id="filterGrade">
+                                <option value="">GRADE</option>
+                                <option value="S">S</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table id="tbNewPrj" class="table table-bordered">
                             <thead>
                                 <tr class="tbheader">
-                                    <th>Title</th>
+                                    <th style="white-space: nowrap;">Title</th>
                                     <th>Name</th>
                                     <th>Date</th>
 
@@ -109,492 +148,523 @@
     </div>
 
 </div>
+@section Modals
+{
+    <!-- Modal Register Idea -->
+    <div id="mdRegIdea" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
 
-<!-- Modal Register Idea -->
-<div id="mdRegIdea" class="modal fade" role="dialog">
-    <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-envelope"></span>&nbsp;Suggesting Idea</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="frmRegIdea" role="form">
+                        <div class="row">
+                            <div class="col-sm-9"></div>
+                            <div class="col-sm-3">
+                                <button id="btnSetProject" type="button" class="btn btn-primary">Make Project</button>
+                                <button id="btnRegIdea" class="btn btn-primary" type="submit" data-action="0" data-emp="">Save</button>
+                            </div>
+                        </div>
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <td class="tdleft">
+                                        <label>Division</label></td>
+                                    <td>
+                                        <select id="division" class="form-control">
+                                            @foreach (var div in ViewBag.Divisions)
+                                            {
+                                                <option value="@div.DIVISION.Trim()">@div.DIVISION.Trim()</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td class="tdleft">
+                                        <label>Dept</label></td>
+                                    <td>
+                                        <select id="department" class="form-control">
+                                            @foreach (var dept in ViewBag.Departments)
+                                            {
+                                                <option value="@dept.DEPARTMENT.Trim()">@dept.DEPARTMENT.Trim()</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td class="tdleft">
+                                        <label>Name</label></td>
+                                    <td>
+                                        <input type="text" class="form-control" id="name" required="required" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tdleft">
+                                        <label>Title</label></td>
+                                    <td colspan="5">
+                                        <input type="text" class="form-control" id="title" required="required" />
+                                    </td>
 
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title"><span class="glyphicon glyphicon-envelope"></span>&nbsp;Suggesting Idea</h4>
-            </div>
-            <div class="modal-body">
-                <form id="frmRegIdea" role="form">
+                                </tr>
+                                <tr>
+                                    <td class="tdleft">
+                                        <label>Detail</label></td>
+                                    <td colspan="5">
+                                        <textarea id="detail" rows="5" class="form-control" maxlength="500" required="required"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="2" class="tdleft">
+                                        <label>
+                                            Forecasted<br />
+                                            Improment</label>
+                                    </td>
+                                    <td class="tdleft">
+                                        <label>Quantiative</label></td>
+                                    <td colspan="4">
+                                        <input type="text" class="form-control" id="quantiative" maxlength="200" required="required" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="tdleft">
+                                        <label>Qualiative</label></td>
+                                    <td colspan="5">
+                                        <input type="text" class="form-control" id="qualiative" maxlength="200" required="required" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
                     <div class="row">
-                        <div class="col-sm-9"></div>
-                        <div class="col-sm-3">
-                            <button id="btnSetProject" type="button" class="btn btn-primary">Make Project</button>
-                            <button id="btnRegIdea" class="btn btn-primary" type="submit" data-action="0" data-emp="">Save</button>
+                        <div class="col-sm-10">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Comment" id="comment">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-primary" type="button" id="Reply" data-id="">Reply</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="btn btn-primary" type="button" id="btnLike" data-id="">Like</button>
                         </div>
                     </div>
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <td class="tdleft">
-                                    <label>Division</label></td>
-                                <td>
-                                    <select id="division" class="form-control">
-                                        @foreach (var div in ViewBag.Divisions)
-                                        {
-                                            <option value="@div.DIVISION.Trim()">@div.DIVISION.Trim()</option>
-                                        }
-                                    </select>
-                                </td>
-                                <td class="tdleft">
-                                    <label>Dept</label></td>
-                                <td>
-                                    <select id="department" class="form-control">
-                                        @foreach (var dept in ViewBag.Departments)
-                                        {
-                                            <option value="@dept.DEPARTMENT.Trim()">@dept.DEPARTMENT.Trim()</option>
-                                        }
-                                    </select>
-                                </td>
-                                <td class="tdleft">
-                                    <label>Name</label></td>
-                                <td>
-                                    <input type="text" class="form-control" id="name" required="required" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="tdleft">
-                                    <label>Title</label></td>
-                                <td colspan="5">
-                                    <input type="text" class="form-control" id="title" required="required" />
-                                </td>
 
-                            </tr>
-                            <tr>
-                                <td class="tdleft">
-                                    <label>Detail</label></td>
-                                <td colspan="5">
-                                    <textarea id="detail" rows="5" class="form-control" maxlength="500" required="required"></textarea>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td rowspan="2" class="tdleft">
-                                    <label>
-                                        Forecasted<br />
-                                        Improment</label>
-                                </td>
-                                <td class="tdleft">
-                                    <label>Quantiative</label></td>
-                                <td colspan="4">
-                                    <input type="text" class="form-control" id="quantiative" maxlength="200" required="required" /></td>
-                            </tr>
-                            <tr>
-                                <td class="tdleft">
-                                    <label>Qualiative</label></td>
-                                <td colspan="5">
-                                    <input type="text" class="form-control" id="qualiative" maxlength="200" required="required" /></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </form>
-                <button id="Reply" data-id="" class="btn btn-primary">Reply</button>
-                <div class="table-responsive">
-                    <table id="tbReply" class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Dept</th>
-                                <th>Name</th>
-                                <th>Comment</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr id="trComment">
-                                <td>0</td>
-                                <td id="cDept">Dept</td>
-                                <td id="cName">Name</td>
-                                <td>
-                                    <input type="text" id="comment" class="form-control" /></td>
-                                <td id="cNow">now</td>
-                            </tr>
-
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table id="tbReply" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Dept</th>
+                                    <th>Name</th>
+                                    <th>Comment</th>
+                                    <th>Date-Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+
         </div>
-
     </div>
-</div>
-<!-- End Modal -->
-<!-- Modal Register Project -->
-<div id="mdRegPrj" class="modal fade" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <!-- End Modal -->
+    <!-- Modal Register Project -->
+    <div id="mdRegPrj" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg" style="width: 80%">
 
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title"><span class="glyphicon glyphicon-envelope"></span>&nbsp;Register Project</h4>
-            </div>
-            <div class="modal-body">
-                <form id="frmRegPrj" role="form" data-id="">
-                    <button id="btnRegPrj" class="btn btn-primary" data-emp="" type="submit" style="float: right">Save</button>
-                    <table id="tbRegPrj" class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <td class="tdleft">
-                                    <label>Dept</label></td>
-                                <td>
-                                    <select id="selDept" class="form-control">
-                                        @foreach (var dept in ViewBag.Departments)
-                                        {
-                                            <option value="@dept.DEPARTMENT.Trim()">@dept.DEPARTMENT.Trim()</option>
-                                        }
-                                    </select>
-                                </td>
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-envelope"></span>&nbsp;Register Project</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="frmRegPrj" role="form" data-id="">
+                        <button id="btnRegPrj" class="btn btn-primary" data-emp="" type="submit" style="float: right">Save</button>
+                        <table id="tbRegPrj" class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <td class="tdleft">
+                                        <label>Dept</label></td>
+                                    <td>
+                                        <select id="selDept" class="form-control">
+                                            @foreach (var dept in ViewBag.Departments)
+                                            {
+                                                <option value="@dept.DEPARTMENT.Trim()">@dept.DEPARTMENT.Trim()</option>
+                                            }
+                                        </select>
+                                    </td>
 
-                                <td class="tdleft">
-                                    <label>Name</label></td>
-                                <td>
-                                    <input type="text" class="form-control" id="txtName" required="required" />
-                                </td>
-                                <td class="tdleft">
-                                    <label>PJT Grade</label></td>
-                                <td>
-                                    <select id="pit" class="form-control">
-                                        <option value="S">S</option>
-                                        <option value="A">A</option>
-                                        <option value="B">B</option>
-                                        <option value="C">C</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="tdleft">
-                                    <label>Title</label></td>
-                                <td colspan="5">
-                                    <input type="text" class="form-control" id="txtTitle" /></td>
-                            </tr>
-                            <tr>
-                                <td rowspan="2" class="tdleft">
-                                    <label>KPI</label></td>
-                                <td class="tdleft">
-                                    <label>Name</label></td>
-                                <td colspan="2">
-                                    <input type="text" class="form-control" id="txtKPIName" required="required" />
-                                </td>
-                                <td class="tdleft">
-                                    <label>Unit</label></td>
-                                <td colspan="2">
-                                    <select id="unit" class="form-control">
-                                        @foreach (var unit in ViewBag.Units)
-                                        {
-                                            <option value="@unit.Trim()">@unit.Trim()</option>
-                                        }
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="5">
-                                    <table id="tbKpi" class="table table-bordered">
-                                        <tbody>
-                                            <tr>
-                                                <td rowspan="2">17.4Q</td>
-                                                <td colspan="12" id="year">@DateTime.Now.Year</td>
-                                            </tr>
-                                            <tr>
-                                                @for (int i = 1; i <= 12; i++)
-                                                {
-                                                    <td>@i</td>
-                                                }
+                                    <td class="tdleft">
+                                        <label>Name</label></td>
+                                    <td>
+                                        <input type="text" class="form-control" id="txtName" required="required" />
+                                    </td>
+                                    <td class="tdleft">
+                                        <label>PJT Grade</label></td>
+                                    <td>
+                                        <select id="pit" class="form-control">
+                                            <option value="S">S</option>
+                                            <option value="A">A</option>
+                                            <option value="B">B</option>
+                                            <option value="C">C</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tdleft">
+                                        <label>Title</label></td>
+                                    <td colspan="5">
+                                        <input type="text" class="form-control" id="txtTitle" /></td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="2" class="tdleft">
+                                        <label>KPI</label></td>
+                                    <td class="tdleft">
+                                        <label>Name</label></td>
+                                    <td colspan="2">
+                                        <input type="text" class="form-control" id="txtKPIName" required="required" />
+                                    </td>
+                                    <td class="tdleft">
+                                        <label>Unit</label></td>
+                                    <td colspan="2">
+                                        <select id="unit" class="form-control">
+                                            @foreach (var unit in ViewBag.Units)
+                                            {
+                                                <option value="@unit.Trim()">@unit.Trim()</option>
+                                            }
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5">
+                                        <div class="table-responsive">
+                                            <table id="tbKpi" class="table table-bordered">
+                                                <tbody>
+                                                    <tr>
+                                                        <td rowspan="2">
+                                                            <select id="selCurent" class="">
+                                                                <option value="@(DateTime.Now.ToString("yy") + " total")">@(DateTime.Now.ToString("yy") + " total")</option>
+                                                                <option value="@(DateTime.Now.ToString("yy") + " 2nd")">@(DateTime.Now.ToString("yy") + " 2nd")</option>
+                                                                <option value="@(DateTime.Now.ToString("yy") + " 4Q")">@(DateTime.Now.ToString("yy") + " 4Q")</option>
+                                                            </select>
+                                                        </td>
+                                                        <td colspan="@ViewBag.Colspan1" id="year">@DateTime.Now.Year</td>
+                                                        @if (ViewBag.Colspan2 > 0)
+                                                        {
+                                                            <td colspan="@ViewBag.Colspan2">@(DateTime.Now.Year + 1)</td>
+                                                        }
+                                                    </tr>
+                                                    <tr>
+                                                        @for (DateTime i = DateTime.Now; i <= DateTime.Now.AddMonths(11); i = i.AddMonths(1))
+                                                        {
+                                                            <td>@i.ToString("MM")</td>
+                                                        }
 
-                                            </tr>
-                                            <tr>
-                                                <td></td>
-                                                @for (var i = 1; i <= 12; i++)
-                                                {
-                                                    <td>
-                                                        <input type="text" data-month="@(i < 10 ? DateTime.Now.Year.ToString() + "-0" + i.ToString() : DateTime.Now.Year.ToString() + "-" + i.ToString())" class="form-control kmonth" />
-                                                    </td>
-                                                }
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <input type="number" id="txtCurrent" data-id="" class="form-control" min="0" max="100" />
+                                                        </td>
+                                                        @for (DateTime i = DateTime.Now; i <= DateTime.Now.AddMonths(11); i = i.AddMonths(1))
+                                                        {
+                                                            <td>
+                                                                <input type="text" data-month="@i.ToString("yyyy-MM")" data-id="" class="form-control kmonth"/>
+                                                            </td>
+                                                        }
 
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="tdleft">
-                                    <label>Background</label></td>
-                                <td colspan="5">
-                                    <textarea id="background" rows="3" class="form-control" maxlength="500"></textarea>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td id="action_plan" rowspan="2" class="tdleft">
-                                    <label>
-                                        Action<br />
-                                        Plan</label>
-                                </td>
-                                <td class="tdleft" colspan="4">
-                                    <label>Action</label></td>
-                                <td class="tdleft" colspan="2">
-                                    <label>Schedule</label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="4">
-                                    <div class="input-group" style="width: 100%">
-                                        <input id="txtAddPlan" type="text" class="form-control" placeholder="Plan">
-                                        <div class="input-group-btn">
-                                            <button id="btnAddPlan" class="btn btn-primary" type="button">
-                                                <i class="glyphicon glyphicon-plus-sign"></i>
-                                            </button>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
-                                    </div>
-                                </td>
-                                <td colspan="2">
-                                    <input id="txtAddSchedule" type="text" class="form-control" /></td>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tdleft">
+                                        <label>Background</label></td>
+                                    <td colspan="5">
+                                        <textarea id="background" rows="3" class="form-control" maxlength="500"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="action_plan" rowspan="2" class="tdleft">
+                                        <label>
+                                            Action<br />
+                                            Plan</label>
+                                    </td>
+                                    <td class="tdleft" colspan="4">
+                                        <label>Action</label></td>
+                                    <td class="tdleft" colspan="2">
+                                        <label>Schedule</label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="input-group" style="width: 100%">
+                                            <input id="txtAddPlan" type="text" class="form-control" placeholder="Plan">
+                                            <div class="input-group-btn">
+                                                <button id="btnAddPlan" class="btn btn-primary" type="button">
+                                                    <i class="glyphicon glyphicon-plus-sign"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td colspan="2">
+                                        <input id="txtAddSchedule" type="text" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="2" class="tdleft">
+                                        <label>
+                                            Forecasted<br />
+                                            Improment</label>
+                                    </td>
+                                    <td class="tdleft">
+                                        <label>Quantiative</label></td>
+                                    <td colspan="4">
+                                        <input type="text" class="form-control" id="prj_quantiative" maxlength="200" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="tdleft">
+                                        <label>Qualiative</label></td>
+                                    <td colspan="5">
+                                        <input type="text" class="form-control" id="prj_qualiative" maxlength="200" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
 
-                            </tr>
-                            <tr>
-                                <td rowspan="2" class="tdleft">
-                                    <label>
-                                        Forecasted<br />
-                                        Improment</label>
-                                </td>
-                                <td class="tdleft">
-                                    <label>Quantiative</label></td>
-                                <td colspan="4">
-                                    <input type="text" class="form-control" id="prj_quantiative" maxlength="200" /></td>
-                            </tr>
-                            <tr>
-                                <td class="tdleft">
-                                    <label>Qualiative</label></td>
-                                <td colspan="5">
-                                    <input type="text" class="form-control" id="prj_qualiative" maxlength="200" /></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </form>
-
-            </div>
-        </div>
-
-    </div>
-</div>
-<!-- End Modal -->
-<!-- Modal Process Project -->
-<div id="mdProcess" class="modal fade" role="dialog">
-    <div class="modal-dialog modal-lg">
-
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title"><span class="glyphicon glyphicon-envelope"></span>&nbsp;Progress Management</h4>
-            </div>
-            <div class="modal-body">
-                <form id="frmProcess" role="form" data-emp="" data-id="">
-                    <button id="btnSaveProcess" class="btn btn-primary" type="submit" style="float: right">Save</button>
-                    <table id="tbProcess" class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <td class="tdleft">
-                                    <label>Division</label></td>
-                                <td>
-                                    <select id="division1" class="form-control">
-                                        @foreach (var e in ViewBag.Divisions)
-                                        {
-                                            <option value="@e.DIVISION.Trim()">@e.DIVISION.Trim()</option>
-                                        }
-                                    </select>
-                                </td>
-                                <td class="tdleft">
-                                    <label>Dept</label></td>
-                                <td>
-                                    <select id="selDept1" class="form-control">
-                                        @foreach (var dept in ViewBag.Departments)
-                                        {
-                                            <option value="@dept.DEPARTMENT.Trim()">@dept.DEPARTMENT.Trim()</option>
-                                        }
-                                    </select>
-                                </td>
-
-                                <td class="tdleft">
-                                    <label>Name</label></td>
-                                <td>
-                                    <input type="text" class="form-control" id="txtName1" required="required" />
-                                </td>
-
-                            </tr>
-                            <tr>
-                                <td class="tdleft">
-                                    <label>Title</label></td>
-                                <td colspan="5">
-                                    <input type="text" class="form-control" id="title1" /></td>
-                            </tr>
-                            <tr>
-                                <td rowspan="2" class="tdleft">
-                                    <label>KPI</label></td>
-                                <td class="tdleft">
-                                    <label>Name</label></td>
-                                <td colspan="2">
-                                    <input type="text" class="form-control" id="txtKPIName1" required="required" />
-                                </td>
-                                <td class="tdleft">
-                                    <label>Unit</label></td>
-                                <td colspan="2">
-                                    <select id="unit1" class="form-control">
-                                        @foreach (var unit in ViewBag.Units)
-                                        {
-                                            <option value="@unit.Trim()">@unit.Trim()</option>
-                                        }
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="5">
-                                    <table id="tbKpi1" class="table table-bordered">
-                                        <tbody>
-                                            <tr>
-                                                <td rowspan="2">17.4Q</td>
-                                                <td colspan="12" id="prjYear">@DateTime.Now.Year</td>
-                                            </tr>
-                                            <tr>
-                                                @for (int i = 1; i <= 12; i++)
-                                                {
-                                                    <td>@i</td>
-                                                }
-
-                                            </tr>
-                                            <tr>
-                                                <td>Target</td>
-                                                @for (var i = 1; i <= 12; i++)
-                                                {
-                                                    <td>
-                                                        <input type="text" data-id="" class="form-control target" data-month="" />
-                                                    </td>
-                                                }
-                                            </tr>
-                                            <tr>
-                                                <td>Result</td>
-                                                @for (int i = 1; i <= 12; i++)
-                                                {
-                                                    <td>
-                                                        <input type="text" data-id="" class="form-control result" />
-                                                    </td>
-                                                }
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td id="action_plan1" rowspan="1" class="tdleft">
-                                    <label>
-                                        Action<br />
-                                        Plan</label>
-                                </td>
-                                <td class="tdleft" colspan="1">
-                                    <label>Complete</label></td>
-                                <td class="tdleft" colspan="1">
-                                    <label>Month</label>
-                                </td>
-                                <td class="tdleft" colspan="2">
-                                    <label>Plan</label></td>
-                                <td class="tdleft" colspan="1">
-                                    <label>Schedule</label>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="tdleft">
-                                    <label>Remark</label></td>
-                                <td colspan="5">
-                                    <textarea id="remark" rows="3" class="form-control" maxlength="500"></textarea>
-                                </td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                </form>
-                <button id="Reply1" class="btn btn-primary">Reply</button>
-                <div class="table-responsive">
-                    <table id="tbReply1" class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Dept</th>
-                                <th>Name</th>
-                                <th>Comment</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>0</td>
-                                <td id="cDept1">Dept</td>
-                                <td id="cName1">Name</td>
-                                <td>
-                                    <input type="text" id="comment1" class="form-control" /></td>
-                                <td id="cNow1">now</td>
-                            </tr>
-
-                        </tbody>
-                    </table>
                 </div>
             </div>
+
         </div>
-
     </div>
-</div>
-<!-- Modal result -->
-<div id="mdResult" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+    <!-- End Modal -->
+    <!-- Modal Process Project -->
+    <div id="mdProcess" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg" style="width: 90%;">
 
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title"><span class="glyphicon glyphicon-lock"></span>&nbsp;Result</h4>
-            </div>
-            <div class="modal-body">
-                <table id="tbKpi2" class="table table-bordered">
-                    <tbody>
-                        <tr>
-                            <td rowspan="2">17.4Q</td>
-                            <td colspan="12" id="prjYear1">@DateTime.Now.Year</td>
-                        </tr>
-                        <tr>
-                            @for (int i = 1; i <= 12; i++)
-                            {
-                                <td>@i</td>
-                            }
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-envelope"></span>&nbsp;Progress Management</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="frmProcess" role="form" data-emp="" data-id="" data-date="">
+                        <button id="btnSaveProcess" class="btn btn-primary" type="submit" style="float: right">Save</button>
+                        <table id="tbProcess" class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <td class="tdleft">
+                                        <label>Division</label></td>
+                                    <td>
+                                        <select id="division1" class="form-control">
+                                            @foreach (var e in ViewBag.Divisions)
+                                            {
+                                                <option value="@e.DIVISION.Trim()">@e.DIVISION.Trim()</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td class="tdleft">
+                                        <label>Dept</label></td>
+                                    <td>
+                                        <select id="selDept1" class="form-control">
+                                            @foreach (var dept in ViewBag.Departments)
+                                            {
+                                                <option value="@dept.DEPARTMENT.Trim()">@dept.DEPARTMENT.Trim()</option>
+                                            }
+                                        </select>
+                                    </td>
 
-                        </tr>
-                        <tr>
-                            <td>Target</td>
-                            @for (var i = 1; i <= 12; i++)
-                            {
-                                <td class="target1"></td>
-                            }
-                        </tr>
-                        <tr>
-                            <td>Result</td>
-                            @for (int i = 1; i <= 12; i++)
-                            {
-                                <td class="result1"></td>
-                            }
-                        </tr>
-                    </tbody>
-                </table>
+                                    <td class="tdleft">
+                                        <label>Name</label></td>
+                                    <td>
+                                        <input type="text" class="form-control" id="txtName1" required="required" />
+                                    </td>
 
+                                </tr>
+                                <tr>
+                                    <td class="tdleft">
+                                        <label>Title</label></td>
+                                    <td colspan="5">
+                                        <input type="text" class="form-control" id="title1" /></td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="2" class="tdleft">
+                                        <label>KPI</label></td>
+                                    <td class="tdleft">
+                                        <label>Name</label></td>
+                                    <td colspan="2">
+                                        <input type="text" class="form-control" id="txtKPIName1" required="required" />
+                                    </td>
+                                    <td class="tdleft">
+                                        <label>Unit</label></td>
+                                    <td colspan="2">
+                                        <select id="unit1" class="form-control">
+                                            @foreach (var unit in ViewBag.Units)
+                                            {
+                                                <option value="@unit.Trim()">@unit.Trim()</option>
+                                            }
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5">
+                                        <div class="table-responsive">
+                                            <table id="tbKpi1" class="table table-bordered">
+                                                <tbody>
+                                                    <tr>
+                                                        <td rowspan="2">
+                                                            
+                                                        </td>
+                                                        <td rowspan="2" id="current">
+                                                            
+                                                        </td>
+                                                        <td colspan="12" id="prjYear">@DateTime.Now.Year</td>
+                                                    </tr>
+                                                    <tr id="kpiMonth">
+                                                        @for (DateTime i = DateTime.Now; i <= DateTime.Now.AddYears(1); i = i.AddMonths(1))
+                                                        {
+                                                            <td>@i.ToString("yyyy")<br />@i.ToString("MM")</td>
+                                                        }
+                                                    </tr>
+                                                    <tr id="trTarget">
+                                                        <td>Target</td>
+                                                        <td></td>
+                                                        @for (DateTime i = DateTime.Now; i <= DateTime.Now.AddYears(1); i = i.AddMonths(1))
+                                                        {
+                                                            <td>
+                                                                <input type="text" data-id="" class="form-control target" data-month="@i.ToString("yyyy-MM")" />
+                                                            </td>
+                                                        }
+                                                    </tr>
+                                                    <tr id="trResult">
+                                                        <td>Result</td>
+                                                        <td></td>
+                                                        @for (DateTime i = DateTime.Now; i <= DateTime.Now.AddYears(1); i = i.AddMonths(1))
+                                                        {
+                                                            <td>
+                                                                <input type="text" data-id="" data-month="@i.ToString("yyyy-MM")" class="form-control result" />
+                                                            </td>
+                                                        }
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="action_plan1" rowspan="1" class="tdleft">
+                                        <label>
+                                            Action<br />
+                                            Plan</label>
+                                    </td>
+                                    <td class="tdleft" colspan="1">
+                                        <label>Complete</label></td>
+                                    <td class="tdleft" colspan="1">
+                                        <label>Month</label>
+                                    </td>
+                                    <td class="tdleft" colspan="2">
+                                        <label>Plan</label></td>
+                                    <td class="tdleft" colspan="1">
+                                        <label>Schedule</label>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="tdleft">
+                                        <label>Remark</label></td>
+                                    <td colspan="5">
+                                        <textarea id="remark" rows="3" class="form-control" maxlength="500"></textarea>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </form>
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Comment" id="comment1">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-primary" type="button" id="Reply1" data-id="">Reply</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="btn btn-primary" type="button" id="btnLike1" data-id="">Like</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="tbReply1" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Dept</th>
+                                    <th>Name</th>
+                                    <th>Comment</th>
+                                    <th>Date-Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
+
         </div>
-
     </div>
-</div>
+    <!-- Modal result -->
+    <div id="mdResult" class="modal fade" role="dialog">
+        <div class="modal-dialog">
 
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-lock"></span>&nbsp;Result</h4>
+                </div>
+                <div class="modal-body">
+                    <table id="tbKpi2" class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td rowspan="2"></td>
+                                <td colspan="12" id="prjYear1">@DateTime.Now.Year</td>
+                            </tr>
+                            <tr>
+                                @for (int i = 1; i <= 12; i++)
+                                {
+                                    <td>@i</td>
+                                }
 
+                            </tr>
+                            <tr>
+                                <td>Target</td>
+                                @for (var i = 1; i <= 12; i++)
+                                {
+                                    <td class="target1"></td>
+                                }
+                            </tr>
+                            <tr>
+                                <td>Result</td>
+                                @for (int i = 1; i <= 12; i++)
+                                {
+                                    <td class="result1"></td>
+                                }
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+}

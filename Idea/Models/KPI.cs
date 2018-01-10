@@ -51,6 +51,7 @@ namespace Idea
             return DBManager<KPI>.Execute(sql, new { IDEA_ID = IDEA_ID,PRJ_MONTH = PRJ_MONTH,TARGET_VALUE = TARGET_VALUE,RESULT_VALUE = RESULT_VALUE});
         }
 
+        
         public virtual int Update(string IDEA_ID, string PRJ_MONTH, int TARGET_VALUE, int RESULT_VALUE, string ID)
         {
             var sql = "UPDATE KPI SET IDEA_ID=@IDEA_ID,PRJ_MONTH=@PRJ_MONTH,TARGET_VALUE=@TARGET_VALUE,RESULT_VALUE=@RESULT_VALUE WHERE ID=@ID";

@@ -17,6 +17,8 @@ namespace Idea
         public string BACKGROUND { get; set; }
         public string REMARK { get; set; }
         public DateTime INS_DT { get; set; }
+        public string PRJ_CURR { get; set; }
+        public int CURR_VALUE { get; set; }
 
         public PROJECT(string IDEA_ID, string EMP_ID, string IDEA_TITLE, string PRJECT_GRADE, string KPI_NAME, string KPI_UNIT, string BACKGROUND)
         {
@@ -41,11 +43,27 @@ namespace Idea
 
         public virtual List<PROJECT> SelectPaging(int start=0, int end=10)
         {
-            var sql = string.Format(@"SELECT * FROM(SELECT ROW_NUMBER() OVER (order by IDEA_ID desc) AS ROWNUM, IDEA_ID,IDEA_TITLE,NAME,
-INS_DT FROM PROJECT AS P WHERE NOT EXISTS(SELECT IDEA_ID FROM PROJECT_PLAN AS PL WHERE P.IDEA_ID=PL.IDEA_ID AND COMPLETE_YN=1)) as u 
+            var sql = string.Format(@"SELECT * FROM(SELECT ROW_NUMBER() OVER (order by IDEA_ID desc) AS ROWNUM, IDEA_ID,IDEA_TITLE,NAME,EMP_ID,
+INS_DT FROM PROJECT AS P WHERE NOT EXISTS(SELECT IDEA_ID FROM KPI AS PL WHERE P.IDEA_ID=PL.IDEA_ID AND RESULT_VALUE > 0)) as u 
 WHERE RowNum >= @start   AND RowNum < @end ORDER BY RowNum;");
 
             return DBManager<PROJECT>.ExecuteReader(sql, new { start=start, end = end});
+        }
+
+        public List<PROJECT> Search(string div, string dep, string grade, int start = 0, int end = 10)
+        {
+            var condition = string.Empty;
+            if (!string.IsNullOrWhiteSpace(div))
+                condition += "AND DIVISION='" + div + "' ";
+            if (!string.IsNullOrWhiteSpace(dep))
+                condition += "AND DEPARTMENT='" + dep + "' ";
+            if (!string.IsNullOrWhiteSpace(grade))
+                condition += "AND GRADE='" + grade + "' ";
+            var sql = string.Format(@"SELECT * FROM(SELECT ROW_NUMBER() OVER (order by IDEA_ID desc) AS ROWNUM, IDEA_ID,IDEA_TITLE,NAME,EMP_ID,
+INS_DT FROM PROJECT AS P WHERE NOT EXISTS(SELECT IDEA_ID FROM KPI AS PL WHERE P.IDEA_ID=PL.IDEA_ID AND RESULT_VALUE > 0) condition) as u 
+WHERE RowNum >= @start   AND RowNum < @end ORDER BY RowNum;");
+
+            return DBManager<PROJECT>.ExecuteReader(sql.Replace("condition",condition), new { start = start, end = end });
         }
 
         public virtual int GetCount(int main=0)
