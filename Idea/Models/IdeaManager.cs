@@ -16,7 +16,7 @@ namespace Idea
 
         public string GenerateId()
         {
-            string id = DateTime.Now.ToString("yyyyMMdd");
+            string id = DateTime.Now.ToString("yyMMdd");
             string sql = "select top 1 ID  from IDEA WHERE ID LIKE @id + '%' order by ID desc";
 
             IDEA idea = DBManager<IDEA>.ExecuteReader(sql, new { id = id }).FirstOrDefault();
@@ -26,7 +26,7 @@ namespace Idea
             }
             else
             {
-                string str = idea.ID.Trim().Substring(8);
+                string str = idea.ID.Trim().Substring(6);
                 string num = (Convert.ToInt32(str) + 1).ToString();
                 for (int i = 0; i < str.Length - num.Length; i++)
                 {

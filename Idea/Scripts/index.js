@@ -82,7 +82,6 @@
     }
 );
     $('#filterDivsion,#filterGrade,#filterDepartment').on('change', function () {
-        if ($(this).val())
         tbNewPrj.draw();
         return false;
     });
@@ -94,7 +93,7 @@
             return false;
         }
         else {
-            $('#Reply,#Reply1,#btnLike,#btnLike1').prop('disabled', false);
+            $('#Reply,#Reply1,#btnLike,#btnLike1,#btnRegIdea').prop('disabled', false);
         }
         $('#btnSetProject').prop('disabled', true);
         $('#frmRegIdea')[0].reset();
@@ -187,7 +186,7 @@
         }
         var reply = { IDEA_ID: ideaId, REP_EMP_ID: username, COMMENTS: comment };
 
-        var seq = $('#tbReply tbody tr').length + 1;
+        var seq = $('#tbReply tr').length;
 
         $.ajax({
             url: $('#hdUrl').val().replace("Action", "InsertIdeaComment"),
@@ -200,7 +199,7 @@
             crossBrowser: true,
             success: function (data, status) {
                 if (data > 0) {
-                    $('#tbReply tr:last').after('<tr><td>' + (seq + 1) + '</td><td>' + $('#username').attr('data-dept') + '</td><td>' + $('#username').attr('data-name') + '</td><td>' + comment + '</td><td>' + moment().format('YYYY-MM-DD hh:mm:ss') + '</td></tr>');
+                    $('#tbReply tr:last').after('<tr><td>' + seq + '</td><td>' + $('#username').attr('data-dept') + '</td><td>' + $('#username').attr('data-name') + '</td><td>' + comment + '</td><td>' + moment().format('YYYY-MM-DD hh:mm:ss') + '</td></tr>');
                     tbIdea.ajax.reload();
                 }
                 else {
@@ -235,7 +234,7 @@
         }
         var reply = { IDEA_ID: ideaId, REP_EMP_ID: username, COMMENTS: comment };
 
-        var seq = $('#tbReply1 tbody tr').length + 1;
+        var seq = $('#tbReply1 tr').length;
 
         $.ajax({
             url: $('#hdUrl').val().replace("Action", "InsertPrjComment"),
@@ -248,7 +247,7 @@
             crossBrowser: true,
             success: function (data, status) {
                 if (data > 0) {
-                    $('#tbReply1 tr:last').after('<tr><td>' + (seq + 1) + '</td><td>' + $('#username').attr('data-dept') + '</td><td>' + $('#username').attr('data-name') + '</td><td>' + comment + '</td><td>' + moment().format('YYYY-MM-DD hh:mm:ss') + '</td></tr>');
+                    $('#tbReply1 tr:last').after('<tr><td>' + seq + '</td><td>' + $('#username').attr('data-dept') + '</td><td>' + $('#username').attr('data-name') + '</td><td>' + comment + '</td><td>' + moment().format('YYYY-MM-DD hh:mm:ss') + '</td></tr>');
                     tbIdea.ajax.reload();
                 }
                 else {
@@ -442,6 +441,13 @@
         $('.target,.result').val('');
         $('#current').text('');
         $('.trPlan').remove();
+        $('#trTarget td').remove();
+        $('#trResult td').remove();
+        $('#prjNYear').remove();
+        var dt1 = new Date();
+        $('#trTarget').append('<td>Target</td><td><select id="selCurent1"><option value="' + dt1.getFullYear().toString().substr(-2) + ' total">' + dt1.getFullYear().toString().substr(-2) + ' total</option><option value="' + dt1.getFullYear().toString().substr(-2) + ' 2nd">' + dt1.getFullYear().toString().substr(-2) + ' 2nd</option><option value="' + dt1.getFullYear().toString().substr(-2) + ' 4Q">' + dt1.getFullYear().toString().substr(-2) + ' 4Q</option></select></td>');
+        $('#trResult').append('<td>Result</td><td><input type="number" id="txtCurrent1" value="" class="form-control"/></td>');
+
         $('#action_plan1').attr('rowspan', 1);
 
         var id = $(this).attr('data-id');
@@ -465,12 +471,7 @@
                     var year = parseInt(data[0].PRJ_MONTH.split("-")[0]);
                     $('#prjYear').text(year);
                     $('#kpiMonth td').remove();
-                    $('#trTarget td').remove();
-                    $('#trResult td').remove();
-                    $('#prjNYear').remove();
-
-                    $('#trTarget').append('<td>Target</td><td><select id="selCurent1"><option value="' + dt.getFullYear().toString().substr(-2) + ' total">' + dt.getFullYear().toString().substr(-2) + ' total</option><option value="' + dt.getFullYear().toString().substr(-2) + ' 2nd">' + dt.getFullYear().toString().substr(-2) + ' 2nd</option><option value="' + dt.getFullYear().toString().substr(-2) + ' 4Q">' + dt.getFullYear().toString().substr(-2) + ' 4Q</option></select></td>');
-                    $('#trResult').append('<td>Result</td><td><input type="number" id="txtCurrent1" value="" class="form-control"/></td>');
+                   
 
                     var col1 = 0;
                     var col2 = 0;
@@ -886,6 +887,10 @@
         var id = $('#Reply').attr('data-id');
         if ($(this).attr('id') == "btnLike1") {
             id = $('#Reply1').attr('data-id');
+        }
+        if (!id) {
+            bootbox.alert('Cannot like empty idea');
+            return false;
         }
         var EMP = {
             EMP_ID: username,

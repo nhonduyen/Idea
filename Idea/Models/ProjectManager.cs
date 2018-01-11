@@ -32,8 +32,8 @@ WHERE RowNum >= @start   AND RowNum < @end ORDER BY RowNum;");
                 condition += "AND DEPARTMENT='" + dep + "' ";
             if (!string.IsNullOrWhiteSpace(grade))
                 condition += "AND PRJECT_GRADE='" + grade + "' ";
-            var sql = string.Format(@"SELECT * FROM(SELECT ROW_NUMBER() OVER (order by IDEA_ID desc) AS ROWNUM, P.IDEA_ID,P.EMP_ID,P.IDEA_TITLE,P.PRJECT_GRADE,
-P.KPI_NAME,P.KPI_UNIT, (SELECT TOP 1 TARGET_VALUE FROM KPI AS K WHERE K.IDEA_ID=P.IDEA_ID ORDER BY PRJ_MONTH DESC) AS FINAL
+            var sql = string.Format(@"SELECT * FROM(SELECT ROW_NUMBER() OVER (order by IDEA_ID desc) AS ROWNUM, P.IDEA_ID,P.EMP_ID,P.IDEA_TITLE,P.NAME,
+P.INS_DT, (SELECT TOP 1 TARGET_VALUE FROM KPI AS K WHERE K.IDEA_ID=P.IDEA_ID ORDER BY PRJ_MONTH DESC) AS FINAL
 FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE NOT EXISTS(SELECT IDEA_ID FROM KPI AS PL WHERE P.IDEA_ID=PL.IDEA_ID AND RESULT_VALUE > 0) condition) as u 
 WHERE RowNum >= @start   AND RowNum < @end ORDER BY RowNum;");
             if (!string.IsNullOrEmpty(condition))

@@ -12,8 +12,7 @@ namespace Idea
         public string REP_EMP_NAME { get; set; }
         public string COMMENTS { get; set; }
         public DateTime INS_DATE { get; set; }
-        public string ID { get; set; }
-
+       
         public PRJ_REPLY(string IDEA_ID, string REP_EMP_ID, string REP_EMP_NAME, string COMMENTS, DateTime INS_DATE, string ID)
         {
             this.IDEA_ID = IDEA_ID;
@@ -21,7 +20,7 @@ namespace Idea
             this.REP_EMP_NAME = REP_EMP_NAME;
             this.COMMENTS = COMMENTS;
             this.INS_DATE = INS_DATE;
-            this.ID = ID;
+           
         }
 
         public PRJ_REPLY() { }
