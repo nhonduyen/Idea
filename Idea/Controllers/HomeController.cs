@@ -126,25 +126,46 @@ namespace Idea.Controllers
         public JsonResult GetMainProject(DataTableParameters dataTableParameters)
         {
             ProjectManager prj = ProjectManager.GetInstance();
-
+            KpiManager km = KpiManager.GetInstance();
+           
             var resultSet = new DataTableResultSet();
             resultSet.draw = dataTableParameters.Draw;
             var lst = prj.GetMainProject(dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1);
             resultSet.recordsTotal = resultSet.recordsFiltered = prj.GetCount(1);
             var seq = dataTableParameters.Start + 1;
-
+            DateTime to = DateTime.Now;
+            DateTime from = to.AddMonths(-11);
             foreach (var i in lst)
             {
+                List<KPI> kpis = km.GetResultKpi(i.IDEA_ID);
+               
                 var columns = new List<string>();
                 columns.Add(seq.ToString());
                 columns.Add((i.DIVISION == null) ? "" : i.DIVISION.Trim());
                 columns.Add((i.DEPARTMENT == null) ? "" : i.DEPARTMENT.Trim());
                 columns.Add("<a class='title' href='#' data-emp='"+i.EMP_ID+"' data-id='" + i.IDEA_ID + "'>" + i.IDEA_TITLE.Trim() + "</a>");
+                columns.Add("<a href='#' class='rep' title='Reply' data-id='" + i.IDEA_ID + "' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.REP.ToString() + "</span></a>");
+                columns.Add("<a href='#' class='like' title='Like' data-id='" + i.IDEA_ID + "' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.L.ToString() + "</span></a>");
                 columns.Add((i.PRJECT_GRADE == null) ? "" : i.PRJECT_GRADE.Trim());
                 columns.Add((i.KPI_NAME == null) ? "" : i.KPI_NAME.Trim());
                 columns.Add((i.KPI_UNIT == null) ? "" : i.KPI_UNIT.Trim());
                 columns.Add(i.FINAL.ToString());
-                columns.Add("<a class='res' href='#' data-id='" + i.IDEA_ID + "'>View</a>");
+                for (var d =from; d <=  to; d=d.AddMonths(1))
+                {
+                    var count = 0;
+                    foreach (var result in kpis)
+                    {
+                        if (d.ToString("yyyy-MM").Equals(result.PRJ_MONTH, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            count++;
+                            columns.Add(result.RESULT_VALUE.ToString());
+                        }
+                    }
+                    if (count == 0)
+                    {
+                        columns.Add("");
+                    }
+                }
                 resultSet.data.Add(columns);
                 seq++;
             }
@@ -170,6 +191,8 @@ namespace Idea.Controllers
                     columns.Add("<a class='title' href='#' data-id='" + i.IDEA_ID + "' data-emp='" + i.EMP_ID.Trim() + "'>" + i.IDEA_TITLE.Trim() + "</a>");
                     columns.Add((i.NAME == null) ? "" : i.NAME.Trim());
                     columns.Add((i.INS_DT == null) ? "" : i.INS_DT.ToShortDateString());
+                    columns.Add("<a href='#' class='rep' title='Reply' data-id='" + i.IDEA_ID + "' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.REP.ToString() + "</span></a>");
+                    columns.Add("<a href='#' class='like' title='Like' data-id='" + i.IDEA_ID + "' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.L.ToString() + "</span></a>");
                     resultSet.data.Add(columns);
                 }
             }
@@ -184,6 +207,8 @@ namespace Idea.Controllers
                     columns.Add("<a class='title' href='#' data-id='" + i.IDEA_ID + "' data-emp='" + i.EMP_ID.Trim() + "'>" + i.IDEA_TITLE.Trim() + "</a>");
                     columns.Add((i.NAME == null) ? "" : i.NAME.Trim());
                     columns.Add((i.INS_DT == null) ? "" : i.INS_DT.ToShortDateString());
+                    columns.Add("<a href='#' class='rep' title='Reply' data-id='" + i.IDEA_ID + "' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.REP.ToString() + "</span></a>");
+                    columns.Add("<a href='#' class='like' title='Like' data-id='" + i.IDEA_ID + "' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.L.ToString() + "</span></a>");
                     resultSet.data.Add(columns);
                 }
             }
@@ -207,8 +232,8 @@ namespace Idea.Controllers
                 columns.Add("<a class='title' href='#' id='" + i.ID + "' data-emp='" + i.EMP_ID.Trim() + "'>" + i.IDEA_TITLE.Trim() + "</a>");
                 columns.Add((i.EMP_NAME==null) ? "" : i.EMP_NAME.Trim());
                 columns.Add((i.DATE == null) ? "" : i.DATE.ToShortDateString());
-                columns.Add("<a href='#' class='rep' title='Reply' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.REP.ToString() + "</span></a>");
-                columns.Add("<a href='#' class='like' title='Like' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.L.ToString() + "</span></a>");
+                columns.Add("<a href='#' class='rep' title='Reply' data-id='"+i.ID+"' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.REP.ToString() + "</span></a>");
+                columns.Add("<a href='#' class='like' title='Like' data-id='" + i.ID + "' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.L.ToString() + "</span></a>");
                 resultSet.data.Add(columns);
 
             }
@@ -365,6 +390,16 @@ namespace Idea.Controllers
         }
 
         [HttpPost]
+        public JsonResult LikeIdea(EMPLOYEE EMP, string IDEA_ID)
+        {
+            LikeManager manager = LikeManager.GetInstance();
+            bool checkLiked = manager.CheckLikeIdea(EMP.EMP_ID, IDEA_ID);
+            if (checkLiked)
+                return Json(-1);
+            return Json(manager.InsertLikeIdea(IDEA_ID, EMP.EMP_ID, EMP.EMP_NAME));
+        }
+
+        [HttpPost]
         public JsonResult GetLikeDetail(string IDEA_ID)
         {
             LikeManager manager = LikeManager.GetInstance();
@@ -372,11 +407,19 @@ namespace Idea.Controllers
         }
 
         [HttpPost]
-        public JsonResult GetRepDetail(string IDEA_ID)
+        public JsonResult GetRepDetail(string IDEA_ID, int table)
         {
-
-            IdeaReplyManager manager = IdeaReplyManager.GetInstance();
-            return Json(manager.GetReplyDetail(IDEA_ID));
+            if (table == 0)
+            {
+                IdeaReplyManager manager = IdeaReplyManager.GetInstance();
+                return Json(manager.GetReplyDetail(IDEA_ID));
+            }
+            else
+            {
+                ProjectReplyManager rep = ProjectReplyManager.GetInstance();
+                List<PRJ_REPLY> lst = rep.GetReplyName(IDEA_ID);
+                return Json(lst);
+            }
         }
     }
 }

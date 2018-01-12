@@ -36,18 +36,26 @@
                 <table id="tbMainDefault" class="table table-bordered">
                     <thead>
                         <tr class="tbheader">
-                            <th rowspan="2" style="width:10px;">#</th>
-                            <th rowspan="2">Division</th>
-                            <th rowspan="2">Dept</th>
-                            <th rowspan="2" style="white-space: nowrap;">Title</th>
-                            <th rowspan="2">Grade</th>
-                            <th colspan="4">KPI</th>
+                            <th rowspan="3">#</th>
+                            <th rowspan="3">Division</th>
+                            <th rowspan="3">Dept</th>
+                            <th rowspan="3" style="white-space: nowrap;">Title</th>
+                             <th rowspan="3">Rep</th>
+                             <th rowspan="3">Like</th>
+                            <th rowspan="3">Grade</th>
+                            <th colspan="15">KPI</th>
                         </tr>
                         <tr>
-                            <th>Name</th>
-                            <th>Unit</th>
-                            <th>Final Target</th>
-                            <th>Result</th>
+                            <th rowspan="2">Name</th>
+                            <th rowspan="2">Unit</th>
+                            <th rowspan="2">Final Target</th>
+                            <th colspan="12">Result</th>
+                        </tr>
+                        <tr>
+                            @for (var d = DateTime.Now.AddMonths(-11); d <= DateTime.Now; d = d.AddMonths(1))
+                            {
+                                <th>@d.ToString("yy/MM")</th>
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -135,7 +143,8 @@
                                     <th style="white-space: nowrap;">Title</th>
                                     <th>Name</th>
                                     <th>Date</th>
-
+                                    <th>Rep</th>
+                                    <th>Like</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -344,9 +353,9 @@
                                                     <tr>
                                                         <td rowspan="2">
                                                             <select id="selCurent" class="">
-                                                                <option value="@(DateTime.Now.ToString("yy") + " total")">@(DateTime.Now.ToString("yy") + " total")</option>
-                                                                <option value="@(DateTime.Now.ToString("yy") + " 2nd")">@(DateTime.Now.ToString("yy") + " 2nd")</option>
-                                                                <option value="@(DateTime.Now.ToString("yy") + " 4Q")">@(DateTime.Now.ToString("yy") + " 4Q")</option>
+                                                                <option value="@(DateTime.Now.AddYears(-1).ToString("yy") + " total")">@(DateTime.Now.AddYears(-1).ToString("yy") + " total")</option>
+                                                                <option value="@(DateTime.Now.AddYears(-1).ToString("yy") + " 2nd")">@(DateTime.Now.AddYears(-1).ToString("yy") + " 2nd")</option>
+                                                                <option value="@(DateTime.Now.AddYears(-1).ToString("yy") + " 4Q")">@(DateTime.Now.AddYears(-1).ToString("yy") + " 4Q")</option>
                                                             </select>
                                                         </td>
                                                         <td colspan="@ViewBag.Colspan1" id="year">@DateTime.Now.Year</td>

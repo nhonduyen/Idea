@@ -41,13 +41,17 @@ namespace Idea
             return DBManager<PROJECT>.ExecuteReader(sql, new { ID = ID});
         }
 
-        public virtual List<PROJECT> SelectPaging(int start=0, int end=10)
+        public virtual dynamic SelectPaging(int start=0, int end=10)
         {
-            var sql = string.Format(@"SELECT * FROM(SELECT ROW_NUMBER() OVER (order by IDEA_ID desc) AS ROWNUM, IDEA_ID,IDEA_TITLE,NAME,EMP_ID,
-INS_DT FROM PROJECT AS P WHERE NOT EXISTS(SELECT IDEA_ID FROM KPI AS PL WHERE P.IDEA_ID=PL.IDEA_ID AND RESULT_VALUE > 0)) as u 
+            var sql = string.Format(@"
+SELECT * FROM(SELECT ROW_NUMBER() OVER (order by IDEA_ID desc) AS ROWNUM, IDEA_ID,IDEA_TITLE,NAME,EMP_ID,
+INS_DT,
+(SELECT COUNT(1) FROM PRJ_REPLY AS PR WHERE PR.IDEA_ID=P.IDEA_ID) AS REP,
+(SELECT COUNT(1) FROM PRJ_LIKE AS L WHERE L.IDEA_ID=P.IDEA_ID) AS L
+FROM PROJECT AS P WHERE NOT EXISTS(SELECT IDEA_ID FROM KPI AS PL WHERE P.IDEA_ID=PL.IDEA_ID AND RESULT_VALUE > 0)) as u 
 WHERE RowNum >= @start   AND RowNum < @end ORDER BY RowNum;");
 
-            return DBManager<PROJECT>.ExecuteReader(sql, new { start=start, end = end});
+            return DBManager<PROJECT>.ExecuteDynamic(sql, new { start=start, end = end});
         }
 
         public List<PROJECT> Search(string div, string dep, string grade, int start = 0, int end = 10)

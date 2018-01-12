@@ -68,7 +68,7 @@
                        });
                    }
                },
-              
+
            });
     $.fn.dataTable.ext.search.push(
     function (settings, data, dataIndex) {
@@ -97,6 +97,8 @@
         }
         $('#btnSetProject').prop('disabled', true);
         $('#frmRegIdea')[0].reset();
+        $('#tbReply').find("tr:not(:first)").remove();
+
         $('#Reply').attr('data-id', '');
         $('#cNow').text(moment().format('YYYY-MM-DD HH:mm:ss'));
         var name = $('#username').attr('data-name');
@@ -199,7 +201,7 @@
             crossBrowser: true,
             success: function (data, status) {
                 if (data > 0) {
-                    $('#tbReply tr:last').after('<tr><td>' + seq + '</td><td>' + $('#username').attr('data-dept') + '</td><td>' + $('#username').attr('data-name') + '</td><td>' + comment + '</td><td>' + moment().format('YYYY-MM-DD hh:mm:ss') + '</td></tr>');
+                    $('<tr><td>' + seq + '</td><td>' + $('#username').attr('data-dept') + '</td><td>' + $('#username').attr('data-name') + '</td><td>' + comment + '</td><td>' + moment().format('YYYY-MM-DD hh:mm:ss') + '</td></tr>').prependTo("#tbReply > tbody");
                     tbIdea.ajax.reload();
                 }
                 else {
@@ -232,7 +234,7 @@
             bootbox.alert("Please enter comment");
             return false;
         }
-        var reply = { IDEA_ID: ideaId, REP_EMP_ID: username, COMMENTS: comment };
+        var reply = { IDEA_ID: ideaId, REP_EMP_ID: username, REP_EMP_NAME: $('#username').attr('data-name'), COMMENTS: comment };
 
         var seq = $('#tbReply1 tr').length;
 
@@ -247,8 +249,10 @@
             crossBrowser: true,
             success: function (data, status) {
                 if (data > 0) {
-                    $('#tbReply1 tr:last').after('<tr><td>' + seq + '</td><td>' + $('#username').attr('data-dept') + '</td><td>' + $('#username').attr('data-name') + '</td><td>' + comment + '</td><td>' + moment().format('YYYY-MM-DD hh:mm:ss') + '</td></tr>');
-                    tbIdea.ajax.reload();
+                    $('<tr><td>' + seq + '</td><td>' + $('#username').attr('data-dept') + '</td><td>' + $('#username').attr('data-name') + '</td><td>' + comment + '</td><td>' + moment().format('YYYY-MM-DD hh:mm:ss') + '</td></tr>').prependTo("#tbReply1 > tbody");
+                    //tbIdea.ajax.reload();
+                    tbNewPrj.ajax.reload();
+                    tbProgress.ajax.reload();
                 }
                 else {
                     bootbox.alert("Fail");
@@ -424,7 +428,7 @@
     });
     $('#tbNewPrj,#tbMainDefault').on('click', '.title', function () {
         var username = $('#username').val();
-        var host=$(this).attr('data-emp');
+        var host = $(this).attr('data-emp');
         if (!username) {
             $('#Reply,#Reply1,#btnLike,#btnLike1').prop('disabled', true);
         }
@@ -445,6 +449,8 @@
         $('#trResult td').remove();
         $('#prjNYear').remove();
         var dt1 = new Date();
+        dt1.setFullYear(dt1.getFullYear() - 1);
+
         $('#trTarget').append('<td>Target</td><td><select id="selCurent1"><option value="' + dt1.getFullYear().toString().substr(-2) + ' total">' + dt1.getFullYear().toString().substr(-2) + ' total</option><option value="' + dt1.getFullYear().toString().substr(-2) + ' 2nd">' + dt1.getFullYear().toString().substr(-2) + ' 2nd</option><option value="' + dt1.getFullYear().toString().substr(-2) + ' 4Q">' + dt1.getFullYear().toString().substr(-2) + ' 4Q</option></select></td>');
         $('#trResult').append('<td>Result</td><td><input type="number" id="txtCurrent1" value="" class="form-control"/></td>');
 
@@ -467,11 +473,10 @@
                 if (data.length > 0) {
                     var date = new Date(data[0].PRJ_MONTH + "-01");
                     var date1 = new Date(date.getFullYear() + 1, date.getMonth(), 1);
-                    var dt = new Date();
+
                     var year = parseInt(data[0].PRJ_MONTH.split("-")[0]);
                     $('#prjYear').text(year);
                     $('#kpiMonth td').remove();
-                   
 
                     var col1 = 0;
                     var col2 = 0;
@@ -482,10 +487,8 @@
                         $('#kpiMonth').append('<td>' + prj_month.split("-")[1] + '</td>');
                         $('#trTarget').append('<td><input data-id="" class="form-control target" data-month="' + prj_month + '" type="text"/></td>');
                         $('#trResult').append('<td><input data-id="" class="form-control result" data-month="' + prj_month + '" type="text"/></td>');
-
                         if (year == d.getFullYear()) {
                             col1++;
-
                         }
                         else {
                             col2++;
@@ -505,17 +508,40 @@
                             if ($(this).attr('data-month') == data[i].PRJ_MONTH) {
                                 $(this).val(data[i].TARGET_VALUE);
                                 $(this).attr('data-id', data[i].ID);
+                                $(this).attr('readonly', false);
+                            }
+                            if (!$(this).val()) {
+                                $(this).attr('readonly', true);
+                            }
+                            else {
+                                $(this).attr('readonly', false);
                             }
                         });
                         $.each($(".result"), function () {
                             if ($(this).attr('data-month') == data[i].PRJ_MONTH) {
                                 $(this).val(data[i].RESULT_VALUE);
                                 $(this).attr('data-id', data[i].ID);
+                                $(this).attr('readonly', false);
+                            }
+                            if (!$(this).val()) {
+                                $(this).attr('readonly', true);
+                            }
+                            else {
+                                $(this).attr('readonly', false);
                             }
                         });
 
                     }
-
+                    $.each($(".target"), function () {
+                        if (!$(this).val()) {
+                            $(this).attr('readonly', 'readonly');
+                        }
+                    });
+                    $.each($(".result"), function () {
+                        if (!$(this).val()) {
+                            $(this).attr('readonly', 'readonly');
+                        }
+                    });
 
                 }
 
@@ -601,7 +627,7 @@
             },
 
         });
-       
+
         $.ajax({
             url: $('#hdUrl').val().replace("Action", "GetProjectById"),
             data: JSON.stringify({
@@ -885,19 +911,23 @@
         var username = $('#username').val();
         var name = $('#username').attr('data-name');
         var id = $('#Reply').attr('data-id');
+        var like = "LikeIdea";
         if ($(this).attr('id') == "btnLike1") {
             id = $('#Reply1').attr('data-id');
+            like = "Like";
         }
         if (!id) {
             bootbox.alert('Cannot like empty idea');
             return false;
         }
+       
+
         var EMP = {
             EMP_ID: username,
             EMP_NAME: name
         };
         $.ajax({
-            url: $('#hdUrl').val().replace("Action", "Like"),
+            url: $('#hdUrl').val().replace("Action", like),
             data: JSON.stringify({
                 IDEA_ID: id,
                 EMP: EMP
@@ -909,6 +939,9 @@
             success: function (data, status) {
                 if (data > 0) {
                     bootbox.alert("Liked");
+                    tbIdea.ajax.reload();
+                    tbNewPrj.ajax.reload();
+                    tbProgress.ajax.reload();
                 }
                 else {
                     bootbox.alert("You already liked it");
@@ -921,19 +954,23 @@
             },
         });
     });
-    $('#tbNewIdea').on('click', '.rep', function (ev) {
+    $('#tbNewIdea,#tbMainDefault,#tbNewPrj').on('click', '.rep', function (ev) {
         ev.preventDefault();
         var num = parseInt($(this).children('span').text());
         if (num == 0) return false;
 
         var e = $(this);
-        var id = e.parent('td').siblings().eq(0).find('a').attr('id');
-
+        var id = e.attr('data-id');
+        var table_id = 1;
+        if (e.closest("#tbNewIdea").length > 0) {
+            table_id = 0;
+        }
         e.off('hover');
         $.ajax({
             url: $('#hdUrl').val().replace("Action", "GetRepDetail"),
             data: JSON.stringify({
-                IDEA_ID: id
+                IDEA_ID: id,
+                table: table_id
             }),
             type: 'POST',
             dataType: 'json',
@@ -942,12 +979,18 @@
             success: function (data, status) {
                 if (data.length > 0) {
                     var names = "";
-                    for (var i = 0; i < data.length; i++) {
-                        for (var j = 0; j < data[i].length; j++) {
-                            names += data[i][j].Value + "<br>";
-                        }
 
+                    for (var i = 0; i < data.length; i++) {
+                        if (table_id == 0) {
+                            for (var j = 0; j < data[i].length; j++) {
+                                names += data[i][j].Value + "<br>";
+                            }
+                        }
+                        else {
+                            names += data[i].REP_EMP_NAME + "<br>";
+                        }
                     }
+
                     e.popover({
                         content: names,
                         html: true,
@@ -964,13 +1007,13 @@
 
         return false;
     });
-    $('#tbNewIdea').on('click', '.like', function (ev) {
+    $('#tbNewIdea,#tbMainDefault,#tbNewPrj').on('click', '.like', function (ev) {
         ev.preventDefault();
         var num = parseInt($(this).children('span').text());
         if (num == 0) return false;
 
         var e = $(this);
-        var id = e.parent('td').siblings().eq(0).find('a').attr('id');
+        var id = e.attr('data-id');
 
         e.off('hover');
         $.ajax({

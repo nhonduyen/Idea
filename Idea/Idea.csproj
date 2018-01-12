@@ -129,6 +129,7 @@
     <Compile Include="Models\IDEA.cs" />
     <Compile Include="Models\IdeaManager.cs" />
     <Compile Include="Models\IdeaReplyManager.cs" />
+    <Compile Include="Models\IDEA_LIKE.cs" />
     <Compile Include="Models\IDEA_REPLY.cs" />
     <Compile Include="Models\KPI.cs" />
     <Compile Include="Models\KpiManager.cs" />

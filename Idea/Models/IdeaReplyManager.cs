@@ -17,7 +17,7 @@ namespace Idea
        
         public dynamic GetReplyByIdeaId(string ID)
         {
-            var sql = "SELECT E.EMP_NAME,E.DEPARTMENT,R.COMMENTS,R.INS_DATE FROM IDEA_REPLY AS R INNER JOIN EMPLOYEE AS E ON R.REP_EMP_ID=E.EMP_ID WHERE IDEA_ID=@ID";
+            var sql = "SELECT E.EMP_NAME,E.DEPARTMENT,R.COMMENTS,R.INS_DATE FROM IDEA_REPLY AS R INNER JOIN EMPLOYEE AS E ON R.REP_EMP_ID=E.EMP_ID WHERE IDEA_ID=@ID ORDER BY INS_DATE DESC";
             return DBManager<dynamic>.ExecuteDynamic(sql, new { ID = ID });
         }
 

@@ -57,5 +57,11 @@ namespace Idea
                 RESULT_VALUE = RESULT_VALUE
             });
         }
+
+        public List<KPI> GetResultKpi(string IDEA_ID)
+        {
+            var sql = "SELECT PRJ_MONTH,RESULT_VALUE FROM KPI WHERE IDEA_ID=@IDEA_ID";
+            return DBManager<KPI>.ExecuteReader(sql, new { IDEA_ID = IDEA_ID });
+        }
     }
 }

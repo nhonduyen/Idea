@@ -14,7 +14,13 @@ namespace Idea
             return instance;
         }
 
-       
+        public int InsertLikeIdea(string IDEA_ID, string EMP_ID, string EMP_NAME)
+        {
+            //string ID = this.GenerateId();
+            var sql = "INSERT INTO IDEA_LIKE(IDEA_ID,EMP_ID,EMP_NAME,INS_DATE) VALUES(@IDEA_ID,@EMP_ID,@EMP_NAME,GETDATE())";
+            return DBManager<IDEA_LIKE>.Execute(sql, new { IDEA_ID = IDEA_ID, EMP_ID = EMP_ID, EMP_NAME = EMP_NAME });
+        }
+
         public int Insert(string IDEA_ID, string EMP_ID, string EMP_NAME)
         {
             //string ID = this.GenerateId();
@@ -38,6 +44,15 @@ namespace Idea
         {
             var sql = "SELECT IDEA_ID  FROM PRJ_LIKE WHERE IDEA_ID=@IDEA_ID AND EMP_ID=@EMP_ID";
             var result = DBManager<PRJ_LIKE>.ExecuteReader(sql, new { EMP_ID = EMP_ID, IDEA_ID = IDEA_ID });
+            if (result == null || result.Count == 0)
+                return false;
+            return true;
+        }
+
+        public bool CheckLikeIdea(string EMP_ID, string IDEA_ID)
+        {
+            var sql = "SELECT IDEA_ID  FROM IDEA_LIKE WHERE IDEA_ID=@IDEA_ID AND EMP_ID=@EMP_ID";
+            var result = DBManager<IDEA_LIKE>.ExecuteReader(sql, new { EMP_ID = EMP_ID, IDEA_ID = IDEA_ID });
             if (result == null || result.Count == 0)
                 return false;
             return true;
