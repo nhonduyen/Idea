@@ -21,7 +21,7 @@ P.KPI_NAME,P.KPI_UNIT,E.DIVISION, E.DEPARTMENT,
 (SELECT COUNT(1) FROM PRJ_REPLY AS PR WHERE PR.IDEA_ID=P.IDEA_ID) AS REP,
 (SELECT COUNT(1) FROM PRJ_LIKE AS L WHERE L.IDEA_ID=P.IDEA_ID) AS L,
 (SELECT TOP 1 TARGET_VALUE FROM KPI AS K WHERE K.IDEA_ID=P.IDEA_ID ORDER BY PRJ_MONTH DESC) AS FINAL
-FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE EXISTS(SELECT IDEA_ID FROM KPI AS PL WHERE P.IDEA_ID=PL.IDEA_ID AND RESULT_VALUE > 0)) as u 
+FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE PRJECT_GRADE='S' OR PRJECT_GRADE='A') as u 
 WHERE RowNum >= @start   AND RowNum < @end ORDER BY RowNum;");
 
             return DBManager<PROJECT>.ExecuteDynamic(sql, new { start = start, end = end });
@@ -40,7 +40,7 @@ P.INS_DT,
 (SELECT COUNT(1) FROM PRJ_REPLY AS PR WHERE PR.IDEA_ID=P.IDEA_ID) AS REP,
 (SELECT COUNT(1) FROM PRJ_LIKE AS L WHERE L.IDEA_ID=P.IDEA_ID) AS L
 ,(SELECT TOP 1 TARGET_VALUE FROM KPI AS K WHERE K.IDEA_ID=P.IDEA_ID ORDER BY PRJ_MONTH DESC) AS FINAL
-FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE NOT EXISTS(SELECT IDEA_ID FROM KPI AS PL WHERE P.IDEA_ID=PL.IDEA_ID AND RESULT_VALUE > 0) condition) as u 
+FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE 1=1 condition) as u 
 WHERE RowNum >= @start   AND RowNum < @end ORDER BY RowNum;");
             if (!string.IsNullOrEmpty(condition))
                 sql = sql.Replace("condition", condition);
@@ -57,8 +57,7 @@ WHERE RowNum >= @start   AND RowNum < @end ORDER BY RowNum;");
             if (!string.IsNullOrWhiteSpace(grade))
                 condition += "AND PRJECT_GRADE='" + grade + "' ";
             var sql = string.Format(@"SELECT COUNT(1) AS CNT
-FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE NOT EXISTS(SELECT IDEA_ID FROM KPI AS PL WHERE P.IDEA_ID=PL.IDEA_ID
-AND RESULT_VALUE > 0) condition");
+FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE 1=1 condition");
             if (!string.IsNullOrEmpty(condition))
                 sql = sql.Replace("condition", condition);
             return (int)DBManager<PROJECT>.ExecuteScalar(sql);
@@ -98,11 +97,11 @@ AND RESULT_VALUE > 0) condition");
         }
 
         public int UpdatePrj(string IDEA_ID, string EMP_ID, string IDEA_TITLE, string KPI_NAME, string KPI_UNIT, string REMARK,
-            string NAME, string PRJ_CURR, int CURR_VALUE)
+            string NAME, string PRJ_CURR, int CURR_VALUE, string PRJECT_GRADE)
         {
             var sql = string.Format(@"UPDATE PROJECT SET IDEA_ID=@IDEA_ID,EMP_ID=@EMP_ID,IDEA_TITLE=@IDEA_TITLE,KPI_NAME=@KPI_NAME,
-                                   NAME=@NAME,KPI_UNIT=@KPI_UNIT,REMARK=@REMARK,CURR_VALUE=@CURR_VALUE,PRJ_CURR=@PRJ_CURR
-                                   WHERE IDEA_ID=@IDEA_ID");
+                                   NAME=@NAME,KPI_UNIT=@KPI_UNIT,REMARK=@REMARK,CURR_VALUE=@CURR_VALUE,PRJ_CURR=@PRJ_CURR,
+                                   PRJECT_GRADE=@PRJECT_GRADE WHERE IDEA_ID=@IDEA_ID");
 
             return DBManager<PROJECT>.Execute(sql, new
             {
@@ -114,7 +113,8 @@ AND RESULT_VALUE > 0) condition");
                 REMARK = REMARK,
                 NAME = NAME,
                 PRJ_CURR = PRJ_CURR,
-                CURR_VALUE = CURR_VALUE
+                CURR_VALUE = CURR_VALUE,
+                PRJECT_GRADE = PRJECT_GRADE
             });
         }
 

@@ -48,7 +48,7 @@ SELECT * FROM(SELECT ROW_NUMBER() OVER (order by IDEA_ID desc) AS ROWNUM, IDEA_I
 INS_DT,
 (SELECT COUNT(1) FROM PRJ_REPLY AS PR WHERE PR.IDEA_ID=P.IDEA_ID) AS REP,
 (SELECT COUNT(1) FROM PRJ_LIKE AS L WHERE L.IDEA_ID=P.IDEA_ID) AS L
-FROM PROJECT AS P WHERE NOT EXISTS(SELECT IDEA_ID FROM KPI AS PL WHERE P.IDEA_ID=PL.IDEA_ID AND RESULT_VALUE > 0)) as u 
+FROM PROJECT AS P ) as u 
 WHERE RowNum >= @start   AND RowNum < @end ORDER BY RowNum;");
 
             return DBManager<PROJECT>.ExecuteDynamic(sql, new { start=start, end = end});
@@ -72,9 +72,9 @@ WHERE RowNum >= @start   AND RowNum < @end ORDER BY RowNum;");
 
         public virtual int GetCount(int main=0)
         {
-            var sql = "SELECT COUNT(1) AS CNT FROM PROJECT AS P WHERE NOT EXISTS(SELECT IDEA_ID FROM PROJECT_PLAN AS PL WHERE P.IDEA_ID=PL.IDEA_ID AND COMPLETE_YN=1)";
+            var sql = "SELECT COUNT(1) AS CNT FROM PROJECT AS P WHERE PRJECT_GRADE='S' OR PRJECT_GRADE='A'"; //NOT EXISTS(SELECT IDEA_ID FROM PROJECT_PLAN AS PL WHERE P.IDEA_ID=PL.IDEA_ID AND COMPLETE_YN=1)
             if (main == 1)
-                sql = sql.Replace("NOT", "");
+                sql = sql.Replace("WHERE PRJECT_GRADE='S' OR PRJECT_GRADE='A'", "");
             return (int)DBManager<PROJECT>.ExecuteScalar(sql);
         }
 

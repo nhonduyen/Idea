@@ -17,8 +17,7 @@ namespace Idea.Controllers
             EmployeeManager employeeManager = EmployeeManager.GetInstance();
             ViewBag.Divisions = employeeManager.GetDivision();
             ViewBag.Departments = employeeManager.GetDepartment();
-            ViewBag.Units = pm.GetKPIUnit();
-
+          
             var from = DateTime.Now;
             var to = from.AddMonths(11);
             var colspan1 = 0;
@@ -131,7 +130,7 @@ namespace Idea.Controllers
             var resultSet = new DataTableResultSet();
             resultSet.draw = dataTableParameters.Draw;
             var lst = prj.GetMainProject(dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1);
-            resultSet.recordsTotal = resultSet.recordsFiltered = prj.GetCount(1);
+            resultSet.recordsTotal = resultSet.recordsFiltered = prj.GetCount();
             var seq = dataTableParameters.Start + 1;
             DateTime to = DateTime.Now;
             DateTime from = to.AddMonths(-11);
@@ -199,7 +198,7 @@ namespace Idea.Controllers
             else
             {
                 var lst = prj.SelectPaging(dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1);
-                resultSet.recordsTotal = resultSet.recordsFiltered = prj.GetCount();
+                resultSet.recordsTotal = resultSet.recordsFiltered = prj.GetCount(1);
 
                 foreach (var i in lst)
                 {
@@ -341,7 +340,7 @@ namespace Idea.Controllers
             if (!string.IsNullOrEmpty(existID))
             {
                 result = prj.UpdatePrj(Project.IDEA_ID, Project.EMP_ID, Project.IDEA_TITLE, Project.KPI_NAME, Project.KPI_UNIT,
-                    Project.REMARK, Project.NAME, Project.PRJ_CURR, Project.CURR_VALUE);
+                    Project.REMARK, Project.NAME, Project.PRJ_CURR, Project.CURR_VALUE, Project.PRJECT_GRADE);
 
                 if (result > 0)
                 {

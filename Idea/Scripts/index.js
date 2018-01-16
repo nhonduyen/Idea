@@ -654,7 +654,7 @@
                     $('#selDept1').val($.trim(data[12].Value));
                     //$('#division1').selectize()[0].selectize.setValue($.trim(data[13].Value), false);
                     $('#division1').val($.trim(data[13].Value));
-
+                    $('#pit1').val($.trim(data[3].Value));
                     $('#txtName1').val($.trim(data[14].Value));
                 }
 
@@ -808,8 +808,8 @@
             IDEA_ID: $(this).attr('data-id'),
             IDEA_TITLE: $('#title1').val(),
             KPI_NAME: $('#txtKPIName1').val(),
-            //KPI_UNIT: $('#unit1').selectize()[0].selectize.getValue(),
             KPI_UNIT: $('#unit1').val(),
+            PRJECT_GRADE: $('#pit1').val(),
             REMARK: $('#remark').val(),
             NAME: $('#txtName1').val(),
             PRJ_CURR: $('#selCurent1').val(),
