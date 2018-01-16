@@ -7,10 +7,10 @@
             $(this).datepicker('hide');
         });
 
-    var $div1 = $('#division,#division1,#unit').selectize({
-        create: true,
-        sortField: 'text'
-    });
+    //var $div1 = $('#division,#division1,#unit,#unit').selectize({
+    //    create: true,
+    //    sortField: 'text'
+    //});
 
     var tbProgress = $('#tbMainDefault').DataTable(
             {
@@ -105,7 +105,8 @@
         var dept = $('#username').attr('data-dept');
         var division = $('#username').attr('data-div');
 
-        $('#division').selectize()[0].selectize.setValue(division, false);
+        //$('#division').selectize()[0].selectize.setValue(division, false);
+        $('#division').val(division);
 
         $('#department').val(dept, false);
         $('#name').val(name);
@@ -129,6 +130,11 @@
         if (username != emp) {
             bootbox.alert("You cannot set this idea");
         }
+        $('#action_plan').attr('rowspan', 2);
+        $('.trNewPlan').remove();
+        $('#frmRegPrj')[0].reset();
+        
+        
         var id = $('#Reply').attr('data-id');
         $.ajax({
             url: $('#hdUrl').val().replace("Action", "GetIdeaById"),
@@ -174,6 +180,7 @@
         var username = $('#username').val();
         var comment = $('#comment').val();
         var ideaId = $('#Reply').attr('data-id');
+      
         if (!username) {
             bootbox.alert("Please login to use this function");
             return false;
@@ -189,7 +196,6 @@
         var reply = { IDEA_ID: ideaId, REP_EMP_ID: username, COMMENTS: comment };
 
         var seq = $('#tbReply tr').length;
-
         $.ajax({
             url: $('#hdUrl').val().replace("Action", "InsertIdeaComment"),
             data: JSON.stringify({
@@ -201,7 +207,7 @@
             crossBrowser: true,
             success: function (data, status) {
                 if (data > 0) {
-                    $('<tr><td>' + seq + '</td><td>' + $('#username').attr('data-dept') + '</td><td>' + $('#username').attr('data-name') + '</td><td>' + comment + '</td><td>' + moment().format('YYYY-MM-DD hh:mm:ss') + '</td></tr>').prependTo("#tbReply > tbody");
+                    $('<tr><td>'+seq+'</td><td>' + $('#username').attr('data-dept') + '</td><td>' + $('#username').attr('data-name') + '</td><td>' + comment + '</td><td>' + moment().format('YYYY-MM-DD hh:mm:ss') + '</td></tr>').prependTo("#tbReply > tbody");
                     tbIdea.ajax.reload();
                 }
                 else {
@@ -282,7 +288,8 @@
             QUALITATIVE: $('#qualiative').val()
         };
         var department = $('#department').val();
-        var division = $('#division').selectize()[0].selectize.getValue();
+        //var division = $('#division').selectize()[0].selectize.getValue();
+        var division = $('#division').val();
         if (action == 1) {
             if (username != host) {
                 bootbox.alert("You cannot modify this idea");
@@ -361,6 +368,7 @@
         else {
             $('#Reply,#Reply1,#btnLike,#btnLike1').prop('disabled', false);
         }
+      
         var id = $(this).attr('id');
         $('#Reply').attr('data-id', id);
         $('#btnRegIdea').attr('data-action', 1);
@@ -368,6 +376,9 @@
         $('#cDept').text($('#username').attr('data-dept'));
         $('#cName').text($('#username').attr('data-name'));
         $('#cNow').text(moment().format('YYYY-MM-DD HH:mm:ss'));
+        var numLike = parseInt($(this).parent().parent().find('.like').children().text());
+        $('#btnLike').find('.badge').text(numLike);
+      
         $('#frmRegIdea')[0].reset();
         $.ajax({
             url: $('#hdUrl').val().replace("Action", "GetIdeaReply"),
@@ -410,7 +421,7 @@
                     $('#qualiative').val($.trim(data[5].Value));
                     $('#department').val($.trim(data[7].Value));
 
-                    $('#division').selectize()[0].selectize.setValue($.trim(data[8].Value), false);
+                    $('#division').val($.trim(data[8].Value));
                     $('#name').val($.trim(data[9].Value));
                 }
 
@@ -441,6 +452,9 @@
         else {
             $('#btnSaveProcess').prop('disabled', false);
         }
+        var numLike = parseInt($(this).parent().parent().find('.like').children().text());
+        $('#btnLike1').find('.badge').text(numLike);
+
         $('#tbReply1').find("tr:not(:first)").remove();
         $('.target,.result').val('');
         $('#current').text('');
@@ -508,22 +522,18 @@
                             if ($(this).attr('data-month') == data[i].PRJ_MONTH) {
                                 $(this).val(data[i].TARGET_VALUE);
                                 $(this).attr('data-id', data[i].ID);
-                                $(this).attr('readonly', false);
+                               
                             }
-                            if (!$(this).val()) {
-                                $(this).attr('readonly', true);
-                            }
-                            else {
-                                $(this).attr('readonly', false);
-                            }
+                           
                         });
                         $.each($(".result"), function () {
+                            var thisMonth = new Date($(this).attr('data-month') + "-01");
                             if ($(this).attr('data-month') == data[i].PRJ_MONTH) {
                                 $(this).val(data[i].RESULT_VALUE);
                                 $(this).attr('data-id', data[i].ID);
                                 $(this).attr('readonly', false);
                             }
-                            if (!$(this).val()) {
+                            if (moment(thisMonth).isAfter(new Date())) {
                                 $(this).attr('readonly', true);
                             }
                             else {
@@ -532,17 +542,7 @@
                         });
 
                     }
-                    $.each($(".target"), function () {
-                        if (!$(this).val()) {
-                            $(this).attr('readonly', 'readonly');
-                        }
-                    });
-                    $.each($(".result"), function () {
-                        if (!$(this).val()) {
-                            $(this).attr('readonly', 'readonly');
-                        }
-                    });
-
+                   
                 }
 
                 return false;
@@ -645,13 +645,15 @@
 
                     $('#title1').val($.trim(data[2].Value));
                     $('#txtKPIName1').val($.trim(data[4].Value));
-                    $('#unit1').selectize()[0].selectize.setValue($.trim(data[5].Value), false);
+                    //$('#unit1').selectize()[0].selectize.setValue($.trim(data[5].Value), false);
+                    $('#unit1').val($.trim(data[5].Value));
                     $('#remark').val($.trim(data[9].Value));
                     $('#current').text($.trim(data[10].Value));
                     $('#selCurent1').val($.trim(data[10].Value));
                     $('#txtCurrent1').val($.trim(data[11].Value));
                     $('#selDept1').val($.trim(data[12].Value));
-                    $('#division1').selectize()[0].selectize.setValue($.trim(data[13].Value), false);
+                    //$('#division1').selectize()[0].selectize.setValue($.trim(data[13].Value), false);
+                    $('#division1').val($.trim(data[13].Value));
 
                     $('#txtName1').val($.trim(data[14].Value));
                 }
@@ -674,7 +676,7 @@
         $('#action_plan').attr('rowspan', rowspan);
         var plan = $.trim($('#txtAddPlan').val());
         var schedule = $.trim($('#txtAddSchedule').val()).length == 0 ? moment().format('YYYY-MM-DD') : $.trim($('#txtAddSchedule').val());
-        $('<tr>'
+        $('<tr class="trNewPlan">'
                                + '<td colspan="4">'
                                  + '   <div class="input-group" style="width:100%">'
                                     + ' <input type="text" class="form-control newplan" data-id="" value="' + plan + '" placeholder="Plan">'
@@ -721,7 +723,8 @@
             IDEA_TITLE: $('#txtTitle').val(),
             PRJECT_GRADE: $('#pit').val(),
             KPI_NAME: $('#txtKPIName').val(),
-            KPI_UNIT: $('#unit').selectize()[0].selectize.getValue(),
+            //KPI_UNIT: $('#unit').selectize()[0].selectize.getValue(),
+            KPI_UNIT: $('#unit').val(),
             BACKGROUND: $('#background').val(),
             NAME: $('#txtName').val(),
             PRJ_CURR: $('#selCurent').val(),
@@ -805,7 +808,8 @@
             IDEA_ID: $(this).attr('data-id'),
             IDEA_TITLE: $('#title1').val(),
             KPI_NAME: $('#txtKPIName1').val(),
-            KPI_UNIT: $('#unit1').selectize()[0].selectize.getValue(),
+            //KPI_UNIT: $('#unit1').selectize()[0].selectize.getValue(),
+            KPI_UNIT: $('#unit1').val(),
             REMARK: $('#remark').val(),
             NAME: $('#txtName1').val(),
             PRJ_CURR: $('#selCurent1').val(),
@@ -912,15 +916,17 @@
         var name = $('#username').attr('data-name');
         var id = $('#Reply').attr('data-id');
         var like = "LikeIdea";
+        var button = "btnLike";
         if ($(this).attr('id') == "btnLike1") {
             id = $('#Reply1').attr('data-id');
             like = "Like";
+            button = "btnLike1";
         }
         if (!id) {
             bootbox.alert('Cannot like empty idea');
             return false;
         }
-       
+        var numLike = parseInt($(this).children('.badge').text()) + 1;
 
         var EMP = {
             EMP_ID: username,
@@ -938,15 +944,23 @@
             crossBrowser: true,
             success: function (data, status) {
                 if (data > 0) {
-                    bootbox.alert("Liked");
+                    if (button == "btnLike") {
+                        $('#btnLike').children('.badge').text(numLike);
+                        $('#btnLike').prop('disabled', true);
+                    }
+                    else {
+                        $('#btnLike1').children('.badge').text(numLike);
+                        $('#btnLike1').prop('disabled', true);
+                    }
                     tbIdea.ajax.reload();
                     tbNewPrj.ajax.reload();
                     tbProgress.ajax.reload();
+                   
                 }
                 else {
                     bootbox.alert("You already liked it");
                 }
-                $('#btnLike').prop('disabled', true);
+               
                 return false;
             },
             error: function (xhr, status, error) {
