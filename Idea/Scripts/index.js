@@ -880,37 +880,6 @@
         return false;
     });
 
-    $('#tbMainDefault').on('click', '.res', function () {
-        $('.target1,.result1').text('');
-        var id = $(this).attr('data-id');
-        $.ajax({
-            url: $('#hdUrl').val().replace("Action", "GetKPI"),
-            data: JSON.stringify({
-                ID: id
-            }),
-            type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
-            crossBrowser: true,
-            success: function (data, status) {
-                if (data.length > 0) {
-                    var year = data[0].PRJ_MONTH.split("-")[0];
-                    $('#prjYear1').text(year);
-                    for (var i = 0; i < data.length; i++) {
-                        var month = parseInt(data[i].PRJ_MONTH.split("-")[1]) - 1;
-                        $('.target1:eq(' + month + ')').text(data[i].TARGET_VALUE);
-                        $('.result1:eq(' + month + ')').text(data[i].RESULT_VALUE);
-                    }
-                    $('#mdResult').modal();
-                }
-
-                return false;
-            },
-            error: function (xhr, status, error) {
-                bootbox.alert("Error! " + xhr.status);
-            },
-        });
-    });
     $('#btnLike,#btnLike1').on('click', function () {
         var username = $('#username').val();
         var name = $('#username').attr('data-name');

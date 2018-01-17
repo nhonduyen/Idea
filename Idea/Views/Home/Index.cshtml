@@ -658,54 +658,5 @@
 
         </div>
     </div>
-    <!-- Modal result -->
-    <div id="mdResult" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title"><span class="glyphicon glyphicon-lock"></span>&nbsp;Result</h4>
-                </div>
-                <div class="modal-body">
-                    <table id="tbKpi2" class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <td rowspan="2"></td>
-                                <td colspan="12" id="prjYear1">@DateTime.Now.Year</td>
-                            </tr>
-                            <tr>
-                                @for (int i = 1; i <= 12; i++)
-                                {
-                                    <td>@i</td>
-                                }
-
-                            </tr>
-                            <tr>
-                                <td>Target</td>
-                                @for (var i = 1; i <= 12; i++)
-                                {
-                                    <td class="target1"></td>
-                                }
-                            </tr>
-                            <tr>
-                                <td>Result</td>
-                                @for (int i = 1; i <= 12; i++)
-                                {
-                                    <td class="result1"></td>
-                                }
-                            </tr>
-                        </tbody>
-                    </table>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
+   
 }
