@@ -6,10 +6,10 @@
     <script src="@Url.Content("~/Scripts/index.js")"></script>
 }
 <style>
-    th {
+    tr > th {
         text-align: center;
+        font-size: 100%;
     }
-
     #tbKpi, #tbKpi1 td {
         text-align: center;
         margin-bottom: 0px;
@@ -40,19 +40,19 @@
                 <table id="tbMainDefault" class="table table-bordered">
                     <thead>
                         <tr class="tbheader">
-                            <th rowspan="3">#</th>
-                            <th rowspan="3">Division</th>
-                            <th rowspan="3">Dept</th>
-                            <th rowspan="3" style="white-space: nowrap;">Title</th>
-                            <th rowspan="3">Rep</th>
-                            <th rowspan="3">Like</th>
-                            <th rowspan="3">Grade</th>
+                            <th rowspan="3" style="vertical-align: middle;">#</th>
+                            <th rowspan="3" style="vertical-align: middle;">Division</th>
+                            <th rowspan="3" style="vertical-align: middle;">Department</th>
+                            <th rowspan="3" style="white-space: nowrap;vertical-align: middle; min-width:200px;" id="mainTitle">Title</th>
+                            <th rowspan="3" style="vertical-align: middle; padding-right:3px;padding-left:3px;" id="mainRep">Rep</th>
+                            <th rowspan="3" style="vertical-align: middle;padding-right:3px;padding-left:3px;" id="mainLike">Like</th>
+                            <th rowspan="3" style="vertical-align: middle;padding-right:3px;padding-left:3px;" id="mainGrade">Grade</th>
                             <th colspan="15">KPI</th>
                         </tr>
                         <tr>
-                            <th rowspan="2">Name</th>
-                            <th rowspan="2">Unit</th>
-                            <th rowspan="2">Final Target</th>
+                            <th rowspan="2" style="vertical-align: middle;">Name</th>
+                            <th rowspan="2" style="vertical-align: middle;">Unit</th>
+                            <th rowspan="2" style="vertical-align: middle;padding-right:3px;padding-left:3px;">Final<br />Target</th>
                             <th colspan="12">Result</th>
                         </tr>
                         <tr>
@@ -87,11 +87,11 @@
                         <table id="tbNewIdea" class="table table-bordered">
                             <thead>
                                 <tr class="tbheader">
-                                    <th style="white-space: nowrap;">Title</th>
+                                    <th style="white-space: nowrap;vertical-align: middle; min-width:200px;">Title</th>
                                     <th>Name</th>
                                     <th>Date</th>
-                                    <th>Rep</th>
-                                    <th>Like</th>
+                                    <th style="vertical-align: middle; padding-right:3px;padding-left:3px;" >Rep</th>
+                                    <th style="vertical-align: middle; padding-right:3px;padding-left:3px;" >Like</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -144,11 +144,11 @@
                         <table id="tbNewPrj" class="table table-bordered">
                             <thead>
                                 <tr class="tbheader">
-                                    <th style="white-space: nowrap;">Title</th>
+                                    <th style="white-space: nowrap;vertical-align: middle; min-width:200px;">Title</th>
                                     <th>Name</th>
                                     <th>Date</th>
-                                    <th>Rep</th>
-                                    <th>Like</th>
+                                    <th style="vertical-align: middle; padding-right:3px;padding-left:3px;">Rep</th>
+                                    <th style="vertical-align: middle; padding-right:3px;padding-left:3px;">Like</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -230,16 +230,16 @@
                                     <td rowspan="2" class="tdleft">
                                         <label>
                                             Forecasted<br />
-                                            Improment</label>
+                                            Improvement</label>
                                     </td>
                                     <td class="tdleft">
-                                        <label>Quantiative</label></td>
+                                        <label>Quantitative</label></td>
                                     <td colspan="4">
                                         <input type="text" class="form-control" id="quantiative" maxlength="200" required="required" /></td>
                                 </tr>
                                 <tr>
                                     <td class="tdleft">
-                                        <label>Qualiative</label></td>
+                                        <label>Qualitative</label></td>
                                     <td colspan="5">
                                         <input type="text" class="form-control" id="qualiative" maxlength="200" required="required" /></td>
                                 </tr>
@@ -602,14 +602,14 @@
                                             Plan</label>
                                     </td>
                                     <td class="tdleft" colspan="1">
-                                        <label>Complete</label></td>
+                                        <label>Completed</label></td>
                                     <td class="tdleft" colspan="1">
-                                        <label>Month</label>
+                                        <label>Actual Date</label>
                                     </td>
                                     <td class="tdleft" colspan="2">
                                         <label>Plan</label></td>
                                     <td class="tdleft" colspan="1">
-                                        <label>Schedule</label>
+                                        <label>Plan Schedule</label>
                                     </td>
                                 </tr>
 
