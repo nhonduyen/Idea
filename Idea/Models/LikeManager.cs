@@ -39,7 +39,11 @@ namespace Idea
             var sql = "SELECT EMP_NAME  FROM PRJ_LIKE WHERE IDEA_ID=@IDEA_ID";
             return DBManager<PRJ_LIKE>.ExecuteReader(sql, new { IDEA_ID = IDEA_ID });
         }
-
+        public List<IDEA_LIKE> GetLike1(string IDEA_ID)
+        {
+            var sql = "SELECT EMP_NAME  FROM IDEA_LIKE WHERE IDEA_ID=@IDEA_ID";
+            return DBManager<IDEA_LIKE>.ExecuteReader(sql, new { IDEA_ID = IDEA_ID });
+        }
         public bool CheckLike(string EMP_ID, string IDEA_ID)
         {
             var sql = "SELECT IDEA_ID  FROM PRJ_LIKE WHERE IDEA_ID=@IDEA_ID AND EMP_ID=@EMP_ID";

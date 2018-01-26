@@ -46,6 +46,9 @@
     <Reference Include="Dapper">
       <HintPath>..\packages\Dapper.1.50.2\lib\net45\Dapper.dll</HintPath>
     </Reference>
+    <Reference Include="EPPlus">
+      <HintPath>..\packages\EPPlus.4.1.1\lib\net40\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -126,6 +129,7 @@
     </Compile>
     <Compile Include="Models\EMPLOYEE.cs" />
     <Compile Include="Models\EmployeeManager.cs" />
+    <Compile Include="Models\GMailer.cs" />
     <Compile Include="Models\IDEA.cs" />
     <Compile Include="Models\IdeaManager.cs" />
     <Compile Include="Models\IdeaReplyManager.cs" />
@@ -161,6 +165,7 @@
     <Content Include="Content\site.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="Scripts\ExportHTMLTable.js" />
     <Content Include="Scripts\Include\bootbox.min.js" />
     <Content Include="Scripts\Include\bootstrap-datepicker.js" />
     <Content Include="Scripts\Include\bootstrap.min.js" />
@@ -174,6 +179,8 @@
     <Content Include="Scripts\Include\plugins.js" />
     <Content Include="Scripts\Include\selectize.js" />
     <Content Include="Scripts\index.js" />
+    <Content Include="Scripts\jquery.callback.js" />
+    <Content Include="Scripts\summary.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -211,6 +218,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Home\ChangePassword.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Home\Summary.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Template\Progress.xlsx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

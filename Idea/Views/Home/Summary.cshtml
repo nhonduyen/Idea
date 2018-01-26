@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "Summary";
+}
+@section Scripts
+{
+    <script src="@Url.Content("~/Scripts/summary.js")"></script>
+}
+@Html.Hidden("hdUrl", Url.Action("Action", "Home"))
+<h2>Summary</h2>
+<div class="panel-group">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <strong>Project</strong>
+
+        </div>
+        <div class="panel-body">
+            <form class="form-inline" action="@Url.Action("ExportProject", "Home")" method="post">
+                <div class="form-group">
+                    <label for="email">From:</label>
+                    <input type="text" class="form-control" id="txtFrom" name="from">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">To:</label>
+                    <input type="text" class="form-control" id="txtTo" name="to">
+                </div>
+                <button class="btn btn-primary" id="btnSearch"><span class="glyphicon glyphicon-search"></span>Search</button>
+                <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-export"></span>Export</button>
+            </form>
+            <div class="table-responsive">
+                <table id="tbMainDefault" class="table table-bordered">
+                   <thead>
+                        <tr class="tbheader">
+                            <th>Division</th>
+                            <th>Department</th>
+                            <th style="white-space: nowrap; vertical-align: middle; min-width: 200px;">Title</th>
+                            <th>Name</th>
+                            <th>Like</th>
+                            <th>Replier</th>
+                            <th>Reply</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="panel-group">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <strong>New Idea</strong>
+        </div>
+        <div class="panel-body">
+            <form class="form-inline" action="@Url.Action("ExportIdea", "Home")" method="post">
+                <div class="form-group">
+                    <label for="email">From:</label>
+                    <input type="text" class="form-control" id="txtFrom1" name="from">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">To:</label>
+                    <input type="text" class="form-control" id="txtTo1" name="to">
+                </div>
+                <button class="btn btn-primary" id="btnSearch1"><span class="glyphicon glyphicon-search"></span>Search</button>
+                <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-export"></span>Export</button>
+            </form>
+            <div class="table-responsive">
+                <table id="tbNewIdea" class="table table-bordered">
+                    <thead>
+                        <tr class="tbheader">
+                            <th>Division</th>
+                            <th>Department</th>
+                            <th style="white-space: nowrap; vertical-align: middle; min-width: 200px;">Title</th>
+                            <th>Name</th>
+                            <th>Like</th>
+                            <th>Replier</th>
+                            <th>Reply</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                    <tfoot></tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

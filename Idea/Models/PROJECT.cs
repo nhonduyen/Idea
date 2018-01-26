@@ -36,7 +36,7 @@ namespace Idea
         {
             var sql = "SELECT * FROM PROJECT ";
             if (string.IsNullOrWhiteSpace(ID)) return DBManager<PROJECT>.ExecuteReader(sql);
-            sql +=" WHERE ID=@ID";
+            sql +=" WHERE IDEA_ID=@ID";
 
             return DBManager<PROJECT>.ExecuteReader(sql, new { ID = ID});
         }

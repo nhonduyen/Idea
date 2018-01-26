@@ -33,7 +33,7 @@
             z-index: 1151 !important;
         }
     </style>
-    <input type="hidden" id="username" value="@Session["Username"]" data-dept="@Session["Dept"]" data-name="@Session["Name"]" data-div="@Session["Division"]" />
+    <input type="hidden" id="username" value="@Session["Username"]" data-dept="@Session["Dept"]" data-name="@Session["Name"]" data-div="@Session["Division"]" data-role="@Session["Role"]" />
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -50,7 +50,11 @@
                     <li id="lhome">
                         <a href="@Url.Action("Index", "Home")">Main</a>
                     </li>
-
+                    @if (@Session["Role"] != null && @Session["Role"].ToString() == "2"){
+                    <li id="lsum">
+                        <a href="@Url.Action("Summary", "Home")">Summary</a>
+                    </li>
+                    }
                 </ul>
                 @if (Session["Username"] != null)
                 {

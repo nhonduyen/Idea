@@ -13,6 +13,8 @@ namespace Idea
         public string EMP_NO { get; set; }
         public string DIVISION { get; set; }
         public string DEPARTMENT { get; set; }
+        public string EMAIL { get; set; }
+        public int ROLE { get; set; }
 
         public EMPLOYEE(string EMP_ID, string EMP_PW, string EMP_NAME, string EMP_NO, string DIVISION, string DEPARTMENT)
         {
@@ -25,11 +27,11 @@ namespace Idea
         }
         public EMPLOYEE() { }
 
-        public virtual List<EMPLOYEE> Select(int ID=0)
+        public virtual List<EMPLOYEE> Select(string ID="")
         {
             var sql = "SELECT * FROM EMPLOYEE ";
-            if (ID == 0) return DBManager<EMPLOYEE>.ExecuteReader(sql);
-            sql +=" WHERE ID=@ID";
+            if (ID == "") return DBManager<EMPLOYEE>.ExecuteReader(sql);
+            sql +=" WHERE EMP_ID=@ID";
 
             return DBManager<EMPLOYEE>.ExecuteReader(sql, new { ID = ID});
         }

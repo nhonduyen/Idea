@@ -27,7 +27,11 @@ namespace Idea
             var sql = "SELECT DISTINCT(DIVISION) FROM EMPLOYEE WHERE DIVISION IS NOT NULL AND DIVISION <> ''";
             return DBManager<EMPLOYEE>.ExecuteReader(sql);
         }
-
+        public List<EMPLOYEE> GetListEmail()
+        {
+            var sql = "SELECT EMAIL FROM EMPLOYEE WHERE ROLE >= 1";
+            return DBManager<EMPLOYEE>.ExecuteReader(sql);
+        }
         public int UpdateDivision(string EmpId, string Division)
         {
             var sql = "UPDATE EMPLOYEE SET DIVISION=@DIVISION WHERE EMP_ID=@EMP_ID";
@@ -47,7 +51,7 @@ namespace Idea
         }
         public bool Login(string EMP_ID, string Password)
         {
-            var sql = "SELECT EMP_ID,EMP_NAME,DIVISION,DEPARTMENT FROM EMPLOYEE WHERE EMP_ID=@EMP_ID AND EMP_PW=@PASSWORD";
+            var sql = "SELECT EMP_ID,EMP_NAME,DIVISION,DEPARTMENT,ROLE FROM EMPLOYEE WHERE EMP_ID=@EMP_ID AND EMP_PW=@PASSWORD";
             EMPLOYEE employee = DBManager<EMPLOYEE>.ExecuteReader(sql, new { EMP_ID = EMP_ID, PASSWORD = Password }).FirstOrDefault();
             if (employee == null)
                 return false;
@@ -55,6 +59,7 @@ namespace Idea
             HttpContext.Current.Session["Name"] = employee.EMP_NAME.Trim();
             HttpContext.Current.Session["Dept"] = employee.DEPARTMENT.Trim();
             HttpContext.Current.Session["Division"] = employee.DIVISION.Trim();
+            HttpContext.Current.Session["Role"] = employee.ROLE;
             return true;
         }
 

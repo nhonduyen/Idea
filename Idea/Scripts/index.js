@@ -6,7 +6,12 @@
         }).on('changeDate', function (ev) {
             $(this).datepicker('hide');
         });
-
+    if ($('#username').val()) {
+        $('#btnUpload').prop('disabled', false);
+    }
+    else {
+        $('#btnUpload').prop('disabled', true);
+    }
     //var $div1 = $('#division,#division1,#unit,#unit').selectize({
     //    create: true,
     //    sortField: 'text'
@@ -88,7 +93,7 @@
     $('#btnUpload').on('click', function () {
         var username = $('#username').val();
         if (!username) {
-            bootbox.alert("Please login to use this function");
+            bootbox.alert("Please login first (Đăng nhập để sử dụng)");
             $('#Reply,#Reply1,#btnLike,#btnLike1').prop('disabled', true);
             return false;
         }
@@ -193,7 +198,7 @@
             bootbox.alert("Please enter comment");
             return false;
         }
-        var reply = { IDEA_ID: ideaId, REP_EMP_ID: username, COMMENTS: comment };
+        var reply = { IDEA_ID: ideaId, REP_EMP_ID: username, COMMENTS: comment, REP_EMP_NAME: $('#username').attr('data-name') };
 
         var seq = $('#tbReply tr').length;
         $.ajax({
@@ -279,6 +284,10 @@
         var username = $('#username').val();
         var host = $('#btnRegIdea').attr('data-emp');
         var action = parseInt($('#btnRegIdea').attr('data-action'));
+        if (!$('#title').val()) {
+            bootbox.alert("Please enter title (Hãy điền tiêu đề)");
+            return false;
+        }
         var idea = {
             ID: $('#Reply').attr('data-id'),
             EMP_ID: $('#username').val(),
@@ -440,17 +449,21 @@
     $('#tbNewPrj,#tbMainDefault').on('click', '.title', function () {
         var username = $('#username').val();
         var host = $(this).attr('data-emp');
+        var role = $(this).attr('data-role');
         if (!username) {
-            $('#Reply,#Reply1,#btnLike,#btnLike1').prop('disabled', true);
+            $('#Reply,#Reply1,#btnLike,#btnLike1,#btnExport').prop('disabled', true);
         }
         else {
-            $('#Reply,#Reply1,#btnLike,#btnLike1').prop('disabled', false);
+            $('#Reply,#Reply1,#btnLike,#btnLike1,#btnExport').prop('disabled', false);
         }
         if (username != host) {
             $('#btnSaveProcess').prop('disabled', true);
+            if (role && parseInt(role) > 0) {
+                $('#btnExport').prop('disabled', false);
+            }
         }
         else {
-            $('#btnSaveProcess').prop('disabled', false);
+            $('#btnSaveProcess,#btnExport').prop('disabled', false);
         }
         var numLike = parseInt($(this).parent().parent().find('.like').children().text());
         $('#btnLike1').find('.badge').text(numLike);
@@ -473,7 +486,7 @@
         var id = $(this).attr('data-id');
         $('#Reply1').attr('data-id', id);
         $('#frmProcess')[0].reset();
-
+        $('#IDEA_ID').val(id);
         $.ajax({
             url: $('#hdUrl').val().replace("Action", "GetKPI"),
             data: JSON.stringify({
@@ -484,47 +497,48 @@
             contentType: 'application/json; charset=utf-8',
             crossBrowser: true,
             success: function (data, status) {
+                var date = new Date(data[0].PRJ_MONTH + "-01");
+                var date1 = new Date(date.getFullYear() + 1, date.getMonth(), 1);
+
+                var year = parseInt(data[0].PRJ_MONTH.split("-")[0]);
+                $('#prjYear').text(year);
+                $('#kpiMonth td').remove();
+
+                var col1 = 0;
+                var col2 = 0;
+                for (var d = date; d <= date1 ; d.setMonth(d.getMonth() + 1)) {
+
+                    var prj_month = moment(d).format('YYYY-MM');
+
+                    $('#kpiMonth').append('<td>' + prj_month.split("-")[1] + '</td>');
+                    $('#trTarget').append('<td><input data-id="" class="form-control target" data-month="' + prj_month + '" type="number" min="0" value=""/></td>');
+                    $('#trResult').append('<td><input data-id="" class="form-control result" data-month="' + prj_month + '" type="number" min="0" value=""/></td>');
+                    if (year == d.getFullYear()) {
+                        col1++;
+                    }
+                    else {
+                        col2++;
+                    }
+                }
+                $('#prjYear').attr('colspan', col1);
+                if (col2 > 0) {
+                    if ($('#prjNYear').length == 0) {
+                        $("<td colspan='" + col2 + "' id='prjNYear'>" + (parseInt(year) + 1) + "</td>").insertAfter('#prjYear');
+                    }
+                    else {
+                        $('#prjNYear').attr('colspan', col2);
+                    }
+                }
                 if (data.length > 0) {
-                    var date = new Date(data[0].PRJ_MONTH + "-01");
-                    var date1 = new Date(date.getFullYear() + 1, date.getMonth(), 1);
-
-                    var year = parseInt(data[0].PRJ_MONTH.split("-")[0]);
-                    $('#prjYear').text(year);
-                    $('#kpiMonth td').remove();
-
-                    var col1 = 0;
-                    var col2 = 0;
-                    for (var d = date; d <= date1 ; d.setMonth(d.getMonth() + 1)) {
-
-                        var prj_month = moment(d).format('YYYY-MM');
-
-                        $('#kpiMonth').append('<td>' + prj_month.split("-")[1] + '</td>');
-                        $('#trTarget').append('<td><input data-id="" class="form-control target" data-month="' + prj_month + '" type="text"/></td>');
-                        $('#trResult').append('<td><input data-id="" class="form-control result" data-month="' + prj_month + '" type="text"/></td>');
-                        if (year == d.getFullYear()) {
-                            col1++;
-                        }
-                        else {
-                            col2++;
-                        }
-                    }
-                    $('#prjYear').attr('colspan', col1);
-                    if (col2 > 0) {
-                        if ($('#prjNYear').length == 0) {
-                            $("<td colspan='" + col2 + "' id='prjNYear'>" + (parseInt(year) + 1) + "</td>").insertAfter('#prjYear');
-                        }
-                        else {
-                            $('#prjNYear').attr('colspan', col2);
-                        }
-                    }
+                   
                     for (var i = 0; i < data.length; i++) {
                         $.each($(".target"), function () {
                             if ($(this).attr('data-month') == data[i].PRJ_MONTH) {
                                 $(this).val(data[i].TARGET_VALUE);
                                 $(this).attr('data-id', data[i].ID);
-                               
+
                             }
-                           
+
                         });
                         $.each($(".result"), function () {
                             var thisMonth = new Date($(this).attr('data-month') + "-01");
@@ -542,9 +556,9 @@
                         });
 
                     }
-                   
-                }
 
+                }
+              
                 return false;
             },
             error: function (xhr, status, error) {
@@ -714,7 +728,7 @@
 
             return false;
         }
-
+        var checkNumber = false;
         var plans = [];
         var kpis = [];
         var project = {
@@ -730,7 +744,23 @@
             PRJ_CURR: $('#selCurent').val(),
             CURR_VALUE: $('#txtCurrent').val()
         };
-
+        $('.kmonth').each(function (i, obj) {
+            if (isNaN($(this).val())) {
+                bootbox.alert("Please enter valid number");
+                return false;
+            }
+            else {
+                if ($(this).val()) {
+                    var target = {
+                        ID: "",
+                        IDEA_ID: $('#frmRegPrj').attr('data-id'),
+                        PRJ_MONTH: $(this).attr('data-month'),
+                        TARGET_VALUE: $(this).val()
+                    };
+                    kpis.push(target);
+                }
+            }
+        });
         if ($('#txtAddPlan').val().length > 0 && $('#txtAddSchedule').val().length > 0) {
             var p = {
                 ID: "",
@@ -752,51 +782,45 @@
             }
         });
 
-        $('.kmonth').each(function (i, obj) {
-            if ($(this).val().length > 0) {
-                var target = {
-                    ID: "",
-                    IDEA_ID: $('#frmRegPrj').attr('data-id'),
-                    PRJ_MONTH: $(this).attr('data-month'),
-                    TARGET_VALUE: $(this).val()
-                };
-                kpis.push(target);
-            }
-        });
-        $.ajax({
-            url: $('#hdUrl').val().replace("Action", "RegPrj"),
-            data: JSON.stringify({
-                Project: project,
-                Plans: plans,
-                KPIs: kpis
-            }),
-            type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
-            crossBrowser: true,
-            success: function (data, status) {
-                if (data > 0) {
-                    bootbox.alert(status);
-                    tbIdea.ajax.reload();
-                    tbNewPrj.ajax.reload();
-                    tbProgress.ajax.reload();
-                    $('#mdRegPrj').modal('hide');
-                }
+        if (plans.length > 0 && kpis.length > 0) {
+            $.ajax({
+                url: $('#hdUrl').val().replace("Action", "RegPrj"),
+                data: JSON.stringify({
+                    Project: project,
+                    Plans: plans,
+                    KPIs: kpis
+                }),
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                crossBrowser: true,
+                success: function (data, status) {
+                    if (data > 0) {
+                        bootbox.alert(status);
+                        tbIdea.ajax.reload();
+                        tbNewPrj.ajax.reload();
+                        tbProgress.ajax.reload();
+                        $('#mdRegPrj').modal('hide');
+                    }
 
-                return false;
-            },
-            error: function (xhr, status, error) {
-                bootbox.alert("Error! " + xhr.status);
-            },
-        });
+                    return false;
+                },
+                error: function (xhr, status, error) {
+                    bootbox.alert("Error! " + xhr.status);
+                },
+            });
+        }
+        else {
+            bootbox.alert("Please enter project plans and kpi");
+        }
         return false;
     });
 
-    $('#frmProcess').submit(function (e) {
-        e.preventDefault();
-
+    $('#btnSaveProcess').click(function () {
+      
         var username = $('#username').val();
-        if (username != $(this).attr('data-emp')) {
+       
+        if (username != $('#frmProcess').attr('data-emp')) {
             bootbox.alert("You cannot modify this project");
             return false;
         }
@@ -804,8 +828,8 @@
         var plans = [];
         var kpis = [];
         var project = {
-            EMP_ID: $(this).attr('data-emp'),
-            IDEA_ID: $(this).attr('data-id'),
+            EMP_ID: $('#frmProcess').attr('data-emp'),
+            IDEA_ID: $('#frmProcess').attr('data-id'),
             IDEA_TITLE: $('#title1').val(),
             KPI_NAME: $('#txtKPIName1').val(),
             KPI_UNIT: $('#unit1').val(),
@@ -830,20 +854,31 @@
 
         $('.target').each(function (i, obj) {
             var index = $(this).index();
-            if ($(this).val().length > 0) {
-                var res = $('.result:eq(' + $(this).index() + ')').val();
-                var target = {
-                    ID: $(this).attr('data-id'),
-                    IDEA_ID: project.IDEA_ID,
-                    TARGET_VALUE: $(this).val(),
-                    RESULT_VALUE: $('.result').eq(index).val(),
-                    PRJ_MONTH: $(this).attr('data-month')
+            if (isNaN($(this).val()))
+            {
+                bootbox.alert("Please enter valid number");
+                return false;
+            }
+            else {
+                if ($(this).val()) {
+                    var res = $('.result:eq(' + $(this).index() + ')').val();
+                    var target = {
+                        ID: $(this).attr('data-id'),
+                        IDEA_ID: project.IDEA_ID,
+                        TARGET_VALUE: $(this).val(),
+                        RESULT_VALUE: $('.result').eq(index).val(),
+                        PRJ_MONTH: $(this).attr('data-month')
 
-                };
-                kpis.push(target);
+                    };
+                    kpis.push(target);
+                }
             }
         });
         $('.result').each(function (j, obj) {
+            if (isNaN($(this).val())) {
+                bootbox.alert("Please enter valid number");
+                return false;
+            }
             for (var i = 0; i < kpis.length; i++) {
                 if ($(this).attr('data-month') == kpis[i].PRJ_MONTH) {
                     kpis[i].RESULT_VALUE = $(this).val();
@@ -851,32 +886,36 @@
             }
 
         });
+        if (kpis.length > 0 && plans.length > 0) {
+            $.ajax({
+                url: $('#hdUrl').val().replace("Action", "UpdateProject"),
+                data: JSON.stringify({
+                    Project: project,
+                    Plans: plans,
+                    KPIs: kpis
+                }),
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                crossBrowser: true,
+                success: function (data, status) {
+                    if (data > 0) {
+                        bootbox.alert(status);
+                        tbNewPrj.ajax.reload();
+                        tbProgress.ajax.reload();
+                        $('#mdProcess').modal('hide');
+                    }
 
-        $.ajax({
-            url: $('#hdUrl').val().replace("Action", "UpdateProject"),
-            data: JSON.stringify({
-                Project: project,
-                Plans: plans,
-                KPIs: kpis
-            }),
-            type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
-            crossBrowser: true,
-            success: function (data, status) {
-                if (data > 0) {
-                    bootbox.alert(status);
-                    tbNewPrj.ajax.reload();
-                    tbProgress.ajax.reload();
-                    $('#mdProcess').modal('hide');
-                }
-
-                return false;
-            },
-            error: function (xhr, status, error) {
-                bootbox.alert("Error! " + xhr.status);
-            },
-        });
+                    return false;
+                },
+                error: function (xhr, status, error) {
+                    bootbox.alert("Error! " + xhr.status);
+                },
+            });
+        }
+        else {
+            bootbox.alert("Please enter plans and kpi");
+        }
         return false;
     });
 
@@ -997,12 +1036,13 @@
 
         var e = $(this);
         var id = e.attr('data-id');
-
+        var table = e.attr('data-table');
         e.off('hover');
         $.ajax({
             url: $('#hdUrl').val().replace("Action", "GetLikeDetail"),
             data: JSON.stringify({
-                IDEA_ID: id
+                IDEA_ID: id,
+                table: table
             }),
             type: 'POST',
             dataType: 'json',
@@ -1030,4 +1070,90 @@
 
         return false;
     });
+    $('#btnExport1').click(function () {
+       
+        var plans = [];
+        var kpis = [];
+        var emp = {
+            DIVISION: $('#division1').val(),
+            DEPARTMENT: $('#selDept1').val(),
+            EMP_NAME: $('#txtName1').val()
+        };
+        var project = {
+            EMP_ID: $(this).attr('data-emp'),
+            IDEA_ID: $(this).attr('data-id'),
+            IDEA_TITLE: $('#title1').val(),
+            KPI_NAME: $('#txtKPIName1').val(),
+            KPI_UNIT: $('#unit1').val(),
+            PRJECT_GRADE: $('#pit1').val(),
+            REMARK: $('#remark').val(),
+            NAME: $('#txtName1').val(),
+            PRJ_CURR: $('#selCurent1').val(),
+            CURR_VALUE: $('#txtCurrent1').val()
+        };
+
+        $.each($(".trPlan"), function () {
+            var plan = {
+                ID: $(this).find('.complete').attr('data-id'),
+                IDEA_ID: project.IDEA_ID,
+                COMPLETE_YN: $(this).find('.complete').val(),
+                COMPLETE_DATE: $(this).find('.com_dt').val(),
+                PLAN_CONTENTS: $(this).find('.plan').val(),
+                PLAN_DATE: $(this).closest('tr').find('.schedule').val()
+            };
+            plans.push(plan);
+        });
+
+        $('.target').each(function (i, obj) {
+            if (isNaN($(this).val())) {
+                bootbox.alert("Please enter valid number");
+                return false;
+            }
+            var index = $(this).index();
+            var res = $('.result:eq(' + $(this).index() + ')').val();
+            var target = {
+                ID: $(this).attr('data-id'),
+                IDEA_ID: project.IDEA_ID,
+                TARGET_VALUE: $(this).val(),
+                RESULT_VALUE: $('.result').eq(index).val(),
+                PRJ_MONTH: $(this).attr('data-month')
+
+            };
+            kpis.push(target);
+        });
+        $('.result').each(function (j, obj) {
+            if (isNaN($(this).val())) {
+                bootbox.alert("Please enter valid number");
+                return false;
+            }
+            for (var i = 0; i < kpis.length; i++) {
+                if ($(this).attr('data-month') == kpis[i].PRJ_MONTH) {
+                    kpis[i].RESULT_VALUE = $(this).val();
+                }
+            }
+
+        });
+        $.ajax({
+            url: $('#hdUrl').val().replace("Action", "ExportProgress"),
+            data: JSON.stringify({
+                Project: project,
+                Plans: plans,
+                KPIs: kpis,
+                EMP: emp
+            }),
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            crossBrowser: true,
+            success: function (data, status) {
+               
+                return false;
+            },
+            error: function (xhr, status, error) {
+                bootbox.alert("Error! " + xhr.status);
+            },
+        });
+        return false;
+    });
+    
 });
