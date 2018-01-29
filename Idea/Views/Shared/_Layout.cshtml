@@ -50,10 +50,11 @@
                     <li id="lhome">
                         <a href="@Url.Action("Index", "Home")">Main</a>
                     </li>
-                    @if (@Session["Role"] != null && @Session["Role"].ToString() == "2"){
-                    <li id="lsum">
-                        <a href="@Url.Action("Summary", "Home")">Summary</a>
-                    </li>
+                    @if (@Session["Role"] != null && @Session["Role"].ToString() == "2")
+                    {
+                        <li id="lsum">
+                            <a href="@Url.Action("Summary", "Home")">Summary</a>
+                        </li>
                     }
                 </ul>
                 @if (Session["Username"] != null)
@@ -67,6 +68,12 @@
                             </a>
                             <ul class="dropdown-menu dropdown-user">
                                 <li class="active"><a href="@Url.Action("ChangePassword", "Home")">Change Password</a></li>
+                                @if (@Session["Role"] != null && @Session["Role"].ToString() == "2")
+                                {
+                                    <li>
+                                        <a href="@Url.Action("Users", "Home")">User Management</a>
+                                    </li>
+                                }
                                 <li><a href="@Url.Action("Logout", "Home")">Log out</a></li>
                             </ul>
                             <!-- /.dropdown-user -->

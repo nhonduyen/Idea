@@ -68,5 +68,23 @@ namespace Idea
             var sql = "UPDATE EMPLOYEE SET EMP_PW=@NEWPASS WHERE EMP_ID=@EMP_ID AND EMP_PW=@PASS";
             return DBManager<EMPLOYEE>.Execute(sql, new { NEWPASS = newpass, EMP_ID = EmpId, PASS=pass });
         }
+        public int ResetPassword(string EMP_ID)
+        {
+            var sql = "UPDATE EMPLOYEE SET EMP_PW='123' WHERE EMP_ID=@EMP_ID";
+            return DBManager<EMPLOYEE>.Execute(sql, new { EMP_ID=EMP_ID});
+        }
+
+        public List<EMPLOYEE> Search(string Key, int start = 0, int end = 10)
+        {
+            var sql = "SELECT * FROM(SELECT ROW_NUMBER() OVER (order by EMP_ID) AS ROWNUM, * FROM EMPLOYEE WHERE EMP_ID LIKE @KEY +'%' OR EMP_NAME LIKE '%' +@KEY+ '%') as u  WHERE   RowNum >= @start   AND RowNum < @end ORDER BY RowNum;";
+
+            return DBManager<EMPLOYEE>.ExecuteReader(sql, new {KEY=Key, start = start, end = end });
+        }
+
+        public int GetSearchCount(string Key)
+        {
+            var sql = "SELECT COUNT(1) AS CNT FROM EMPLOYEE WHERE EMP_ID LIKE @KEY +'%' OR EMP_NAME LIKE '%' +@KEY+ '%';";
+            return (int)DBManager<EMPLOYEE>.ExecuteScalar(sql, new { KEY = Key });
+        }
     }
 }

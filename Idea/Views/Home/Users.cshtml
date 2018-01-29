@@ -1,0 +1,120 @@
+﻿@{
+    ViewBag.Title = "User";
+}
+@section Scripts
+{
+    <script src="@Url.Content("~/Scripts/users.js")"></script>
+}
+@Html.Hidden("hdUrl", Url.Action("Action", "Home"))
+<div class="panel-group">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-sm-10"><strong>User Management</strong></div>
+                <div class="col-sm-2">
+                    <button id="btnNew" type="button" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span>New</button>
+
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+
+            <div class="table-responsive">
+                <table id="tbMainDefault" class="table table-bordered">
+                    <thead>
+                        <tr class="tbheader">
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Division</th>
+                            <th>Department</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="mdEmp" role="dialog">
+    <div class="modal-dialog modal-md">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 id="H2"><span class="glyphicon glyphicon-user"></span>Add/Edit Employee</h4>
+            </div>
+            <div class="modal-body">
+                <form id="frmModify" role="form" data-id="">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="tdleft">
+                                    <label>ID</label></td>
+                                <td>
+                                    <input type="text" id="txtId" class="form-control" required="required" maxlength="6" /></td>
+                            </tr>
+                            <tr>
+                                <td class="tdleft">
+                                    <label>Name</label>
+                                </td>
+                                <td>
+                                    <input type="text" id="txtName" class="form-control" required="required" /></td>
+                            </tr>
+                            <tr>
+                                <td class="tdleft">
+                                    <label>Division</label></td>
+                                <td>
+                                    <select id="ddlDivision" class="form-control">
+                                        @foreach (var div in ViewBag.Divisions)
+                                        {
+                                            <option value="@div.DIVISION.Trim()">@div.DIVISION.Trim()</option>
+                                        }
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdleft">
+                                    <label>Department</label></td>
+                                <td>
+                                    <select id="ddlDepartment" class="form-control">
+                                        @foreach (var dept in ViewBag.Departments)
+                                        {
+                                            <option value="@dept.DEPARTMENT.Trim()">@dept.DEPARTMENT.Trim()</option>
+                                        }
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdleft">
+                                    <label>Email</label>
+                                </td>
+                                <td>
+                                    <input type="email" id="txtEmail" class="form-control" /></td>
+                            </tr>
+                            <tr>
+                                <td class="tdleft">
+                                    <label>Role</label>
+                                </td>
+                                <td>
+                                    <select id="ddlRole" class="form-control">
+                                        <option value="0">User</option>
+                                        <option value="1">Leader</option>
+                                        <option value="2">Admin</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button type="submit" id="btnSave" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span>Save</button>
+                    <button type="button" class="btn btn-danger" id="btnResetPass"><span class="glyphicon glyphicon-pencil"></span>Reset Password</button>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>

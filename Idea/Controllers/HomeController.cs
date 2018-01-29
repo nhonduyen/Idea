@@ -15,6 +15,90 @@ namespace Idea.Controllers
     {
         //
         // GET: /Home/
+        public ActionResult Users()
+        {
+            EmployeeManager employeeManager = EmployeeManager.GetInstance();
+            ViewBag.Divisions = employeeManager.GetDivision();
+            ViewBag.Departments = employeeManager.GetDepartment();
+            return View();
+        }
+        public JsonResult ResetPassword(string EMP_ID)
+        {
+            EmployeeManager employeeManager = EmployeeManager.GetInstance();
+            int result = employeeManager.ResetPassword(EMP_ID);
+            return Json(result);
+        }
+        public JsonResult InsertUser(EMPLOYEE EMP, string Action)
+        {
+            EmployeeManager employeeManager = EmployeeManager.GetInstance();
+            var result = 0;
+            if (Action == "0")
+            {
+                var em = employeeManager.Select(EMP.EMP_ID);
+                if (em.Count > 0)
+                    return Json(-1);
+                result = employeeManager.Insert(EMP.EMP_ID, "123", EMP.EMP_NAME, EMP.DIVISION, EMP.DEPARTMENT, EMP.EMAIL,EMP.ROLE);
+            }
+            else
+            {
+                result = employeeManager.Update(EMP.EMP_ID, EMP.EMP_NAME, EMP.DIVISION, EMP.DEPARTMENT, EMP.EMAIL,EMP.ROLE);
+            }
+            return Json(result);
+        }
+        public JsonResult GetUserById(string EMP_ID)
+        {
+            EmployeeManager employeeManager = EmployeeManager.GetInstance();
+            EMPLOYEE em = employeeManager.Select(EMP_ID).FirstOrDefault();
+            return Json(em);
+        }
+        public JsonResult GetUsers(DataTableParameters dataTableParameters)
+        {
+            EmployeeManager employeeManager = EmployeeManager.GetInstance();
+
+            var resultSet = new DataTableResultSet();
+            resultSet.draw = dataTableParameters.Draw;
+            if (!string.IsNullOrWhiteSpace(dataTableParameters.Search.Value))
+            {
+                var lst = employeeManager.Search(dataTableParameters.Search.Value);
+                resultSet.recordsTotal = resultSet.recordsFiltered = employeeManager.GetSearchCount(dataTableParameters.Search.Value);
+
+                foreach (var i in lst)
+                {
+                    var role = "User";
+                    if (i.ROLE == 1) role = "Leader";
+                    if (i.ROLE == 2) role = "Admin";
+                    var columns = new List<string>();
+                    columns.Add("<a class='empId' href='#' data-emp='" + i.EMP_ID.Trim() + "'>" + i.EMP_ID.Trim() + "</a>");
+                    columns.Add((i.EMP_NAME == null) ? "" : i.EMP_NAME.Trim());
+                    columns.Add((i.DIVISION == null) ? "" : i.DIVISION.Trim());
+                    columns.Add((i.DEPARTMENT == null) ? "" : i.DEPARTMENT.Trim());
+                    columns.Add((i.EMAIL == null) ? "" : i.EMAIL.Trim());
+                    columns.Add(role);
+                    resultSet.data.Add(columns);
+                }
+            }
+            else
+            {
+                var lst = employeeManager.SelectPaging(dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1);
+                resultSet.recordsTotal = resultSet.recordsFiltered = employeeManager.GetCount();
+
+                foreach (var i in lst)
+                {
+                    var role = "User";
+                    if (i.ROLE == 1) role = "Leader";
+                    if (i.ROLE == 2) role = "Admin";
+                    var columns = new List<string>();
+                    columns.Add("<a class='empId' href='#' data-emp='" + i.EMP_ID.Trim() + "'>" + i.EMP_ID.Trim() + "</a>");
+                    columns.Add((i.EMP_NAME == null) ? "" : i.EMP_NAME.Trim());
+                    columns.Add((i.DIVISION == null) ? "" : i.DIVISION.Trim());
+                    columns.Add((i.DEPARTMENT == null) ? "" : i.DEPARTMENT.Trim());
+                    columns.Add((i.EMAIL == null) ? "" : i.EMAIL.Trim());
+                    columns.Add(role);
+                    resultSet.data.Add(columns);
+                }
+            }
+            return Json(resultSet);
+        }
         public ActionResult Summary()
         {
             return View();
