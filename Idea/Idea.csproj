@@ -165,7 +165,6 @@
     <Content Include="Content\site.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="Scripts\ExportHTMLTable.js" />
     <Content Include="Scripts\Include\bootbox.min.js" />
     <Content Include="Scripts\Include\bootstrap-datepicker.js" />
     <Content Include="Scripts\Include\bootstrap.min.js" />
@@ -179,7 +178,6 @@
     <Content Include="Scripts\Include\plugins.js" />
     <Content Include="Scripts\Include\selectize.js" />
     <Content Include="Scripts\index.js" />
-    <Content Include="Scripts\jquery.callback.js" />
     <Content Include="Scripts\summary.js" />
     <Content Include="Scripts\users.js" />
     <Content Include="Web.config">

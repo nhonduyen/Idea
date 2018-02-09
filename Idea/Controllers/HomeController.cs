@@ -57,45 +57,30 @@ namespace Idea.Controllers
 
             var resultSet = new DataTableResultSet();
             resultSet.draw = dataTableParameters.Draw;
+            List<EMPLOYEE> lst = new List<EMPLOYEE>();
             if (!string.IsNullOrWhiteSpace(dataTableParameters.Search.Value))
             {
-                var lst = employeeManager.Search(dataTableParameters.Search.Value);
+                lst = employeeManager.Search(dataTableParameters.Search.Value);
                 resultSet.recordsTotal = resultSet.recordsFiltered = employeeManager.GetSearchCount(dataTableParameters.Search.Value);
-
-                foreach (var i in lst)
-                {
-                    var role = "User";
-                    if (i.ROLE == 1) role = "Leader";
-                    if (i.ROLE == 2) role = "Admin";
-                    var columns = new List<string>();
-                    columns.Add("<a class='empId' href='#' data-emp='" + i.EMP_ID.Trim() + "'>" + i.EMP_ID.Trim() + "</a>");
-                    columns.Add((i.EMP_NAME == null) ? "" : i.EMP_NAME.Trim());
-                    columns.Add((i.DIVISION == null) ? "" : i.DIVISION.Trim());
-                    columns.Add((i.DEPARTMENT == null) ? "" : i.DEPARTMENT.Trim());
-                    columns.Add((i.EMAIL == null) ? "" : i.EMAIL.Trim());
-                    columns.Add(role);
-                    resultSet.data.Add(columns);
-                }
             }
             else
             {
-                var lst = employeeManager.SelectPaging(dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1);
+                lst = employeeManager.SelectPaging(dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1);
                 resultSet.recordsTotal = resultSet.recordsFiltered = employeeManager.GetCount();
-
-                foreach (var i in lst)
-                {
-                    var role = "User";
-                    if (i.ROLE == 1) role = "Leader";
-                    if (i.ROLE == 2) role = "Admin";
-                    var columns = new List<string>();
-                    columns.Add("<a class='empId' href='#' data-emp='" + i.EMP_ID.Trim() + "'>" + i.EMP_ID.Trim() + "</a>");
-                    columns.Add((i.EMP_NAME == null) ? "" : i.EMP_NAME.Trim());
-                    columns.Add((i.DIVISION == null) ? "" : i.DIVISION.Trim());
-                    columns.Add((i.DEPARTMENT == null) ? "" : i.DEPARTMENT.Trim());
-                    columns.Add((i.EMAIL == null) ? "" : i.EMAIL.Trim());
-                    columns.Add(role);
-                    resultSet.data.Add(columns);
-                }
+            }
+            foreach (var i in lst)
+            {
+                var role = "User";
+                if (i.ROLE == 1) role = "Leader";
+                if (i.ROLE == 2) role = "Admin";
+                var columns = new List<string>();
+                columns.Add("<a class='empId' href='#' data-emp='" + i.EMP_ID.Trim() + "'>" + i.EMP_ID.Trim() + "</a>");
+                columns.Add((i.EMP_NAME == null) ? "" : i.EMP_NAME.Trim());
+                columns.Add((i.DIVISION == null) ? "" : i.DIVISION.Trim());
+                columns.Add((i.DEPARTMENT == null) ? "" : i.DEPARTMENT.Trim());
+                columns.Add((i.EMAIL == null) ? "" : i.EMAIL.Trim());
+                columns.Add(role);
+                resultSet.data.Add(columns);
             }
             return Json(resultSet);
         }
