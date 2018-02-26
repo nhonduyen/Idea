@@ -100,7 +100,7 @@
         else {
             $('#Reply,#Reply1,#btnLike,#btnLike1,#btnRegIdea').prop('disabled', false);
         }
-        $('#btnSetProject').prop('disabled', true);
+        $('#btnSetProject,#btnDelIdea').prop('disabled', true);
         $('#frmRegIdea')[0].reset();
         $('#tbReply').find("tr:not(:first)").remove();
 
