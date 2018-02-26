@@ -47,5 +47,13 @@ namespace Idea
             var sql = "INSERT INTO IDEA(ID,EMP_ID,IDEA_TITLE,DETAIL,QUANTITATIVE,QUALITATIVE,DATE) VALUES(@ID,@EMP_ID,@IDEA_TITLE,@DETAIL,@QUANTITATIVE,@QUALITATIVE,GETDATE())";
             return DBManager<IDEA>.Execute(sql, new {ID=ID, EMP_ID = EMP_ID, IDEA_TITLE = IDEA_TITLE, DETAIL = DETAIL, QUANTITATIVE = QUANTITATIVE, QUALITATIVE = QUALITATIVE });
         }
+
+        public void DeleteLikeReply(string IdeaId)
+        {
+            var sql = "DELETE FROM IDEA_LIKE WHERE IDEA_ID=@ID;";
+            var sql1 = "DELETE FROM IDEA_REPLY WHERE IDEA_ID=@ID;";
+            DBManager<IDEA_LIKE>.Execute(sql, new { ID = IdeaId });
+            DBManager<IDEA_REPLY>.Execute(sql1, new { ID = IdeaId });
+        }
     }
 }

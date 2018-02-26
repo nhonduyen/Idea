@@ -608,6 +608,19 @@ namespace Idea.Controllers
             return Json(resultSet);
 
         }
+
+        [HttpPost]
+        public JsonResult DeleteIdea(string ID)
+        {
+            if (string.IsNullOrWhiteSpace(ID))
+                return Json(-1);
+            var result = 0;
+            IdeaManager lm = IdeaManager.GetInstance();
+            lm.DeleteLikeReply(ID);
+            result = lm.Delete(ID);
+            return Json(result);
+        }
+
         [HttpPost]
         public ActionResult ExportProject(string from = "", string to = "")
         {

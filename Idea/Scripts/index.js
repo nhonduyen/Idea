@@ -365,14 +365,18 @@
     });
     $('#tbNewIdea').on('click', '.title', function () {
         var username = $('#username').val();
+        var role = $('#username').attr('data-role');
         if (username != $(this).attr('data-emp')) {
-            $('#btnSetProject,#btnRegIdea').prop('disabled', true);
+            $('#btnSetProject,#btnRegIdea,#btnDelIdea').prop('disabled', true);
+            if (role == "2") {
+                $('#btnDelIdea').prop('disabled', false);
+            }
         }
         else {
-            $('#btnSetProject,#btnRegIdea').prop('disabled', false);
+            $('#btnSetProject,#btnRegIdea,#btnDelIdea').prop('disabled', false);
         }
         if (!username) {
-            $('#Reply,#Reply1,#btnLike,#btnLike1').prop('disabled', true);
+            $('#Reply,#Reply1,#btnLike,#btnLike1,#btnDelIdea').prop('disabled', true);
         }
         else {
             $('#Reply,#Reply1,#btnLike,#btnLike1').prop('disabled', false);
@@ -380,6 +384,7 @@
       
         var id = $(this).attr('id');
         $('#Reply').attr('data-id', id);
+        $('#btnDelIdea').attr('data-ideaid', id);
         $('#btnRegIdea').attr('data-action', 1);
         $('#tbReply').find("tr:not(:first)").remove();
         $('#cDept').text($('#username').attr('data-dept'));
@@ -1070,5 +1075,38 @@
 
         return false;
     });
-   
+    $('#btnDelIdea').on('click', function () {
+       
+        var id = $(this).attr('data-ideaid');
+        if (!id)
+            return false;
+        var cfm = confirm("Are you sure you want to delete this idea?");
+        if (cfm) {
+            $.ajax({
+                url: $('#hdUrl').val().replace("Action", "DeleteIdea"),
+                data: JSON.stringify({
+                    ID: id
+                }),
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                crossBrowser: true,
+                success: function (data, status) {
+                    if (data > 0) {
+                        $("#mdRegIdea").modal('hide');
+                        tbIdea.ajax.reload();
+                    }
+                    else {
+                        bootbox.alert("Delete fail");
+                    }
+
+                    return false;
+                },
+                error: function (xhr, status, error) {
+                    bootbox.alert("Error! " + xhr.status);
+                },
+            });
+        }
+        return false;
+    });
 });

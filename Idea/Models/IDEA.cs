@@ -69,10 +69,10 @@ as u  WHERE   RowNum >= @start   AND RowNum < @end ORDER BY RowNum;");
             return DBManager<IDEA>.Execute(sql,  new { ID = ID,EMP_ID = EMP_ID,IDEA_TITLE = IDEA_TITLE,DETAIL = DETAIL,QUANTITATIVE = QUANTITATIVE,QUALITATIVE = QUALITATIVE});
         }
 
-        public virtual int Delete(int ID=0)
+        public virtual int Delete(string ID = "")
         {
             var sql = "DELETE FROM IDEA ";
-            if (ID == 0) return DBManager<IDEA>.Execute(sql);
+            if (string.IsNullOrWhiteSpace(ID)) return DBManager<IDEA>.Execute(sql);
             sql += " WHERE ID=@ID ";
             return DBManager<IDEA>.Execute(sql, new { ID = ID });
         }
