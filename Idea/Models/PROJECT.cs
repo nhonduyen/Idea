@@ -91,11 +91,11 @@ WHERE RowNum >= @start   AND RowNum < @end ORDER BY RowNum;");
             return DBManager<PROJECT>.Execute(sql,  new { IDEA_ID = IDEA_ID,EMP_ID = EMP_ID,IDEA_TITLE = IDEA_TITLE,PRJECT_GRADE = PRJECT_GRADE,KPI_NAME = KPI_NAME,KPI_UNIT = KPI_UNIT,BACKGROUND = BACKGROUND});
         }
 
-        public virtual int Delete(int ID=0)
+        public virtual int Delete(string ID="")
         {
             var sql = "DELETE FROM PROJECT ";
-            if (ID == 0) return DBManager<PROJECT>.Execute(sql);
-            sql += " WHERE ID=@ID ";
+            if (string.IsNullOrWhiteSpace(ID)) return DBManager<PROJECT>.Execute(sql);
+            sql += " WHERE IDEA_ID=@ID ";
             return DBManager<PROJECT>.Execute(sql, new { ID = ID });
         }
 

@@ -10,6 +10,7 @@
         text-align: center;
         font-size: 100%;
     }
+
     #tbKpi, #tbKpi1 td {
         text-align: center;
         margin-bottom: 0px;
@@ -28,7 +29,7 @@
         overflow-y: auto;
     }
 </style>
-<iframe id="txtArea1" style="display:none"></iframe>
+<iframe id="txtArea1" style="display: none"></iframe>
 @Html.Hidden("hdUrl", Url.Action("Action", "Home"))
 <div class="panel-group" id="total">
     <div class="panel panel-info">
@@ -42,19 +43,24 @@
                     <thead>
                         <tr class="tbheader">
                             <th rowspan="3" style="vertical-align: middle;">#</th>
-                            <th rowspan="3" style="vertical-align: middle;">Division<br />Khối</th>
-                            <th rowspan="3" style="vertical-align: middle;">Department<br />Phòng ban</th>
-                            <th rowspan="3" style="white-space: nowrap;vertical-align: middle; min-width:300px;" id="mainTitle">Title (Tiêu đề)</th>
-                            <th rowspan="3" style="vertical-align: middle; padding-right:3px;padding-left:3px;" id="mainRep">Rep</th>
-                            <th rowspan="3" style="vertical-align: middle;padding-right:3px;padding-left:3px;" id="mainLike">Like</th>
-                            <th rowspan="3" style="vertical-align: middle;padding-right:3px;padding-left:3px;" id="mainGrade">Grade<br />Hạng</th>
+                            <th rowspan="3" style="vertical-align: middle;">Division<br />
+                                Khối</th>
+                            <th rowspan="3" style="vertical-align: middle;">Department<br />
+                                Phòng ban</th>
+                            <th rowspan="3" style="white-space: nowrap; vertical-align: middle; min-width: 300px;" id="mainTitle">Title (Tiêu đề)</th>
+                            <th rowspan="3" style="vertical-align: middle; padding-right: 3px; padding-left: 3px;" id="mainRep">Rep</th>
+                            <th rowspan="3" style="vertical-align: middle; padding-right: 3px; padding-left: 3px;" id="mainLike">Like</th>
+                            <th rowspan="3" style="vertical-align: middle; padding-right: 3px; padding-left: 3px;" id="mainGrade">Grade<br />
+                                Hạng</th>
                             <th colspan="15">KPI</th>
                         </tr>
                         <tr>
-                            <th rowspan="2" style="vertical-align: middle;">Name<br />Tên</th>
-                            <th rowspan="2" style="vertical-align: middle;">Unit<br />Đơn vị</th>
-                            <th rowspan="2" style="vertical-align: middle;padding-right:3px;padding-left:3px;">
-                                Final<br />Target<br />
+                            <th rowspan="2" style="vertical-align: middle;">Name<br />
+                                Tên</th>
+                            <th rowspan="2" style="vertical-align: middle;">Unit<br />
+                                Đơn vị</th>
+                            <th rowspan="2" style="vertical-align: middle; padding-right: 3px; padding-left: 3px;">Final<br />
+                                Target<br />
                             </th>
                             <th colspan="12">Result (Kết quả)</th>
                         </tr>
@@ -90,11 +96,11 @@
                         <table id="tbNewIdea" class="table table-bordered">
                             <thead>
                                 <tr class="tbheader">
-                                    <th style="white-space: nowrap;vertical-align: middle; min-width:300px;">Title(Tiêu đề)</th>
+                                    <th style="white-space: nowrap; vertical-align: middle; min-width: 300px;">Title(Tiêu đề)</th>
                                     <th>Name(Tên)</th>
                                     <th>Date(Ngày)</th>
-                                    <th style="vertical-align: middle; padding-right:3px;padding-left:3px;" >Rep</th>
-                                    <th style="vertical-align: middle; padding-right:3px;padding-left:3px;" >Like</th>
+                                    <th style="vertical-align: middle; padding-right: 3px; padding-left: 3px;">Rep</th>
+                                    <th style="vertical-align: middle; padding-right: 3px; padding-left: 3px;">Like</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -147,11 +153,11 @@
                         <table id="tbNewPrj" class="table table-bordered">
                             <thead>
                                 <tr class="tbheader">
-                                    <th style="white-space: nowrap;vertical-align: middle; min-width:300px;">Title(Tiêu đề)</th>
+                                    <th style="white-space: nowrap; vertical-align: middle; min-width: 300px;">Title(Tiêu đề)</th>
                                     <th>Name(Tên)</th>
                                     <th>Date(Ngày)</th>
-                                    <th style="vertical-align: middle; padding-right:3px;padding-left:3px;">Rep</th>
-                                    <th style="vertical-align: middle; padding-right:3px;padding-left:3px;">Like</th>
+                                    <th style="vertical-align: middle; padding-right: 3px; padding-left: 3px;">Rep</th>
+                                    <th style="vertical-align: middle; padding-right: 3px; padding-left: 3px;">Like</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -183,14 +189,16 @@
                             <div class="col-sm-6">
                                 <button id="btnRegIdea" class="btn btn-primary" type="submit" data-action="0" data-emp=""><span class="glyphicon glyphicon-floppy-disk"></span>Save</button>
                                 <button id="btnSetProject" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-check"></span>Make Project</button>
-                                <button id="btnDelIdea" data-ideaId="" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span>Delete</button>
+                                <button id="btnDelIdea" data-ideaid="" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span>Delete</button>
                             </div>
                         </div>
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
                                     <td class="tdleft">
-                                        <label>Division<br />Khối</label></td>
+                                        <label>
+                                            Division<br />
+                                            Khối</label></td>
                                     <td>
                                         <select id="division" class="form-control">
                                             @foreach (var div in ViewBag.Divisions)
@@ -200,7 +208,9 @@
                                         </select>
                                     </td>
                                     <td class="tdleft">
-                                        <label>Dept<br />Phòng</label></td>
+                                        <label>
+                                            Dept<br />
+                                            Phòng</label></td>
                                     <td>
                                         <select id="department" class="form-control">
                                             @foreach (var dept in ViewBag.Departments)
@@ -210,14 +220,18 @@
                                         </select>
                                     </td>
                                     <td class="tdleft">
-                                        <label>Name<br />Tên</label></td>
+                                        <label>
+                                            Name<br />
+                                            Tên</label></td>
                                     <td>
                                         <input type="text" class="form-control" id="name" required="required" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="tdleft">
-                                        <label>Title<br />Tiêu đề</label></td>
+                                        <label>
+                                            Title<br />
+                                            Tiêu đề</label></td>
                                     <td colspan="5">
                                         <input type="text" class="form-control" id="title" required="required" />
                                     </td>
@@ -225,7 +239,9 @@
                                 </tr>
                                 <tr>
                                     <td class="tdleft">
-                                        <label>Detail<br />Chi tiết</label></td>
+                                        <label>
+                                            Detail<br />
+                                            Chi tiết</label></td>
                                     <td colspan="5">
                                         <textarea id="detail" rows="5" class="form-control" maxlength="500" required="required"></textarea>
                                     </td>
@@ -234,18 +250,23 @@
                                     <td rowspan="2" class="tdleft">
                                         <label>
                                             Forecasted<br />
-                                            Improvement<br />Dự báo<br />
+                                            Improvement<br />
+                                            Dự báo<br />
                                             Cải tiến
                                         </label>
                                     </td>
                                     <td class="tdleft">
-                                        <label>Quantitative<br />Định lượng</label></td>
+                                        <label>
+                                            Quantitative<br />
+                                            Định lượng</label></td>
                                     <td colspan="4">
                                         <input type="text" class="form-control" id="quantiative" maxlength="200" required="required" /></td>
                                 </tr>
                                 <tr>
                                     <td class="tdleft">
-                                        <label>Qualitative<br />Chất lượng</label></td>
+                                        <label>
+                                            Qualitative<br />
+                                            Chất lượng</label></td>
                                     <td colspan="5">
                                         <input type="text" class="form-control" id="qualiative" maxlength="200" required="required" /></td>
                                 </tr>
@@ -315,12 +336,16 @@
                                     </td>
 
                                     <td class="tdleft">
-                                        <label>Name<br />Tên</label></td>
+                                        <label>
+                                            Name<br />
+                                            Tên</label></td>
                                     <td>
                                         <input type="text" class="form-control" id="txtName" required="required" />
                                     </td>
                                     <td class="tdleft">
-                                        <label>PJT Grade<br />Hạng</label></td>
+                                        <label>
+                                            PJT Grade<br />
+                                            Hạng</label></td>
                                     <td>
                                         <select id="pit" class="form-control">
                                             <option value="S">S</option>
@@ -332,7 +357,9 @@
                                 </tr>
                                 <tr>
                                     <td class="tdleft">
-                                        <label>Title<br />Tiêu đề</label></td>
+                                        <label>
+                                            Title<br />
+                                            Tiêu đề</label></td>
                                     <td colspan="5">
                                         <input type="text" class="form-control" id="txtTitle" /></td>
                                 </tr>
@@ -340,12 +367,17 @@
                                     <td rowspan="2" class="tdleft">
                                         <label>KPI</label></td>
                                     <td class="tdleft">
-                                        <label>Name<br /></label></td>
+                                        <label>
+                                            Name<br />
+                                        </label>
+                                    </td>
                                     <td colspan="2">
                                         <input type="text" class="form-control" id="txtKPIName" required="required" />
                                     </td>
                                     <td class="tdleft">
-                                        <label>Unit<br />Đơn vị</label></td>
+                                        <label>
+                                            Unit<br />
+                                            Đơn vị</label></td>
                                     <td colspan="2">
                                         <select id="unit" class="form-control">
                                             <option value="U$">U$</option>
@@ -411,7 +443,9 @@
                                 </tr>
                                 <tr>
                                     <td class="tdleft">
-                                        <label>Background<br />Nền tảng</label></td>
+                                        <label>
+                                            Background<br />
+                                            Nền tảng</label></td>
                                     <td colspan="5">
                                         <textarea id="background" rows="3" class="form-control" maxlength="500"></textarea>
                                     </td>
@@ -433,17 +467,20 @@
                                 </tr>
                                 <tr>
                                     <td colspan="4">
+
+                                        <textarea id="txtAddPlan" class="form-control" placeholder="Plan"></textarea>
+                                        @*<input id="txtAddPlan" type="text" class="form-control" placeholder="Plan">*@
+
+                                    </td>
+                                    <td colspan="2">
                                         <div class="input-group" style="width: 100%">
-                                            <input id="txtAddPlan" type="text" class="form-control" placeholder="Plan">
+                                            <input id="txtAddSchedule" type="text" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")"/>
                                             <div class="input-group-btn">
                                                 <button id="btnAddPlan" class="btn btn-primary" type="button">
                                                     <i class="glyphicon glyphicon-plus-sign"></i>
                                                 </button>
                                             </div>
                                         </div>
-                                    </td>
-                                    <td colspan="2">
-                                        <input id="txtAddSchedule" type="text" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -455,13 +492,17 @@
                                         </label>
                                     </td>
                                     <td class="tdleft">
-                                        <label>Quantitative<br />Định lượng</label></td>
+                                        <label>
+                                            Quantitative<br />
+                                            Định lượng</label></td>
                                     <td colspan="4">
                                         <input type="text" class="form-control" id="prj_quantiative" maxlength="200" /></td>
                                 </tr>
                                 <tr>
                                     <td class="tdleft">
-                                        <label>Qualitative<br />Chất lượng</label></td>
+                                        <label>
+                                            Qualitative<br />
+                                            Chất lượng</label></td>
                                     <td colspan="5">
                                         <input type="text" class="form-control" id="prj_qualiative" maxlength="200" /></td>
                                 </tr>
@@ -486,15 +527,18 @@
                     <h4 class="modal-title"><span class="glyphicon glyphicon-envelope"></span>&nbsp;Progress Management - Quản lý tiến trình</h4>
                 </div>
                 <div class="modal-body">
-                    <form id="frmProcess" method="post" role="form" data-emp="" data-id="" data-date="" action="@Url.Action("ExportProgress","Home")">
+                    <form id="frmProcess" method="post" role="form" data-emp="" data-id="" data-date="" action="@Url.Action("ExportProgress", "Home")">
                         <input type="hidden" name="IDEA_ID" id="IDEA_ID" value="" />
-                        <button id="btnExport" class="btn btn-primary" type="submit" style="float: right"><span class="glyphicon glyphicon-export"></span>Export</button>
-                        <button id="btnSaveProcess" class="btn btn-primary" style="float: right; margin-right:5px;"><span class="glyphicon glyphicon-floppy-disk"></span>Save</button>
+                        <button id="btnDelPrj" class="btn btn-danger" type="button" style="float: right"><span class="glyphicon glyphicon-remove"></span>Delete</button>
+                        <button id="btnExport" class="btn btn-primary" type="submit" style="float: right; margin-right: 5px;"><span class="glyphicon glyphicon-export"></span>Export</button>
+                        <button id="btnSaveProcess" class="btn btn-primary" style="float: right; margin-right: 5px;"><span class="glyphicon glyphicon-floppy-disk"></span>Save</button>
                         <table id="tbProcess" class="table table-bordered">
                             <tbody>
                                 <tr>
                                     <td class="tdleft">
-                                        <label>Division<br />Khối</label></td>
+                                        <label>
+                                            Division<br />
+                                            Khối</label></td>
                                     <td>
                                         <select id="division1" class="form-control">
                                             @foreach (var e in ViewBag.Divisions)
@@ -504,7 +548,9 @@
                                         </select>
                                     </td>
                                     <td class="tdleft">
-                                        <label>Dept<br />Phòng</label></td>
+                                        <label>
+                                            Dept<br />
+                                            Phòng</label></td>
                                     <td>
                                         <select id="selDept1" class="form-control">
                                             @foreach (var dept in ViewBag.Departments)
@@ -515,7 +561,9 @@
                                     </td>
 
                                     <td class="tdleft">
-                                        <label>Name<br />Tên</label></td>
+                                        <label>
+                                            Name<br />
+                                            Tên</label></td>
                                     <td>
                                         <input type="text" class="form-control" id="txtName1" required="required" />
                                     </td>
@@ -523,11 +571,15 @@
                                 </tr>
                                 <tr>
                                     <td class="tdleft">
-                                        <label>Title<br />Tiêu đề</label></td>
+                                        <label>
+                                            Title<br />
+                                            Tiêu đề</label></td>
                                     <td colspan="3">
                                         <input type="text" class="form-control" id="title1" /></td>
                                     <td class="tdleft">
-                                        <label>Grade<br />Hạng</label>
+                                        <label>
+                                            Grade<br />
+                                            Hạng</label>
                                     </td>
                                     <td>
                                         <select class="form-control" id="pit1">
@@ -584,7 +636,8 @@
                                                         }
                                                     </tr>
                                                     <tr id="trTarget">
-                                                        <td>Target<br />Mục tiêu</td>
+                                                        <td>Target<br />
+                                                            Mục tiêu</td>
                                                         <td></td>
                                                         @for (DateTime i = DateTime.Now; i <= DateTime.Now.AddYears(1); i = i.AddMonths(1))
                                                         {
@@ -594,7 +647,8 @@
                                                         }
                                                     </tr>
                                                     <tr id="trResult">
-                                                        <td>Result<br />Kết quả</td>
+                                                        <td>Result<br />
+                                                            Kết quả</td>
                                                         <td></td>
                                                         @for (DateTime i = DateTime.Now; i <= DateTime.Now.AddYears(1); i = i.AddMonths(1))
                                                         {
@@ -609,7 +663,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td id="action_plan1" rowspan="1" class="tdleft">
+                                    <td id="action_plan1" rowspan="2" class="tdleft">
                                         <label>
                                             Action<br />
                                             Plan<br />
@@ -620,18 +674,46 @@
                                     <td class="tdleft" colspan="1">
                                         <label>Completed(Hoàn tất)</label></td>
                                     <td class="tdleft" colspan="1">
-                                        <label>Actual Date<br />Ngày</label>
+                                        <label>
+                                            Actual Date<br />
+                                            Ngày thực hiện</label>
                                     </td>
                                     <td class="tdleft" colspan="2">
                                         <label>Plan(Kế hoạch)</label></td>
                                     <td class="tdleft" colspan="1">
-                                        <label>Plan Schedule<br />Ngày</label>
+                                        <label>
+                                            Plan Schedule<br />
+                                            Ngày dự kiến</label>
                                     </td>
                                 </tr>
+                                <tr class="trPlan1">
 
+                                    <td colspan="1">
+                                        <select id="com1" class="form-control complete">
+                                            <option value="0">No</option>
+                                            <option value="1">Yes</option>
+                                        </select></td>
+                                    <td colspan="1">
+                                        <input id="com_dt" class="form-control com_dt" type="text"></td>
+                                    <td colspan="2">
+                                        <textarea id="txtAddPlan1" class="form-control plan"></textarea>
+                                        @*    <input  class="form-control plan" type="text">*@</td>
+                                    <td colspan="1">
+                                        <div class="input-group">
+                                            <input id="txtAddSchedule1" class="form-control schedule" type="text">
+                                            <div class="input-group-btn">
+                                                <button id="btnAddPlan1" class="btn btn-primary" type="button">
+                                                    <i class="glyphicon glyphicon-plus-sign"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td class="tdleft">
-                                        <label>Remark<br />Chú thích</label></td>
+                                        <label>
+                                            Remark<br />
+                                            Chú thích</label></td>
                                     <td colspan="5">
                                         <textarea id="remark" rows="3" class="form-control" maxlength="500"></textarea>
                                     </td>
@@ -674,5 +756,5 @@
 
         </div>
     </div>
-   
+
 }

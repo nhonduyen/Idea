@@ -59,10 +59,10 @@ namespace Idea
             return DBManager<KPI>.Execute(sql,  new { IDEA_ID = IDEA_ID,PRJ_MONTH = PRJ_MONTH,TARGET_VALUE = TARGET_VALUE,RESULT_VALUE = RESULT_VALUE,ID = ID});
         }
 
-        public virtual int Delete(int ID=0)
+        public virtual int Delete(string ID="")
         {
             var sql = "DELETE FROM KPI ";
-            if (ID == 0) return DBManager<KPI>.Execute(sql);
+            if (string.IsNullOrWhiteSpace(ID)) return DBManager<KPI>.Execute(sql);
             sql += " WHERE ID=@ID ";
             return DBManager<KPI>.Execute(sql, new { ID = ID });
         }

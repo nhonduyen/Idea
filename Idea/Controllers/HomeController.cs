@@ -458,7 +458,14 @@ namespace Idea.Controllers
                     {
                         foreach (var p in Plans)
                         {
-                            plan.Update(p.IDEA_ID, p.PLAN_CONTENTS, p.PLAN_DATE, p.COMPLETE_YN, p.COMPLETE_DATE, p.ID);
+                            if (string.IsNullOrWhiteSpace(p.ID))
+                            {
+                                plan.InsertPlan(p.IDEA_ID, p.PLAN_CONTENTS, p.PLAN_DATE, p.COMPLETE_YN, p.COMPLETE_DATE);
+                            }
+                            else
+                            {
+                                plan.Update(p.IDEA_ID, p.PLAN_CONTENTS, p.PLAN_DATE, p.COMPLETE_YN, p.COMPLETE_DATE, p.ID);
+                            }
                         }
                     }
                     if (KPIs != null)
@@ -618,6 +625,34 @@ namespace Idea.Controllers
             IdeaManager lm = IdeaManager.GetInstance();
             lm.DeleteLikeReply(ID);
             result = lm.Delete(ID);
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult DeleteProject(string ID)
+        {
+            if (string.IsNullOrWhiteSpace(ID))
+                return Json(-1);
+            var result = 0;
+            ProjectManager pm = ProjectManager.GetInstance();
+            PlanManager plan = PlanManager.GetInstance();
+            KpiManager kpi = KpiManager.GetInstance();
+            
+            plan.DeletePlanByIdeaId(ID);
+            kpi.DeleteKPIByIdeaId(ID);
+            pm.DeleteLikeReply(ID); 
+            result = pm.Delete(ID);
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult RemovePlan(string ID)
+        {
+            if (string.IsNullOrWhiteSpace(ID))
+                return Json(-1);
+            var result = 0;
+            PlanManager pm = PlanManager.GetInstance();
+            result = pm.Delete(ID);
             return Json(result);
         }
 

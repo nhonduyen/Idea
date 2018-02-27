@@ -1,6 +1,6 @@
 ﻿$(document).ready(function () {
     $('#lhome').addClass("active");
-    $('#txtAddSchedule')
+    $('#txtAddSchedule,#com_dt,#txtAddSchedule1')
         .datepicker({
             format: 'yyyy-mm-dd'
         }).on('changeDate', function (ev) {
@@ -12,11 +12,7 @@
     else {
         $('#btnUpload').prop('disabled', true);
     }
-    //var $div1 = $('#division,#division1,#unit,#unit').selectize({
-    //    create: true,
-    //    sortField: 'text'
-    //});
-
+    
     var tbProgress = $('#tbMainDefault').DataTable(
             {
                 sort: false,
@@ -454,21 +450,24 @@
     $('#tbNewPrj,#tbMainDefault').on('click', '.title', function () {
         var username = $('#username').val();
         var host = $(this).attr('data-emp');
-        var role = $(this).attr('data-role');
+        var role = $('#username').attr('data-role');
         if (!username) {
-            $('#Reply,#Reply1,#btnLike,#btnLike1,#btnExport').prop('disabled', true);
+            $('#Reply,#Reply1,#btnLike,#btnLike1,#btnExport,#btnDelPrj').prop('disabled', true);
         }
         else {
             $('#Reply,#Reply1,#btnLike,#btnLike1,#btnExport').prop('disabled', false);
         }
         if (username != host) {
-            $('#btnSaveProcess').prop('disabled', true);
+            $('#btnSaveProcess,#btnDelPrj').prop('disabled', true);
             if (role && parseInt(role) > 0) {
                 $('#btnExport').prop('disabled', false);
             }
+            if (role && parseInt(role) == 2) {
+                $('#btnExport,#btnDelPrj').prop('disabled', false);
+            }
         }
         else {
-            $('#btnSaveProcess,#btnExport').prop('disabled', false);
+            $('#btnSaveProcess,#btnExport,#btnDelPrj').prop('disabled', false);
         }
         var numLike = parseInt($(this).parent().parent().find('.like').children().text());
         $('#btnLike1').find('.badge').text(numLike);
@@ -486,7 +485,7 @@
         $('#trTarget').append('<td>Target</td><td><select id="selCurent1"><option value="' + dt1.getFullYear().toString().substr(-2) + ' total">' + dt1.getFullYear().toString().substr(-2) + ' total</option><option value="' + dt1.getFullYear().toString().substr(-2) + ' 2nd">' + dt1.getFullYear().toString().substr(-2) + ' 2nd</option><option value="' + dt1.getFullYear().toString().substr(-2) + ' 4Q">' + dt1.getFullYear().toString().substr(-2) + ' 4Q</option></select></td>');
         $('#trResult').append('<td>Result</td><td><input type="number" id="txtCurrent1" value="" class="form-control"/></td>');
 
-        $('#action_plan1').attr('rowspan', 1);
+        $('#action_plan1').attr('rowspan', 2);
 
         var id = $(this).attr('data-id');
         $('#Reply1').attr('data-id', id);
@@ -592,6 +591,7 @@
                 bootbox.alert("Error! " + xhr.status);
             },
         });
+       
         $.ajax({
             url: $('#hdUrl').val().replace("Action", "GetPlan"),
             data: JSON.stringify({
@@ -603,9 +603,10 @@
             crossBrowser: true,
             success: function (data, status) {
                 if (data.length > 0) {
-
+                    var rowspan = parseInt($('#action_plan1').attr('rowspan'));
+                    $('#action_plan1').attr('rowspan', rowspan + data.length);
                     for (var i = 0; i < data.length; i++) {
-                        var rowspan = parseInt($('#action_plan1').attr('rowspan'));
+                       
                         var complete_dt = moment(data[i].COMPLETE_DATE).format('YYYY-MM-DD') == "0001-01-01" ? "" : moment(data[i].COMPLETE_DATE).format('YYYY-MM-DD');
                         var plan_dt = moment(data[i].PLAN_DATE).format('YYYY-MM-DD') == "0001-01-01" ? "" : moment(data[i].PLAN_DATE).format('YYYY-MM-DD');
                         var tr = '<tr class="trPlan">'
@@ -624,13 +625,20 @@
                     + '<td colspan="1">'
                         + '<input type="text" class="form-control com_dt" value="' + complete_dt + '" /></td>'
                     + '<td colspan="2">'
-                        + '<input type="text" class="form-control plan" value="' + $.trim(data[i].PLAN_CONTENTS) + '" /></td>'
+                        + '<textarea class="form-control plan">' + $.trim(data[i].PLAN_CONTENTS) + '</textarea></td>'
                     + '<td colspan="1">'
-                       + ' <input type="text" class="form-control schedule" value="' + plan_dt + '"/></td>'
+                       + '<div class="input-group"><input type="text" class="form-control schedule" value="' + plan_dt + '"/>'
+                       +'<div class="input-group-btn">'
+                      + '<button data-id="' + data[i].ID + '" class="btn btn-danger removeplan" type="button">'
+                     +                               '<i class="glyphicon glyphicon-minus-sign"></i>'
+                     +                           '</button>'
+                     +                       '</div>'
+                     +                   '</div></td>'
                 + '</tr>';
-                        $('#action_plan1').parent('tr').after(tr);
-                        $('#action_plan1').attr('rowspan', rowspan + 1);
+                       
+                        $('.trPlan1').after(tr);
                     }
+                  
                     $('.schedule,.com_dt')
                         .datepicker({
                             format: 'yyyy-mm-dd'
@@ -697,17 +705,18 @@
         var schedule = $.trim($('#txtAddSchedule').val()).length == 0 ? moment().format('YYYY-MM-DD') : $.trim($('#txtAddSchedule').val());
         $('<tr class="trNewPlan">'
                                + '<td colspan="4">'
-                                 + '   <div class="input-group" style="width:100%">'
-                                    + ' <input type="text" class="form-control newplan" data-id="" value="' + plan + '" placeholder="Plan">'
-                                      + '  <div class="input-group-btn">'
+                                    + ' <textarea class="form-control newplan" data-id="" placeholder="Plan">' + plan + '</textarea>'
+                                     
+                               + ' </td>'
+                               + ' <td colspan="2">'
+                                + '   <div class="input-group" style="width:100%">'
+                                  + '  <input type="text" class="form-control newschedule" value="' + schedule + '" />'
+                                   + '  <div class="input-group-btn">'
                                         + '    <button class="btn btn-danger btnRemovePlan" type="button" data-id="">'
                                           + '<i class="glyphicon glyphicon-minus-sign"></i>'
                                            + ' </button>'
                                        + ' </div>'
-                                  + '  </div>'
-                               + ' </td>'
-                               + ' <td colspan="2">'
-                                  + '  <input type="text" class="form-control newschedule" value="' + schedule + '" /></td>'
+                                  + '  </div></td>'
                            + ' </tr>').insertAfter($(this).closest('tr'));
         $('.newschedule')
         .datepicker({
@@ -717,6 +726,88 @@
         });
         $('#txtAddPlan').val('');
         $('#txtAddSchedule').val('');
+        return false;
+    });
+    $('#btnAddPlan1').on('click', function () {
+        
+        var yesno = $('#com1').val();
+        var com_dt = $('#com_dt').val();
+        //var com_dt = $.trim($('#txtAddSchedule1').val()).length == 0 ? moment().format('YYYY-MM-DD') : $.trim($('#txtAddSchedule1').val());
+        var plan = $.trim($('#txtAddPlan1').val());
+        if (!plan) {
+            alert('Please enter plan');
+            return false;
+        }
+        var schedule = $.trim($('#txtAddSchedule1').val());
+        var rowspan = parseInt($('#action_plan1').attr('rowspan')) + 1;
+        $('#action_plan1').attr('rowspan', rowspan);
+        $('<tr class="trPlan">'
+                                + '<td colspan="1">'
+                                    + '<select class="form-control complete" data-id="">'
+       
+            +'<option value="' + yesno + '" selected="selected">No</option>'
+            + '<option value="1">Yes</option>'
+        + '</select>'
+    + '</td>'
+    + '<td colspan="1">'
+        + '<input type="text" class="form-control com_dt" value="' + com_dt + '" /></td>'
+    + '<td colspan="2">'
+        + '<textarea class="form-control plan">' + $.trim(plan) + '</textarea></td>'
+    + '<td colspan="1">'
+       + '<div class="input-group"><input type="text" class="form-control schedule" value="' + schedule + '"/>'
+       + '<div class="input-group-btn">'
+      + '<button data-id="" class="btn btn-danger removeplan" type="button">'
+     + '<i class="glyphicon glyphicon-minus-sign"></i>'
+     + '</button>'
+     + '</div>'
+     + '</div></td>'
++ '</tr>').insertAfter($(this).closest('tr'));
+        $('.schedule,.com_dt')
+        .datepicker({
+            format: 'yyyy-mm-dd'
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+        $('#txtAddPlan1').val('');
+        $('#txtAddSchedule1').val('');
+        return false;
+    });
+    $('#frmProcess').on('click', '.removeplan', function () {
+        var conf = confirm('Are you sure you want to remove this plan?');
+        if (conf) {
+            var id = $(this).attr('data-id');
+            var username = $('#username').val();
+            if (username != $('#frmProcess').attr('data-emp')) {
+                alert('You cannot delete this plan');
+                return false;
+            }
+            if (id) {
+                $.ajax({
+                    url: $('#hdUrl').val().replace("Action", "RemovePlan"),
+                    data: JSON.stringify({
+                        ID: id
+                    }),
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    crossBrowser: true,
+                    success: function (data, status) {
+                        if (data > 0) {
+                            bootbox.alert(status);
+
+                        }
+
+                        return false;
+                    },
+                    error: function (xhr, status, error) {
+                        bootbox.alert("Error! " + xhr.status);
+                    },
+                });
+            }
+            var rowspan = parseInt($('#action_plan1').attr('rowspan'));
+            $('#action_plan1').attr('rowspan', rowspan - 1);
+            $(this).closest('tr').remove();
+        }
         return false;
     });
     $('#tbRegPrj').on('click', '.btnRemovePlan', function () {
@@ -1094,6 +1185,42 @@
                 success: function (data, status) {
                     if (data > 0) {
                         $("#mdRegIdea").modal('hide');
+                        tbIdea.ajax.reload();
+                    }
+                    else {
+                        bootbox.alert("Delete fail");
+                    }
+
+                    return false;
+                },
+                error: function (xhr, status, error) {
+                    bootbox.alert("Error! " + xhr.status);
+                },
+            });
+        }
+        return false;
+    });
+    $('#btnDelPrj').on('click', function () {
+
+        var id = $('#frmProcess').attr('data-id');
+        if (!id)
+            return false;
+        var cfm = confirm("Are you sure you want to delete this project?");
+        if (cfm) {
+            $.ajax({
+                url: $('#hdUrl').val().replace("Action", "DeleteProject"),
+                data: JSON.stringify({
+                    ID: id
+                }),
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                crossBrowser: true,
+                success: function (data, status) {
+                    if (data > 0) {
+                        $("#mdProcess").modal('hide');
+                        tbProgress.ajax.reload();
+                        tbNewPrj.ajax.reload();
                         tbIdea.ajax.reload();
                     }
                     else {

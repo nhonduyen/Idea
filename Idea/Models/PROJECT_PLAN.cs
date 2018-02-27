@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Dapper;
+using System.Data;
 
 namespace Idea
 {
@@ -57,18 +59,35 @@ namespace Idea
         public virtual int Update(string IDEA_ID, string PLAN_CONTENTS, DateTime PLAN_DATE, int COMPLETE_YN, DateTime COMPLETE_DATE, string ID)
         {
             var sql = "UPDATE PROJECT_PLAN SET IDEA_ID=@IDEA_ID,PLAN_CONTENTS=@PLAN_CONTENTS,PLAN_DATE=@PLAN_DATE,COMPLETE_YN=@COMPLETE_YN,COMPLETE_DATE=@COMPLETE_DATE WHERE ID=@ID";
+            DynamicParameters parameter = new DynamicParameters();
+
+            parameter.Add("@ID", ID, DbType.String, ParameterDirection.Input);
+            parameter.Add("@IDEA_ID", IDEA_ID, DbType.String, ParameterDirection.Input);
+            parameter.Add("@PLAN_CONTENTS", PLAN_CONTENTS, DbType.String, ParameterDirection.Input);
+            if (PLAN_DATE == DateTime.MinValue)
+            {
+                parameter.Add("@PLAN_DATE", DBNull.Value, DbType.Date, ParameterDirection.Input);
+            }
+            else
+            {
+                parameter.Add("@PLAN_DATE", PLAN_DATE, DbType.Date, ParameterDirection.Input);
+            }
+            parameter.Add("@COMPLETE_YN", COMPLETE_YN, DbType.Int32, ParameterDirection.Input);
             if (COMPLETE_DATE == DateTime.MinValue)
             {
-                DateTime? nullDate = null;
-                return DBManager<PROJECT_PLAN>.Execute(sql, new { IDEA_ID = IDEA_ID, PLAN_CONTENTS = PLAN_CONTENTS, PLAN_DATE = PLAN_DATE, COMPLETE_YN = COMPLETE_YN, COMPLETE_DATE = nullDate, ID = ID });
+                parameter.Add("@COMPLETE_DATE", DBNull.Value, DbType.Date, ParameterDirection.Input);
             }
-            return DBManager<PROJECT_PLAN>.Execute(sql, new { IDEA_ID = IDEA_ID, PLAN_CONTENTS = PLAN_CONTENTS, PLAN_DATE = PLAN_DATE, COMPLETE_YN = COMPLETE_YN, COMPLETE_DATE = COMPLETE_DATE, ID = ID });
+            else
+            {
+                parameter.Add("@COMPLETE_DATE", COMPLETE_DATE, DbType.Date, ParameterDirection.Input);
+            }
+            return DBManager<PROJECT_PLAN>.Execute(sql, parameter);
         }
 
-        public virtual int Delete(int ID=0)
+        public virtual int Delete(string ID="")
         {
             var sql = "DELETE FROM PROJECT_PLAN ";
-            if (ID == 0) return DBManager<PROJECT_PLAN>.Execute(sql);
+            if (string.IsNullOrWhiteSpace(ID)) return DBManager<PROJECT_PLAN>.Execute(sql);
             sql += " WHERE ID=@ID ";
             return DBManager<PROJECT_PLAN>.Execute(sql, new { ID = ID });
         }

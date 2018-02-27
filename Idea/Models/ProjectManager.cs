@@ -126,5 +126,12 @@ FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE 1=1 condit
             return DBManager<PROJECT>.Execute(sql, project);
         }
 
+        public void DeleteLikeReply(string IdeaId)
+        {
+            var sql = "DELETE FROM PRJ_LIKE WHERE IDEA_ID=@ID;";
+            var sql1 = "DELETE FROM PRJ_REPLY WHERE IDEA_ID=@ID;";
+            DBManager<PRJ_LIKE>.Execute(sql, new { ID = IdeaId });
+            DBManager<PRJ_REPLY>.Execute(sql1, new { ID = IdeaId });
+        }
     }
 }

@@ -63,5 +63,11 @@ namespace Idea
             var sql = "SELECT PRJ_MONTH,RESULT_VALUE FROM KPI WHERE IDEA_ID=@IDEA_ID";
             return DBManager<KPI>.ExecuteReader(sql, new { IDEA_ID = IDEA_ID });
         }
+
+        public int DeleteKPIByIdeaId(string ID = "")
+        {
+            var sql = "DELETE FROM KPI WHERE IDEA_ID=@ID ";
+            return DBManager<KPI>.Execute(sql, new { ID = ID });
+        }
     }
 }
