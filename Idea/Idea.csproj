@@ -124,6 +124,8 @@
     <Compile Include="Controllers\AjaxController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="App_Code\DBManager.cs" />
+    <Compile Include="Controllers\Project1Controller.cs" />
+    <Compile Include="Controllers\ProjectController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -157,7 +159,6 @@
     <Content Include="Content\bt\buttons.dataTables.min.css" />
     <Content Include="Content\bt\dataTables.bootstrap.css" />
     <Content Include="Content\bt\datepicker.css" />
-    <Content Include="Content\bt\selectize.bootstrap3.css" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\img\bg.png" />
     <Content Include="Content\img\mkt5.jpg" />
@@ -170,14 +171,20 @@
     <Content Include="Scripts\Include\bootstrap.min.js" />
     <Content Include="Scripts\Include\dataTables.bootstrap.js" />
     <Content Include="Scripts\Include\dataTables.buttons.min.js" />
+    <Content Include="Scripts\Include\dataTables.rowsGroup.js" />
     <Content Include="Scripts\Include\ie10-viewport-bug-workaround.js" />
     <Content Include="Scripts\Include\jquery-1.11.3.min.js" />
     <Content Include="Scripts\Include\jquery.backstretch.min.js" />
     <Content Include="Scripts\Include\jquery.dataTables.min.js" />
+    <Content Include="Scripts\Include\jquery.fileupload.js" />
+    <Content Include="Scripts\Include\jquery.iframe-transport.js" />
+    <Content Include="Scripts\Include\jquery.placeholder.min.js" />
+    <Content Include="Scripts\Include\jquery.ui.widget.js" />
+    <Content Include="Scripts\Include\jquery.xdr-transport.js" />
     <Content Include="Scripts\Include\modernizr-3.5.0.min.js" />
     <Content Include="Scripts\Include\plugins.js" />
-    <Content Include="Scripts\Include\selectize.js" />
     <Content Include="Scripts\index.js" />
+    <Content Include="Scripts\project.js" />
     <Content Include="Scripts\summary.js" />
     <Content Include="Scripts\users.js" />
     <Content Include="Web.config">
@@ -193,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Upload\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -226,6 +234,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Home\Users.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Project\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Project1\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

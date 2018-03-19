@@ -57,17 +57,39 @@ WHERE RowNum >= @start   AND RowNum < @end ORDER BY RowNum;");
             if (!string.IsNullOrWhiteSpace(grade))
                 condition += "AND PRJECT_GRADE='" + grade + "' ";
             var sql = string.Format(@"SELECT COUNT(1) AS CNT
-FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE 1=1 condition");
-            if (!string.IsNullOrEmpty(condition))
-                sql = sql.Replace("condition", condition);
+FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE 1=1 {0}",condition);
+           
             return (int)DBManager<PROJECT>.ExecuteScalar(sql);
         }
+      
         public dynamic GetProject(string ID)
         {
             var sql = "SELECT I.*, E.DEPARTMENT,E.DIVISION,E.EMP_NAME FROM PROJECT AS I INNER JOIN EMPLOYEE AS E ON I.EMP_ID=E.EMP_ID WHERE IDEA_ID=@ID";
             return DBManager<dynamic>.ExecuteReader(sql, new { ID = ID }).FirstOrDefault();
         }
-
+        public dynamic GetProject( string div = "", string dept = "", string grade = "", int page=0)
+        {
+            var start = (page-1) * 10 + 1;
+            var end = start + 10 - 1;
+            var sql = string.Format(@"SELECT * FROM(SELECT ROW_NUMBER() OVER (order by IDEA_ID desc) AS ROWNUM, P.IDEA_ID,P.EMP_ID,E.EMP_NAME,E.DIVISION,E.DEPARTMENT,P.IDEA_TITLE,P.NAME,
+P.PRJECT_GRADE,P.KPI_UNIT,P.KPI_NAME,
+(SELECT COUNT(1) FROM PRJ_REPLY AS PR WHERE PR.IDEA_ID=P.IDEA_ID) AS REP,
+(SELECT COUNT(1) FROM PRJ_LIKE AS L WHERE L.IDEA_ID=P.IDEA_ID) AS L
+FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE 
+(@div='' OR DIVISION LIKE '%'+@div+'%') 
+AND (@dept='' OR DEPARTMENT LIKE '%'+@dept+'%') 
+AND (@grade='' OR PRJECT_GRADE=@grade) ) as u 
+WHERE RowNum >= @start   AND RowNum <= @end ORDER BY RowNum");
+            return DBManager<dynamic>.ExecuteDynamic(sql, new
+            {
+               
+                div = div,
+                dept = dept,
+                grade = grade,
+                start=start,
+                end=end
+            });
+        }
         public List<string> GetKPIUnit()
         {
             var sql = "SELECT DISTINCT(KPI_UNIT) FROM PROJECT WHERE KPI_UNIT IS NOT NULL";
@@ -97,11 +119,11 @@ FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE 1=1 condit
         }
 
         public int UpdatePrj(string IDEA_ID, string EMP_ID, string IDEA_TITLE, string KPI_NAME, string KPI_UNIT, string REMARK,
-            string NAME, string PRJ_CURR, int CURR_VALUE, string PRJECT_GRADE)
+            string NAME, string PRJ_CURR, decimal CURR_VALUE, string PRJECT_GRADE, string ATTACHMENT, string ISSUE, string REQUEST)
         {
             var sql = string.Format(@"UPDATE PROJECT SET IDEA_ID=@IDEA_ID,EMP_ID=@EMP_ID,IDEA_TITLE=@IDEA_TITLE,KPI_NAME=@KPI_NAME,
                                    NAME=@NAME,KPI_UNIT=@KPI_UNIT,REMARK=@REMARK,CURR_VALUE=@CURR_VALUE,PRJ_CURR=@PRJ_CURR,
-                                   PRJECT_GRADE=@PRJECT_GRADE WHERE IDEA_ID=@IDEA_ID");
+                                   PRJECT_GRADE=@PRJECT_GRADE,ATTACHMENT=@ATTACHMENT,ISSUE=@REMARK,REQUEST=@REQUEST WHERE IDEA_ID=@IDEA_ID");
 
             return DBManager<PROJECT>.Execute(sql, new
             {
@@ -114,15 +136,29 @@ FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE 1=1 condit
                 NAME = NAME,
                 PRJ_CURR = PRJ_CURR,
                 CURR_VALUE = CURR_VALUE,
-                PRJECT_GRADE = PRJECT_GRADE
+                PRJECT_GRADE = PRJECT_GRADE,
+                ATTACHMENT = ATTACHMENT,
+                REQUEST = REQUEST
+            });
+        }
+
+        public int UpdateTranslate(string IDEA_ID, string REQUEST, string ISSUE)
+        {
+            var sql = string.Format(@"UPDATE PROJECT SET REQUEST_KOREAN=@REQUEST,ISSUE_KOREAN=@ISSUE WHERE IDEA_ID=@IDEA_ID");
+
+            return DBManager<PROJECT>.Execute(sql, new
+            {
+                IDEA_ID = IDEA_ID,
+                REQUEST = REQUEST,
+                ISSUE = ISSUE
             });
         }
 
         public int InsertProject(PROJECT project)
         {
             var sql = string.Format(@"INSERT INTO PROJECT(IDEA_ID,EMP_ID,IDEA_TITLE,PRJECT_GRADE,KPI_NAME,KPI_UNIT,BACKGROUND,NAME,
-            INS_DT,PRJ_CURR,CURR_VALUE) VALUES(@IDEA_ID,@EMP_ID,@IDEA_TITLE,@PRJECT_GRADE,@KPI_NAME,@KPI_UNIT,@BACKGROUND,@NAME,
-            GETDATE(),@PRJ_CURR,@CURR_VALUE)");
+            INS_DT,PRJ_CURR,CURR_VALUE,ATTACHMENT) VALUES(@IDEA_ID,@EMP_ID,@IDEA_TITLE,@PRJECT_GRADE,@KPI_NAME,@KPI_UNIT,@BACKGROUND,@NAME,
+            GETDATE(),@PRJ_CURR,@CURR_VALUE,@ATTACHMENT)");
             return DBManager<PROJECT>.Execute(sql, project);
         }
 

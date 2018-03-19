@@ -18,7 +18,12 @@ namespace Idea
         public string REMARK { get; set; }
         public DateTime INS_DT { get; set; }
         public string PRJ_CURR { get; set; }
-        public int CURR_VALUE { get; set; }
+        public decimal CURR_VALUE { get; set; }
+        public string ISSUE { get; set; }
+        public string ISSUE_KOREAN { get; set; }
+        public string REQUEST { get; set; }
+        public string REQUEST_KOREAN { get; set; }
+        public string ATTACHMENT { get; set; }
 
         public PROJECT(string IDEA_ID, string EMP_ID, string IDEA_TITLE, string PRJECT_GRADE, string KPI_NAME, string KPI_UNIT, string BACKGROUND)
         {

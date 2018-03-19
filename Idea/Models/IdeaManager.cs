@@ -55,5 +55,11 @@ namespace Idea
             DBManager<IDEA_LIKE>.Execute(sql, new { ID = IdeaId });
             DBManager<IDEA_REPLY>.Execute(sql1, new { ID = IdeaId });
         }
+
+        public  int Delegate(string EMP_ID, string IDEA_ID)
+        {
+            var sql = "UPDATE IDEA SET EMP_ID=@EMP_ID WHERE ID=@IDEA_ID";
+            return DBManager<IDEA>.Execute(sql, new { IDEA_ID = IDEA_ID, EMP_ID = EMP_ID});
+        }
     }
 }

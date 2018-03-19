@@ -29,6 +29,7 @@ D:\Duyen\Project\Idea\Idea\bin\Idea.dll
 D:\Duyen\Project\Idea\Idea\bin\Idea.pdb
 D:\Duyen\Project\Idea\Idea\bin\Antlr3.Runtime.dll
 D:\Duyen\Project\Idea\Idea\bin\Dapper.dll
+D:\Duyen\Project\Idea\Idea\bin\EPPlus.dll
 D:\Duyen\Project\Idea\Idea\bin\Microsoft.Web.Infrastructure.dll
 D:\Duyen\Project\Idea\Idea\bin\Newtonsoft.Json.dll
 D:\Duyen\Project\Idea\Idea\bin\System.Net.Http.Formatting.dll
@@ -44,6 +45,7 @@ D:\Duyen\Project\Idea\Idea\bin\System.Web.WebPages.Razor.dll
 D:\Duyen\Project\Idea\Idea\bin\WebGrease.dll
 D:\Duyen\Project\Idea\Idea\bin\Antlr3.Runtime.pdb
 D:\Duyen\Project\Idea\Idea\bin\Dapper.xml
+D:\Duyen\Project\Idea\Idea\bin\EPPlus.xml
 D:\Duyen\Project\Idea\Idea\bin\Newtonsoft.Json.xml
 D:\Duyen\Project\Idea\Idea\bin\System.Web.Optimization.xml
 D:\Duyen\Project\Idea\Idea\bin\System.Net.Http.Formatting.xml
@@ -58,5 +60,3 @@ D:\Duyen\Project\Idea\Idea\bin\System.Web.WebPages.Razor.xml
 D:\Duyen\Project\Idea\Idea\obj\Debug\Idea.dll
 D:\Duyen\Project\Idea\Idea\obj\Debug\Idea.pdb
 D:\Duyen\Project\Idea\Idea\obj\Debug\Idea.csprojResolveAssemblyReference.cache
-D:\Duyen\Project\Idea\Idea\bin\EPPlus.dll
-D:\Duyen\Project\Idea\Idea\bin\EPPlus.xml

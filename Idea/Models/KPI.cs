@@ -9,11 +9,11 @@ namespace Idea
     {
         public string IDEA_ID { get; set; }
         public string PRJ_MONTH { get; set; }
-        public int TARGET_VALUE { get; set; }
-        public int RESULT_VALUE { get; set; }
+        public decimal TARGET_VALUE { get; set; }
+        public decimal RESULT_VALUE { get; set; }
         public string ID { get; set; }
 
-        public KPI(string IDEA_ID, string PRJ_MONTH, int TARGET_VALUE, int RESULT_VALUE, string ID)
+        public KPI(string IDEA_ID, string PRJ_MONTH, decimal TARGET_VALUE, decimal RESULT_VALUE, string ID)
         {
             this.IDEA_ID = IDEA_ID;
             this.PRJ_MONTH = PRJ_MONTH;
@@ -45,14 +45,14 @@ namespace Idea
             return (int) DBManager<KPI>.ExecuteScalar(sql);
         }
 
-        public virtual int Insert(string IDEA_ID,string PRJ_MONTH,int TARGET_VALUE,int RESULT_VALUE)
+        public virtual int Insert(string IDEA_ID,string PRJ_MONTH,decimal TARGET_VALUE,decimal RESULT_VALUE)
         {
             var sql = "INSERT INTO KPI(IDEA_ID,PRJ_MONTH,TARGET_VALUE,RESULT_VALUE) VALUES(@IDEA_ID,@PRJ_MONTH,@TARGET_VALUE,@RESULT_VALUE)";
             return DBManager<KPI>.Execute(sql, new { IDEA_ID = IDEA_ID,PRJ_MONTH = PRJ_MONTH,TARGET_VALUE = TARGET_VALUE,RESULT_VALUE = RESULT_VALUE});
         }
 
         
-        public virtual int Update(string IDEA_ID, string PRJ_MONTH, int TARGET_VALUE, int RESULT_VALUE, string ID)
+        public virtual int Update(string IDEA_ID, string PRJ_MONTH, decimal TARGET_VALUE, decimal RESULT_VALUE, string ID)
         {
             var sql = "UPDATE KPI SET IDEA_ID=@IDEA_ID,PRJ_MONTH=@PRJ_MONTH,TARGET_VALUE=@TARGET_VALUE,RESULT_VALUE=@RESULT_VALUE WHERE ID=@ID";
 

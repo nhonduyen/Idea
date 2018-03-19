@@ -32,7 +32,7 @@ namespace Idea
         {
             var sql = "SELECT * FROM PROJECT_PLAN ";
             if (string.IsNullOrWhiteSpace(ID)) return DBManager<PROJECT_PLAN>.ExecuteReader(sql);
-            sql += " WHERE IDEA_ID=@ID";
+            sql += " WHERE IDEA_ID=@ID ORDER BY PLAN_DATE DESC";
 
             return DBManager<PROJECT_PLAN>.ExecuteReader(sql, new { ID = ID});
         }

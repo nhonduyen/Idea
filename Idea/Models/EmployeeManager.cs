@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Idea
 {
-    public class EmployeeManager:EMPLOYEE
+    public class EmployeeManager : EMPLOYEE
     {
         private static EmployeeManager instance = new EmployeeManager();
 
@@ -16,10 +16,13 @@ namespace Idea
         {
             return instance;
         }
-        public List<EMPLOYEE> GetDepartment()
+        public List<EMPLOYEE> GetDepartment(string Div = "")
         {
-            var sql = "SELECT DISTINCT(DEPARTMENT) FROM EMPLOYEE WHERE DEPARTMENT IS NOT NULL AND DEPARTMENT <> ''";
-            return DBManager<EMPLOYEE>.ExecuteReader(sql);
+            var sql = " SELECT distinct(RTRIM(LTRIM(DEPARTMENT))) as DEPARTMENT FROM EMPLOYEE  WHERE DEPARTMENT IS NOT NULL AND DEPARTMENT <> ''";
+            if (string.IsNullOrWhiteSpace(Div))
+                return DBManager<EMPLOYEE>.ExecuteReader(sql);
+            sql += " AND DIVISION=@DIV";
+            return DBManager<EMPLOYEE>.ExecuteReader(sql, new { DIV = Div });
         }
 
         public List<EMPLOYEE> GetDivision()
@@ -29,13 +32,13 @@ namespace Idea
         }
         public List<EMPLOYEE> GetListEmail()
         {
-            var sql = "SELECT EMAIL FROM EMPLOYEE WHERE ROLE >= 1";
+            var sql = "SELECT EMAIL FROM EMPLOYEE WHERE ROLE >= 1 AND EMAIL <> ''";
             return DBManager<EMPLOYEE>.ExecuteReader(sql);
         }
         public int UpdateDivision(string EmpId, string Division)
         {
             var sql = "UPDATE EMPLOYEE SET DIVISION=@DIVISION WHERE EMP_ID=@EMP_ID";
-            return DBManager<EMPLOYEE>.Execute(sql, new { DIVISION = Division, EMP_ID =EmpId});
+            return DBManager<EMPLOYEE>.Execute(sql, new { DIVISION = Division, EMP_ID = EmpId });
         }
         public int UpdateDepartment(string EmpId, string DEPARTMENT)
         {
@@ -66,19 +69,19 @@ namespace Idea
         public int ChangePassword(string EmpId, string pass, string newpass)
         {
             var sql = "UPDATE EMPLOYEE SET EMP_PW=@NEWPASS WHERE EMP_ID=@EMP_ID AND EMP_PW=@PASS";
-            return DBManager<EMPLOYEE>.Execute(sql, new { NEWPASS = newpass, EMP_ID = EmpId, PASS=pass });
+            return DBManager<EMPLOYEE>.Execute(sql, new { NEWPASS = newpass, EMP_ID = EmpId, PASS = pass });
         }
         public int ResetPassword(string EMP_ID)
         {
             var sql = "UPDATE EMPLOYEE SET EMP_PW='123' WHERE EMP_ID=@EMP_ID";
-            return DBManager<EMPLOYEE>.Execute(sql, new { EMP_ID=EMP_ID});
+            return DBManager<EMPLOYEE>.Execute(sql, new { EMP_ID = EMP_ID });
         }
 
         public List<EMPLOYEE> Search(string Key, int start = 0, int end = 10)
         {
             var sql = "SELECT * FROM(SELECT ROW_NUMBER() OVER (order by EMP_ID) AS ROWNUM, * FROM EMPLOYEE WHERE EMP_ID LIKE @KEY +'%' OR EMP_NAME LIKE '%' +@KEY+ '%') as u  WHERE   RowNum >= @start   AND RowNum < @end ORDER BY RowNum;";
 
-            return DBManager<EMPLOYEE>.ExecuteReader(sql, new {KEY=Key, start = start, end = end });
+            return DBManager<EMPLOYEE>.ExecuteReader(sql, new { KEY = Key, start = start, end = end });
         }
 
         public int GetSearchCount(string Key)

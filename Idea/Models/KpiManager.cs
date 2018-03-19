@@ -37,14 +37,14 @@ namespace Idea
             return id;
         }
 
-        public int InsertKPI(string IDEA_ID, string PRJ_MONTH, int TARGET_VALUE)
+        public int InsertKPI(string IDEA_ID, string PRJ_MONTH, decimal TARGET_VALUE)
         {
             var ID = GenerateId();
             var sql = "INSERT INTO KPI(ID,IDEA_ID,PRJ_MONTH,TARGET_VALUE) VALUES(@ID,@IDEA_ID,@PRJ_MONTH,@TARGET_VALUE)";
             return DBManager<KPI>.Execute(sql, new { ID = ID, IDEA_ID = IDEA_ID, PRJ_MONTH = PRJ_MONTH, TARGET_VALUE = TARGET_VALUE });
         }
 
-        public int InsertKPI(string IDEA_ID, string PRJ_MONTH, int TARGET_VALUE, int RESULT_VALUE)
+        public int InsertKPI(string IDEA_ID, string PRJ_MONTH, decimal TARGET_VALUE, decimal RESULT_VALUE)
         {
             var ID = GenerateId();
             var sql = "INSERT INTO KPI(ID,IDEA_ID,PRJ_MONTH,TARGET_VALUE,RESULT_VALUE) VALUES(@ID,@IDEA_ID,@PRJ_MONTH,@TARGET_VALUE,@RESULT_VALUE)";
@@ -60,7 +60,7 @@ namespace Idea
 
         public List<KPI> GetResultKpi(string IDEA_ID)
         {
-            var sql = "SELECT PRJ_MONTH,RESULT_VALUE FROM KPI WHERE IDEA_ID=@IDEA_ID";
+            var sql = "SELECT * FROM KPI WHERE IDEA_ID=@IDEA_ID ORDER BY PRJ_MONTH";
             return DBManager<KPI>.ExecuteReader(sql, new { IDEA_ID = IDEA_ID });
         }
 

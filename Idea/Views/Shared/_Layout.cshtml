@@ -24,7 +24,6 @@
     <!-- DataTables CSS -->
     <link href="@Url.Content("~/Content/bt/dataTables.bootstrap.css")" rel="stylesheet">
     <!-- DataTables Responsive CSS -->
-    <link href="@Url.Content("~/Content/bt/selectize.bootstrap3.css")" rel="stylesheet">
 </head>
 
 <body>
@@ -49,6 +48,9 @@
                 <ul class="nav navbar-nav">
                     <li id="lhome">
                         <a href="@Url.Action("Index", "Home")">Main</a>
+                    </li>
+                    <li id="lprj">
+                        <a href="@Url.Action("Index", "Project1")">Project</a>
                     </li>
                     @if (@Session["Role"] != null && @Session["Role"].ToString() == "2")
                     {
@@ -120,9 +122,15 @@
     <!-- DataTables JavaScript -->
     <script src="@Url.Content("~/Scripts/Include/jquery.dataTables.min.js")"></script>
     <script src="@Url.Content("~/Scripts/Include/dataTables.bootstrap.js")"></script>
-    <script src="@Url.Content("~/Scripts/Include/selectize.js")"></script>
     <script src="@Url.Content("~/Scripts/Include/bootbox.min.js")"></script>
     <script src="@Url.Content("~/Scripts/Include/moment.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/Include/jquery.placeholder.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/Include/jquery.ui.widget.js")"></script>
+    <script src="@Url.Content("~/Scripts/Include/jquery.iframe-transport.js")"></script>
+    <script src="@Url.Content("~/Scripts/Include/jquery.fileupload.js")"></script>
+    <!--[if lt IE 10]>
+        <script src="~/Scripts/Include/jquery.xdr-transport.js"></script>
+    <![endif]-->
     @RenderSection("Scripts", false)
 </body>
 
@@ -170,6 +178,7 @@
 }
 <script>
     $(document).ready(function () {
+        $('input, textarea').placeholder();
         $('.dropdown ul li').hover(function () {
             $(this).addClass('active');
         }, function () {

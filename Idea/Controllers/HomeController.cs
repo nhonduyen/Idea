@@ -95,7 +95,7 @@ namespace Idea.Controllers
             ViewBag.Divisions = employeeManager.GetDivision();
             ViewBag.Departments = employeeManager.GetDepartment();
 
-            var from = DateTime.Now;
+            var from = DateTime.Now.AddMonths(-2);
             var to = from.AddMonths(11);
             var colspan1 = 0;
             var colspan2 = 0;
@@ -155,21 +155,28 @@ namespace Idea.Controllers
                 affectedRows = ideaManager.Insert(idea.EMP_ID, idea.IDEA_TITLE, idea.DETAIL, idea.QUANTITATIVE, idea.QUALITATIVE);
                 if (affectedRows > 0)
                 {
-                    var emails = em.GetListEmail();
-                    GMailer.GmailUsername = "nnduyen@gmail.com";
-                    GMailer.GmailPassword = "gachip0864034";
-
-                    GMailer mailer = new GMailer();
-
-                    mailer.Subject = "[Project Management - New idea uploaded]";
-                    mailer.Body = " Employee " + idea.EMP_ID + " Has uploaded an idea: " + idea.IDEA_TITLE + ".<br> Please check it out at<br> <a href='http://172.25.215.17/idea'>Project Management</a>";
-                    mailer.IsHtml = true;
-                    foreach (var email in emails)
+                    try
                     {
-                        mailer.ToEmail = email.EMAIL.Trim();
-                        mailer.Send();
-                    }
+                        var emails = em.GetListEmail();
+                        GMailer.GmailUsername = "nnduyen@gmail.com";
+                        GMailer.GmailPassword = "gachip0864034";
 
+                        GMailer mailer = new GMailer();
+
+                        mailer.Subject = "[Project Management - New idea uploaded]";
+                        mailer.Body = " Employee " + idea.EMP_ID + " Has uploaded an idea: " + idea.IDEA_TITLE + ".<br> Please check it out at<br> <a href='http://172.25.215.17/idea'>Project Management</a>";
+                        mailer.IsHtml = true;
+                        foreach (var email in emails)
+                        {
+                            mailer.ToEmail = email.EMAIL.Trim();
+                            mailer.Send();
+                        }
+                    }
+                     
+                    catch
+                    {
+                        return Json(affectedRows);
+                    }
                 }
             }
             else
@@ -192,34 +199,48 @@ namespace Idea.Controllers
             ProjectManager prj = ProjectManager.GetInstance();
             KpiManager km = KpiManager.GetInstance();
             EmployeeManager em = EmployeeManager.GetInstance();
+            IdeaManager idea = IdeaManager.GetInstance();
 
             string existID = prj.IsExist(Project.IDEA_ID);
             if (string.IsNullOrEmpty(existID))
             {
+              // generate id
+                if (string.IsNullOrWhiteSpace(Project.IDEA_ID))
+                {
+                    Project.IDEA_ID = idea.GenerateId();
+                    idea.Insert(Project.EMP_ID, Project.IDEA_TITLE, Project.BACKGROUND, "", "");
+                }
                 result = prj.InsertProject(Project);
                 if (result > 0)
                 {
                     foreach (var p in Plans)
                     {
-                        plan.InsertPlan(p.IDEA_ID, p.PLAN_CONTENTS, p.PLAN_DATE);
+                        plan.InsertPlan(Project.IDEA_ID, p.PLAN_CONTENTS, p.PLAN_DATE);
                     }
                     foreach (var kpi in KPIs)
                     {
-                        km.InsertKPI(kpi.IDEA_ID, kpi.PRJ_MONTH, kpi.TARGET_VALUE);
+                        km.InsertKPI(Project.IDEA_ID, kpi.PRJ_MONTH, kpi.TARGET_VALUE);
                     }
-                    var emails = em.GetListEmail();
-                    GMailer.GmailUsername = "nnduyen@gmail.com";
-                    GMailer.GmailPassword = "gachip0864034";
-
-                    GMailer mailer = new GMailer();
-
-                    mailer.Subject = "[Project Management - New project uploaded]";
-                    mailer.Body = " Employee " + Project.EMP_ID + " Has uploaded a project: " + Project.IDEA_TITLE + ".<br> Please check it out at<br> <a href='http://172.25.215.17/idea'>Project Management</a>";
-                    mailer.IsHtml = true;
-                    foreach (var email in emails)
+                    try
                     {
-                        mailer.ToEmail = email.EMAIL.Trim();
-                        mailer.Send();
+                        var emails = em.GetListEmail();
+                        GMailer.GmailUsername = "nnduyen@gmail.com";
+                        GMailer.GmailPassword = "gachip0864034";
+
+                        GMailer mailer = new GMailer();
+
+                        mailer.Subject = "[Project Management - New project uploaded]";
+                        mailer.Body = " Employee " + Project.EMP_ID + " Has uploaded a project: " + Project.IDEA_TITLE + ".<br> Please check it out at<br> <a href='http://172.25.215.17/idea'>Project Management</a>";
+                        mailer.IsHtml = true;
+                        foreach (var email in emails)
+                        {
+                            mailer.ToEmail = email.EMAIL.Trim();
+                            mailer.Send();
+                        }
+                    }
+                    catch
+                    {
+                        return Json(result);
                     }
                 }
             }
@@ -231,116 +252,26 @@ namespace Idea.Controllers
 
         }
 
+        
         [HttpPost]
-        public JsonResult GetMainProject(DataTableParameters dataTableParameters)
-        {
-            ProjectManager prj = ProjectManager.GetInstance();
-            KpiManager km = KpiManager.GetInstance();
-
-            var resultSet = new DataTableResultSet();
-            resultSet.draw = dataTableParameters.Draw;
-            var lst = prj.GetMainProject(dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1);
-            resultSet.recordsTotal = resultSet.recordsFiltered = prj.GetCount();
-            var seq = dataTableParameters.Start + 1;
-            DateTime to = DateTime.Now;
-            DateTime from = to.AddMonths(-11);
-            foreach (var i in lst)
-            {
-                List<KPI> kpis = km.GetResultKpi(i.IDEA_ID);
-
-                var columns = new List<string>();
-                columns.Add(seq.ToString());
-                columns.Add((i.DIVISION == null) ? "" : i.DIVISION.Trim());
-                columns.Add((i.DEPARTMENT == null) ? "" : i.DEPARTMENT.Trim());
-                columns.Add("<a class='title' href='#' data-emp='" + i.EMP_ID + "' data-id='" + i.IDEA_ID + "'>" + i.IDEA_TITLE.Trim() + "</a>");
-                columns.Add("<a href='#' class='rep' title='Reply' data-id='" + i.IDEA_ID + "' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.REP.ToString() + "</span></a>");
-                columns.Add("<a href='#' class='like' title='Like' data-id='" + i.IDEA_ID + "' data-table='0' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.L.ToString() + "</span></a>");
-                columns.Add((i.PRJECT_GRADE == null) ? "" : i.PRJECT_GRADE.Trim());
-                columns.Add((i.KPI_NAME == null) ? "" : i.KPI_NAME.Trim());
-                columns.Add((i.KPI_UNIT == null) ? "" : i.KPI_UNIT.Trim());
-                columns.Add((i.FINAL == null) ? "0" : i.FINAL.ToString());
-                for (var d = from; d <= to; d = d.AddMonths(1))
-                {
-                    var count = 0;
-                    foreach (var result in kpis)
-                    {
-                        if (d.ToString("yyyy-MM").Equals(result.PRJ_MONTH, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            count++;
-                            columns.Add(result.RESULT_VALUE.ToString());
-                        }
-                    }
-                    if (count == 0)
-                    {
-                        columns.Add("");
-                    }
-                }
-                resultSet.data.Add(columns);
-                seq++;
-            }
-            return Json(resultSet);
-
-        }
-
-        [HttpPost]
-        public JsonResult GetNewProject(DataTableParameters dataTableParameters, string div, string dep, string grade)
-        {
-            ProjectManager prj = ProjectManager.GetInstance();
-
-            var resultSet = new DataTableResultSet();
-            resultSet.draw = dataTableParameters.Draw;
-            if (!string.IsNullOrWhiteSpace(div) || !string.IsNullOrWhiteSpace(dep) || !string.IsNullOrWhiteSpace(grade))
-            {
-                var lst = prj.SearchNewPrj(div, dep, grade, dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1);
-                resultSet.recordsTotal = resultSet.recordsFiltered = prj.GetSearchCount(div, dep, grade);
-
-                foreach (var i in lst)
-                {
-                    var columns = new List<string>();
-                    columns.Add("<a class='title' href='#' data-id='" + i.IDEA_ID + "' data-emp='" + i.EMP_ID.Trim() + "'>" + i.IDEA_TITLE.Trim() + "</a>");
-                    columns.Add((i.NAME == null) ? "" : i.NAME.Trim());
-                    columns.Add((i.INS_DT == null) ? "" : i.INS_DT.ToShortDateString());
-                    columns.Add("<a href='#' class='rep' title='Reply' data-id='" + i.IDEA_ID + "' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.REP.ToString() + "</span></a>");
-                    columns.Add("<a href='#' class='like' title='Like' data-id='" + i.IDEA_ID + "' data-table='0' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.L.ToString() + "</span></a>");
-                    resultSet.data.Add(columns);
-                }
-            }
-            else
-            {
-                var lst = prj.SelectPaging(dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1);
-                resultSet.recordsTotal = resultSet.recordsFiltered = prj.GetCount(1);
-
-                foreach (var i in lst)
-                {
-                    var columns = new List<string>();
-                    columns.Add("<a class='title' href='#' data-id='" + i.IDEA_ID + "' data-emp='" + i.EMP_ID.Trim() + "'>" + i.IDEA_TITLE.Trim() + "</a>");
-                    columns.Add((i.NAME == null) ? "" : i.NAME.Trim());
-                    columns.Add((i.INS_DT == null) ? "" : i.INS_DT.ToShortDateString());
-                    columns.Add("<a href='#' class='rep' title='Reply' data-id='" + i.IDEA_ID + "' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.REP.ToString() + "</span></a>");
-                    columns.Add("<a href='#' class='like' title='Like' data-id='" + i.IDEA_ID + "' data-table='0' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.L.ToString() + "</span></a>");
-                    resultSet.data.Add(columns);
-                }
-            }
-            return Json(resultSet);
-
-        }
-        [HttpPost]
-        public JsonResult GetIdea(DataTableParameters dataTableParameters)
+        public JsonResult GetIdea(DataTableParameters dataTableParameters, string div, string dep)
         {
             IdeaManager idea = IdeaManager.GetInstance();
 
             var resultSet = new DataTableResultSet();
             resultSet.draw = dataTableParameters.Draw;
-            var lst = idea.SelectPaging(dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1);
-            resultSet.recordsTotal = resultSet.recordsFiltered = idea.GetCount();
+            var lst = idea.SelectPaging(dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1,div,dep);
+            resultSet.recordsTotal = resultSet.recordsFiltered = idea.GetCount(div,dep);
 
             foreach (var i in lst)
             {
                 var columns = new List<string>();
-
-                columns.Add("<a class='title' href='#' id='" + i.ID + "' data-emp='" + i.EMP_ID.Trim() + "'>" + i.IDEA_TITLE.Trim() + "</a>");
+                columns.Add(i.ROWNUM.ToString());
+                columns.Add((i.DIVISION == null) ? "" : i.DIVISION.Trim());
+                columns.Add((i.DEPARTMENT == null) ? "" : i.DEPARTMENT.Trim());
                 columns.Add((i.EMP_NAME == null) ? "" : i.EMP_NAME.Trim());
-                columns.Add((i.DATE == null) ? "" : i.DATE.ToShortDateString());
+                columns.Add("<a class='title' href='#' id='" + i.ID + "' data-emp='" + i.EMP_ID.Trim() + "'>" + i.IDEA_TITLE.Trim() + "</a>");
+                //columns.Add((i.DATE == null) ? "" : i.DATE.ToShortDateString());
                 columns.Add("<a href='#' class='rep' title='Reply' data-id='" + i.ID + "' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.REP.ToString() + "</span></a>");
                 columns.Add("<a href='#' class='like' title='Like' data-id='" + i.ID + "' data-table='1' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.L.ToString() + "</span></a>");
                 resultSet.data.Add(columns);
@@ -450,7 +381,8 @@ namespace Idea.Controllers
             if (!string.IsNullOrEmpty(existID))
             {
                 result = prj.UpdatePrj(Project.IDEA_ID, Project.EMP_ID, Project.IDEA_TITLE, Project.KPI_NAME, Project.KPI_UNIT,
-                    Project.REMARK, Project.NAME, Project.PRJ_CURR, Project.CURR_VALUE, Project.PRJECT_GRADE);
+                    Project.REMARK, Project.NAME, Project.PRJ_CURR, Project.CURR_VALUE, Project.PRJECT_GRADE,Project.ATTACHMENT,
+                    Project.ISSUE, Project.REQUEST);
 
                 if (result > 0)
                 {
@@ -653,6 +585,17 @@ namespace Idea.Controllers
             var result = 0;
             PlanManager pm = PlanManager.GetInstance();
             result = pm.Delete(ID);
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult Delegate(string ID, string EMP_ID)
+        {
+            if (string.IsNullOrWhiteSpace(ID))
+                return Json(-1);
+            var result = 0;
+            IdeaManager im = IdeaManager.GetInstance();
+            result = im.Delegate(EMP_ID, ID);
             return Json(result);
         }
 

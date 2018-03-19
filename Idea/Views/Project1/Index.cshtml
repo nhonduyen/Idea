@@ -1,0 +1,639 @@
+﻿@{
+    ViewBag.Title = "New Project";
+    var pdiv = Request.QueryString["div"];
+    var pdep = Request.QueryString["dept"];
+    var pgrade = Request.QueryString["grade"];
+  
+    int page = Request.QueryString["page"] == null ? 1 : Convert.ToInt32(Request.QueryString["page"].ToString());
+}
+@section Scripts
+{
+    <script src="@Url.Content("~/Scripts/project.js")"></script>
+}
+@Html.Hidden("hdUrl", Url.Action("Action", "Home"))
+@Html.Hidden("hdUrl1", Url.Action("Action", "Project1"))
+<h4 class="page-header" style="margin: 10px;"><strong>New Project - Dự án mới</strong></h4>
+<div class="row">
+
+    <div class="col-sm-10">
+        <form class="form-inline">
+            <div class="form-group">
+                <select class="form-control" id="filterDivsion" name="div">
+                    <option value="">DIVISION(Cấp)</option>
+                    @foreach (var div in ViewBag.Divisions)
+                    {
+                        if (div.DIVISION.Trim() == pdiv)
+                        {
+                        <option value="@div.DIVISION.Trim()" selected="selected">@div.DIVISION.Trim()</option>
+                        }
+                        else
+                        {
+                        <option value="@div.DIVISION.Trim()">@div.DIVISION.Trim()</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <select class="form-control" id="filterDepartment" name="dept">
+                    <option value="">DEPARTMENT(Phòng ban)</option>
+                    @foreach (var dep in ViewBag.Departments)
+                    {
+                        if (dep.DEPARTMENT.Trim() == pdep)
+                        {
+                        @:<option value="@dep.DEPARTMENT.Trim()" selected="selected">@dep.DEPARTMENT.Trim()</option>
+                        }
+                        else
+                        {
+                        @:<option value="@dep.DEPARTMENT.Trim()">@dep.DEPARTMENT.Trim()</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <select class="form-control" id="filterGrade" name="grade">
+                    <option value="">GRADE(Hạng)</option>
+                    <option value="S">S</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                </select>
+            </div>
+            
+            <button id="btnSearch" type="submit" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-search"></span>Search</button>
+            <button id="btnUpload" type="button" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-upload"></span>Upload</button>
+        </form>
+    </div>
+    <div class="col-sm-2"></div>
+</div>
+<div class="table-responsive">
+    <table id="tbMainDefault" class="table table-bordered">
+        <thead>
+            <tr class="tbheader">
+                <th style="vertical-align: middle;">#</th>
+                <th style="vertical-align: middle;">Division<br />
+                    Khối</th>
+                <th style="vertical-align: middle;">Department<br />
+                    Phòng ban</th>
+                <th>Name (Tên)</th>
+                <th style="white-space: nowrap; vertical-align: middle; min-width: 300px;" id="mainTitle">Title (Tiêu đề)</th>
+
+                <th style="vertical-align: middle; padding-right: 3px; padding-left: 3px;" id="mainGrade">Grade<br />
+                    Hạng</th>
+                <th style="vertical-align: middle;" id="mainRep"><span class="glyphicon glyphicon-comment"></span></th>
+                <th style="vertical-align: middle;" id="mainLike"><span class="glyphicon glyphicon-heart"></span></th>
+                <th colspan="2">KPI</th>
+                @for (int i = 1; i < 13; i++)
+                {
+                    <th>@i</th>
+                }
+            </tr>
+
+        </thead>
+        <tbody>
+           
+            @foreach (var item in ViewBag.PRJ)
+            {
+                
+                <tr>
+                    <td rowspan="2">@item.ROWNUM</td>
+                    <td rowspan="2">@item.DIVISION</td>
+                    <td rowspan="2">@item.DEPARTMENT</td>
+                    <td rowspan="2">@item.EMP_NAME</td>
+                    <td rowspan="2"><a class="title" href="#" data-emp="@item.EMP_ID" data-id="@item.IDEA_ID">@item.IDEA_TITLE</a></td>
+                    <td rowspan="2">@item.PRJECT_GRADE</td>
+                    <td rowspan="2"><a href='#' class='rep' title='Reply' data-id='@item.IDEA_ID' data-trigger='focus'><span class='badge badge-pill badge-primary'>@item.REP</span></a></td>
+                    <td rowspan="2"><a href='#' class='like' title='Like' data-id='@item.IDEA_ID' data-table='0' data-trigger='focus'><span class='badge badge-pill badge-primary'>@item.L</span></a></td>
+                    <td>@item.KPI_NAME</td>
+                    <td>Target</td>
+
+                    @foreach (var kpi in ViewBag.KPI[item.IDEA_ID])
+                    {
+                        <td>@kpi.TARGET_VALUE.ToString("0.##")</td>
+                    }
+                </tr>
+                <tr>
+                    <td>@item.KPI_UNIT</td>
+                    <td>Actual</td>
+                    @foreach (var kpi in ViewBag.KPI[item.IDEA_ID])
+                    {
+                        <td>@kpi.RESULT_VALUE.ToString("0.##")</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="col-sm-6">
+    <label>Total : @ViewBag.Total</label>
+</div>
+<div class="col-sm-6">
+    <ul class="pager">
+
+        <li class="@(page <= 1 ? "disabled" : "")"><a href="@Url.Action("Index", "Project1", new { div = pdiv, dept = pdep, grade = pgrade, page = page <= 1 ? 1 : page - 1 })">&larr; Previous</a></li>
+
+        <li class="@(page > ViewBag.Total / 10 ? "disabled" : "")"><a href="@Url.Action("Index", "Project1", new { div = pdiv, dept = pdep, grade = pgrade,  page = page + 1 })">Next &rarr;</a></li>
+
+    </ul>
+</div>
+
+<div id="mdProcess" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg" style="width: 95%;">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><span class="glyphicon glyphicon-envelope"></span>&nbsp;Progress Management - Quản lý tiến trình</h4>
+            </div>
+            <div class="modal-body">
+                <form id="frmProcess" method="post" role="form" data-emp="" data-id="" data-date="" action="@Url.Action("ExportProgress", "Home")">
+                    <input type="hidden" name="IDEA_ID" id="IDEA_ID" value="" />
+                    <button id="btnDelPrj" class="btn btn-danger" type="button" style="float: right"><span class="glyphicon glyphicon-remove"></span>Delete</button>
+                    <button id="btnExport" class="btn btn-primary" type="submit" style="float: right; margin-right: 5px;"><span class="glyphicon glyphicon-export"></span>Export</button>
+                    <button id="btnSaveProcess" class="btn btn-primary" style="float: right; margin-right: 5px;"><span class="glyphicon glyphicon-floppy-disk"></span>Save</button>
+                    <table id="tbProcess" class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="tdleft">
+                                    <label>
+                                        Division<br />
+                                        Khối</label></td>
+                                <td>
+                                    <select id="division1" class="form-control">
+                                        @foreach (var e in ViewBag.Divisions)
+                                        {
+                                            <option value="@e.DIVISION.Trim()">@e.DIVISION.Trim()</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td class="tdleft">
+                                    <label>
+                                        Dept<br />
+                                        Phòng</label></td>
+                                <td>
+                                    <select id="selDept1" class="form-control">
+                                        @foreach (var dept in ViewBag.Departments)
+                                        {
+                                            <option value="@dept.DEPARTMENT.Trim()">@dept.DEPARTMENT.Trim()</option>
+                                        }
+                                    </select>
+                                </td>
+
+                                <td class="tdleft">
+                                    <label>
+                                        Name<br />
+                                        Tên</label></td>
+                                <td>
+                                    <input type="text" class="form-control" id="txtName1" required="required" />
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td class="tdleft">
+                                    <label>
+                                        Title<br />
+                                        Tiêu đề</label></td>
+                                <td>
+                                    <input type="text" class="form-control" id="title1" /></td>
+                                <td class="tdleft">
+                                    <label>
+                                        Grade<br />
+                                        Hạng</label>
+                                </td>
+                                <td>
+                                    <select class="form-control" id="pit1">
+                                        <option value="S">S</option>
+                                        <option value="A">A</option>
+                                        <option value="B">B</option>
+                                        <option value="C">C</option>
+                                    </select>
+                                </td>
+                                <td class="tdleft">
+                                    <label>
+                                        Attachment
+                                    </label>
+                                </td>
+                                <td class="upload1">
+                                    <input type="file" name="upload" id="upload">
+                                    <a id="download" href="@Url.Action("Download", "Project1")"></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2" class="tdleft">
+                                    <label>KPI</label></td>
+                                <td class="tdleft">
+                                    <label>Name - Tên</label></td>
+                                <td colspan="2">
+                                    <input type="text" class="form-control" id="txtKPIName1" required="required" />
+                                </td>
+                                <td class="tdleft">
+                                    <label>Unit - Đơn vị</label></td>
+                                <td colspan="2">
+                                    <select id="unit1" class="form-control">
+                                        <option value="U$">U$</option>
+                                        <option value="Thousand U$">Thousand U$</option>
+                                        <option value="Million U$">Million U$</option>
+                                        <option value="mt">mt</option>
+                                        <option value="Thousand mt">Thousand mt</option>
+                                        <option value="Million mt">Million mt</option>
+                                        <option value="%">%</option>
+                                        <option value="kg/mt">kg/mt</option>
+                                        <option value="kwh/mt">kwh/mt</option>
+                                        <option value="mmbtu/mt">mmbtu/mt</option>
+                                        <option value="㎛/mt">㎛/mt</option>
+                                        <option value="ton/hour">ton/hour</option>
+                                        <option value="ton/day">ton/day</option>
+                                        <option value="Completion">Completion</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="5">
+                                    <div class="table-responsive">
+                                        <table id="tbKpi1" class="table table-bordered">
+                                            <tbody>
+                                                <tr>
+                                                    <td rowspan="2"></td>
+                                                    <td rowspan="2" id="current">
+                                                        <span>tháng/quý/năm trước</span>
+                                                    </td>
+                                                    <td colspan="12" id="prjYear">@DateTime.Now.Year</td>
+                                                </tr>
+                                                <tr id="kpiMonth">
+                                                    @for (DateTime i = DateTime.Now.AddMonths(-2); i <= DateTime.Now.AddMonths(9); i = i.AddMonths(1))
+                                                    {
+                                                        <td>@i.ToString("yyyy")<br />@i.ToString("MM")</td>
+                                                    }
+                                                </tr>
+                                                <tr id="trTarget">
+                                                    <td>Target<br />
+                                                        Mục tiêu</td>
+                                                    <td></td>
+                                                    @for (DateTime i = DateTime.Now.AddMonths(-2); i <= DateTime.Now.AddMonths(9); i = i.AddMonths(1))
+                                                    {
+                                                        <td>
+                                                            <input type="text" data-id="" class="form-control target" data-month="@i.ToString("yyyy-MM")" />
+                                                        </td>
+                                                    }
+                                                </tr>
+                                                <tr id="trResult">
+                                                    <td>Result<br />
+                                                        Kết quả</td>
+                                                    <td></td>
+                                                    @for (DateTime i = DateTime.Now.AddMonths(-2); i <= DateTime.Now.AddMonths(9); i = i.AddMonths(1))
+                                                    {
+                                                        <td>
+                                                            <input type="text" data-id="" data-month="@i.ToString("yyyy-MM")" class="form-control result" />
+                                                        </td>
+                                                    }
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td id="action_plan1" rowspan="2" class="tdleft">
+                                    <label>
+                                        Action<br />
+                                        Plan<br />
+                                        Kế hoạch<br />
+                                        thực hiện
+                                    </label>
+                                </td>
+                                <td class="tdleft" colspan="1">
+                                    <label>Completed(Hoàn tất)</label></td>
+                                <td class="tdleft" colspan="1">
+                                    <label>
+                                        Actual Date<br />
+                                        Ngày thực hiện</label>
+                                </td>
+                                <td class="tdleft" colspan="2">
+                                    <label>Plan(Kế hoạch)</label></td>
+                                <td class="tdleft" colspan="1">
+                                    <label>
+                                        Plan Schedule<br />
+                                        Ngày dự kiến</label>
+                                </td>
+                            </tr>
+                            <tr class="trPlan1">
+
+                                <td colspan="1">
+                                    <select id="com1" class="form-control complete">
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select></td>
+                                <td colspan="1">
+                                    <input id="com_dt" class="form-control com_dt" type="text"></td>
+                                <td colspan="2">
+                                    <textarea id="txtAddPlan1" class="form-control plan" rows="3" placeholder="Tối đa 3 dòng" maxlength="120"></textarea>
+                                    @*    <input  class="form-control plan" type="text">*@</td>
+                                <td colspan="1">
+                                    <div class="input-group">
+                                        <input id="txtAddSchedule1" class="form-control schedule" type="text">
+                                        <div class="input-group-btn">
+                                            <button id="btnAddPlan1" class="btn btn-primary" type="button">
+                                                <i class="glyphicon glyphicon-plus-sign"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="6">
+                                    <label>Issue & Request (Khó khăn & Đề nghị)</label></td>
+                            </tr>
+                            <tr>
+                                <td class="tdleft" style="width: 10%"></td>
+                                <td class="tdleft" colspan="2" style="width: 45%">
+                                    <label>Vietnamese(English) - Tiếng Việt hoặc Tiếng Anh</label></td>
+                                <td class="tdleft" colspan="2" style="width: 45%">
+                                    <label>Korean (Tiếng Hàn)</label></td>
+                                <td class="tdleft">
+                                    <label>Translator (Phiên dịch)</label></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 10%" class="tdleft">
+                                    <label>
+                                        Issue<br />
+                                        Khó khăn</label></td>
+                                <td colspan="2" style="width: 45%">
+                                    <textarea id="remark" rows="3" placeholder="Tối đa 3 dòng" class="form-control" maxlength="120"></textarea>
+                                </td>
+                                <td colspan="2" style="width: 45%">
+                                    <textarea id="issue_korea" placeholder="Tối đa 3 dòng" rows="3" class="form-control" maxlength="120"></textarea>
+                                </td>
+                                <td>
+                                    <button class="btn btn-success translator" type="button"><i class="glyphicon glyphicon-floppy-disk"></i>Save Korean</button></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 10%" class="tdleft">
+                                    <label>
+                                        Request<br />
+                                        Đề nghị</label></td>
+                                <td colspan="2" style="width: 45%">
+                                    <textarea id="request" rows="3" placeholder="Tối đa 3 dòng" class="form-control" maxlength="120"></textarea>
+                                </td>
+                                <td colspan="2" style="width: 45%">
+                                    <textarea id="request_korea" rows="3" placeholder="Tối đa 3 dòng" class="form-control" maxlength="120"></textarea>
+                                </td>
+                                <td>
+                                    <button class="btn btn-success translator" type="button"><i class="glyphicon glyphicon-floppy-disk"></i>Save Korean</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+                <div class="row">
+                    <div class="col-sm-10">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Comment" id="comment1">
+                            <div class="input-group-btn">
+                                <button class="btn btn-primary" type="button" id="Reply1" data-id=""><span class="glyphicon glyphicon-comment"></span>Reply</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <button class="btn btn-primary" type="button" id="btnLike1" data-id=""><span class="glyphicon glyphicon-heart"></span>Like <span class="badge">0</span></button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="tbReply1" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Dept(Phòng)</th>
+                                <th>Name(Tên)</th>
+                                <th>Comment</th>
+                                <th>Date-Time(Thời gian)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal Register Project -->
+<div id="mdRegPrj" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg" style="width: 90%">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><span class="glyphicon glyphicon-envelope"></span>&nbsp;Register Project - Đăng ký dự án</h4>
+            </div>
+            <div class="modal-body">
+                <form id="frmRegPrj" role="form" data-id="">
+                    <button id="btnRegPrj" class="btn btn-primary" data-emp="" type="submit" style="float: right"><span class="glyphicon glyphicon-floppy-disk"></span>Save</button>
+                    <table id="tbRegPrj" class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="tdleft">
+                                    <label>Dept(Phòng)</label></td>
+                                <td>
+                                    <select id="selDept" class="form-control" name="dept">
+                                        @foreach (var dept in ViewBag.Departments)
+                                        {
+                                            <option value="@dept.DEPARTMENT.Trim()">@dept.DEPARTMENT.Trim()</option>
+                                        }
+                                    </select>
+                                </td>
+
+                                <td class="tdleft">
+                                    <label>
+                                        Name<br />
+                                        Tên</label></td>
+                                <td>
+                                    <input type="text" class="form-control" id="txtName" required="required" />
+                                </td>
+                                <td class="tdleft">
+                                    <label>
+                                        PJT Grade<br />
+                                        Hạng</label></td>
+                                <td>
+                                    <select id="pit" name="pit" class="form-control">
+                                        <option value="S">S</option>
+                                        <option value="A">A</option>
+                                        <option value="B">B</option>
+                                        <option value="C">C</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdleft">
+                                    <label>
+                                        Title<br />
+                                        Tiêu đề</label>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" name="title" id="txtTitle" />
+
+                                </td>
+                                <td class="tdleft">
+                                    <label>
+                                        Attachment
+                                    </label>
+                                </td>
+                                <td class="upload">
+                                    <input type="file" name="upload" id="upload1">
+                                </td>
+                                <td class="tdleft"></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2" class="tdleft">
+                                    <label>KPI</label></td>
+                                <td class="tdleft">
+                                    <label>
+                                        Name<br />
+                                    </label>
+                                </td>
+                                <td colspan="2">
+                                    <input type="text" class="form-control" name="kpi_name" id="txtKPIName" required="required" />
+                                </td>
+                                <td class="tdleft">
+                                    <label>
+                                        Unit<br />
+                                        Đơn vị</label></td>
+                                <td colspan="2">
+                                    <select id="unit" class="form-control" name="unit">
+                                        <option value="U$">U$</option>
+                                        <option value="Thousand U$">Thousand U$</option>
+                                        <option value="Million U$">Million U$</option>
+                                        <option value="mt">mt</option>
+                                        <option value="Thousand mt">Thousand mt</option>
+                                        <option value="Million mt">Million mt</option>
+                                        <option value="%">%</option>
+                                        <option value="kg/mt">kg/mt</option>
+                                        <option value="kwh/mt">kwh/mt</option>
+                                        <option value="mmbtu/mt">mmbtu/mt</option>
+                                        <option value="㎛/mt">㎛/mt</option>
+                                        <option value="ton/hour">ton/hour</option>
+                                        <option value="ton/day">ton/day</option>
+                                        <option value="Completion">Completion</option>
+
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="5">
+                                    <div class="table-responsive">
+                                        <table id="tbKpi" class="table table-bordered">
+                                            <tbody>
+                                                <tr>
+
+                                                    <td>Tháng/Quý</td>
+                                                    <td colspan="@ViewBag.Colspan1" id="year" style="text-align:center">@DateTime.Now.Year</td>
+                                                    @if (ViewBag.Colspan2 > 0)
+                                                    {
+                                                        <td colspan="@ViewBag.Colspan2">@(DateTime.Now.Year + 1)</td>
+                                                    }
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <input type="text" name="PRJ_CURR" placeholder="Tháng/Quý trước" class="form-control" id="selCurent" />
+
+                                                    </td>
+                                                    @for (DateTime i = DateTime.Now.AddMonths(-2); i <= DateTime.Now.AddMonths(9); i = i.AddMonths(1))
+                                                    {
+                                                        <td>@i.ToString("MM")</td>
+                                                    }
+
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <input type="text" name="CURR_VALUE" placeholder="Kết quả" id="txtCurrent" data-id="" class="form-control" />
+                                                    </td>
+                                                    @for (DateTime i = DateTime.Now.AddMonths(-2); i <= DateTime.Now.AddMonths(9); i = i.AddMonths(1))
+                                                    {
+                                                        <td>
+                                                            <input name="TARGET_VALUE" type="number" min="0" step="0.01" data-month="@i.ToString("yyyy-MM")" data-id="" class="form-control kmonth"/>
+                                                        </td>
+                                                    }
+
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdleft">
+                                    <label>
+                                        Background<br />
+                                        Nền tảng</label></td>
+                                <td colspan="5">
+                                    <textarea id="background" rows="3" class="form-control" maxlength="500"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td id="action_plan" rowspan="2" class="tdleft">
+                                    <label>
+                                        Action<br />
+                                        Plan<br />
+                                        Kế hoạch<br />
+                                        thực hiện
+                                    </label>
+                                </td>
+                                <td class="tdleft" colspan="4">
+                                    <label>Action - Hành động</label></td>
+                                <td class="tdleft" colspan="2">
+                                    <label>Schedule - Lịch</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+
+                                    <textarea id="txtAddPlan" class="form-control" placeholder="Plan"></textarea>
+                                    @*<input id="txtAddPlan" type="text" class="form-control" placeholder="Plan">*@
+
+                                </td>
+                                <td colspan="2">
+                                    <div class="input-group" style="width: 100%">
+                                        <input id="txtAddSchedule" type="text" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")"/>
+                                        <div class="input-group-btn">
+                                            <button id="btnAddPlan" class="btn btn-primary" type="button">
+                                                <i class="glyphicon glyphicon-plus-sign"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2" class="tdleft">
+                                    <label>
+                                        Forecasted<br />
+                                        Improvement<br />
+                                        Dự báo cải tiến
+                                    </label>
+                                </td>
+                                <td class="tdleft">
+                                    <label>
+                                        Quantitative<br />
+                                        Định lượng</label></td>
+                                <td colspan="4">
+                                    <input type="text" class="form-control" id="prj_quantiative" maxlength="200" /></td>
+                            </tr>
+                            <tr>
+                                <td class="tdleft">
+                                    <label>
+                                        Qualitative<br />
+                                        Chất lượng</label></td>
+                                <td colspan="5">
+                                    <input type="text" class="form-control" id="prj_qualiative" maxlength="200" /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>

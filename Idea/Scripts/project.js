@@ -1,6 +1,7 @@
 ﻿$(document).ready(function () {
-    $('#lhome').addClass("active");
-    $('#txtAddSchedule,#com_dt,#txtAddSchedule1')
+
+    $('#lprj').addClass("active");
+    $('#txtAddSchedule,#com_dt,#txtAddSchedule1,#from,#to')
         .datepicker({
             format: 'yyyy-mm-dd'
         }).on('changeDate', function (ev) {
@@ -12,67 +13,26 @@
     else {
         $('#btnUpload').prop('disabled', true);
     }
-    
-    var tbProgress = $('#tbMainDefault').DataTable(
-            {
-                sort: false,
-                "processing": true,
-                "serverSide": true,
-                "searching": false,
-                ajax: {
-                    type: "POST",
-                    contentType: "application/json",
-                    url: $('#hdUrl').val().replace("Action", "GetMainProject"),
-                    data: function (d) {
-                        // note: d is created by datatable, the structure of d is the same with DataTableParameters model above
 
-                        return JSON.stringify({ dataTableParameters: d });
-                    }
-                }
+    //var tbProgress = $('#tbMainDefault').DataTable(
+    //        {
+    //            sort: false,
+    //            "processing": true,
+    //            "serverSide": true,
+    //            "searching": false,
+    //            ajax: {
+    //                type: "POST",
+    //                contentType: "application/json",
+    //                url: $('#hdUrl').val().replace("Action", "GetMainProject"),
+    //                data: function (d) {
+    //                    // note: d is created by datatable, the structure of d is the same with DataTableParameters model above
 
-            });
-    var tbIdea = $('#tbNewIdea').DataTable(
-            {
-                sort: false,
-                "processing": true,
-                "serverSide": true,
-                "searching": false,
-                ajax: {
-                    type: "POST",
-                    contentType: "application/json",
-                    url: $('#hdUrl').val().replace("Action", "GetIdea"),
-                    data: function (d) {
-                        return JSON.stringify({
-                            dataTableParameters: d,
-                            div: $('#filterDivsion1').val(),
-                            dep: $('#filterDepartment1').val()
-                        });
-                    }
-                }
+    //                    return JSON.stringify({ dataTableParameters: d });
+    //                }
+    //            }
 
-            });
-    var tbNewPrj = $('#tbNewPrj').DataTable(
-           {
-               sort: false,
-               "processing": true,
-               "serverSide": true,
-               "searching": false,
-               ajax: {
-                   type: "POST",
-                   contentType: "application/json",
-                   url: $('#hdUrl').val().replace("Action", "GetNewProject"),
-                   data: function (d) {
-                       // note: d is created by datatable, the structure of d is the same with DataTableParameters model above
-                       return JSON.stringify({
-                           dataTableParameters: d,
-                           div: $('#filterDivsion').val(),
-                           dep: $('#filterDepartment').val(),
-                           grade: $('#filterGrade').val()
-                       });
-                   }
-               },
+    //        });
 
-           });
     $.fn.dataTable.ext.search.push(
     function (settings, data, dataIndex) {
         var div = $('#filterDivsion').val();
@@ -84,9 +44,10 @@
         return false;
     }
 );
-    $('#filterDivsion1,#filterDepartment1').on('change', function () {
-        if ($(this).attr('id') == 'filterDivsion1') {
-            $('#filterDepartment1').find("option:gt(0)").remove();
+
+    $('#filterDivsion,#filterGrade,#filterDepartment').on('change', function () {
+        if ($(this).attr('id') == 'filterDivsion') {
+            $('#filterDepartment').find("option:gt(0)").remove();
             $.ajax({
                 url: $('#hdUrl1').val().replace("Action", "GetDepartment"),
                 data: JSON.stringify({
@@ -98,7 +59,7 @@
                 crossBrowser: true,
                 success: function (data, status) {
                     for (var i = 0; i < data.length; i++) {
-                        $('#filterDepartment1').append($('<option>', {
+                        $('#filterDepartment').append($('<option>', {
                             value: $.trim(data[i].DEPARTMENT),
                             text: data[i].DEPARTMENT
                         }));
@@ -111,148 +72,33 @@
                 },
             });
         }
-        tbIdea.draw();
+       // tbProgress.draw();
         return false;
     });
     $('#btnUpload').on('click', function () {
         var username = $('#username').val();
-        if (!username) {
-            bootbox.alert("Please login first (Đăng nhập để sử dụng)");
-            $('#Reply,#Reply1,#btnLike,#btnLike1').prop('disabled', true);
-            return false;
-        }
-        else {
-            $('#Reply,#Reply1,#btnLike,#btnLike1,#btnRegIdea').prop('disabled', false);
-        }
-        $('#btnSetProject,#btnDelIdea').prop('disabled', true);
-        $('#frmRegIdea')[0].reset();
-        $('#tbReply').find("tr:not(:first)").remove();
-
-        $('#Reply').attr('data-id', '');
-        $('#cNow').text(moment().format('YYYY-MM-DD HH:mm:ss'));
-        var name = $('#username').attr('data-name');
-        var dept = $('#username').attr('data-dept');
-        var division = $('#username').attr('data-div');
-
-        //$('#division').selectize()[0].selectize.setValue(division, false);
-        $('#division').val(division);
-
-        $('#department').val(dept, false);
-        $('#name').val(name);
-        $('#btnRegIdea').attr('data-action', 0);
-        $("#mdRegIdea").modal({
-            backdrop: 'static',
-            keyboard: false
-        });
-        return false;
-    });
-
-    $('#btnSetProject').on('click', function () {
-        var username = $('#username').val();
         var emp = $('#btnRegIdea').attr('data-emp');
+        
         if (!username) {
             $('#Reply,#Reply1,#btnLike,#btnLike1').prop('disabled', true);
         }
         else {
             $('#Reply,#Reply1,#btnLike,#btnLike1').prop('disabled', false);
         }
-        if (username != emp) {
-            bootbox.alert("You cannot set this idea");
-        }
+        $('#download,#download1').remove();
         $('#action_plan').attr('rowspan', 2);
         $('.trNewPlan').remove();
         $('#frmRegPrj')[0].reset();
-        
-        
-        var id = $('#Reply').attr('data-id');
-        $.ajax({
-            url: $('#hdUrl').val().replace("Action", "GetIdeaById"),
-            data: JSON.stringify({
-                ID: id
-            }),
-            type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
-            crossBrowser: true,
-            success: function (data, status) {
-                if (data.length > 0) {
-
-                    $('#btnRegPrj').attr('data-emp', $.trim(data[1].Value));
-                    $('#txtTitle').val($.trim(data[2].Value));
-                    $('#prj_quantiative').val($.trim(data[4].Value));
-                    $('#prj_qualiative').val($.trim(data[5].Value));
-                    $('#selDept').val($.trim(data[7].Value));
-                    $('#frmRegPrj').attr('data-id', id);
-                    $('#txtName').val($.trim(data[9].Value));
-                }
-
-                return false;
-            },
-            error: function (xhr, status, error) {
-                bootbox.alert("Error! " + xhr.status);
-            },
-        });
-        $("#mdRegIdea").modal('hide');
+        $('#selDept').val($('#username').attr('data-dept'));
+        $('#txtName').val($('#username').attr('data-name'));
         $("#mdRegPrj").modal({
             backdrop: 'static',
             keyboard: false
         });
         return false;
     });
-    $('#btnUpdate').on('click', function () {
-        var username = $('#username').val();
-        if (!username) {
-            bootbox.alert("Please login to use this function");
-        }
-    });
-    $('#Reply').on('click', function () {
-        var username = $('#username').val();
-        var comment = $('#comment').val();
-        var ideaId = $('#Reply').attr('data-id');
-      
-        if (!username) {
-            bootbox.alert("Please login to use this function");
-            return false;
-        }
-        if (!ideaId) {
-            bootbox.alert("Cannot comment on empty idea");
-            return false;
-        }
-        if (!comment) {
-            bootbox.alert("Please enter comment");
-            return false;
-        }
-        var reply = { IDEA_ID: ideaId, REP_EMP_ID: username, COMMENTS: comment, REP_EMP_NAME: $('#username').attr('data-name') };
 
-        var seq = $('#tbReply tr').length;
-        $.ajax({
-            url: $('#hdUrl').val().replace("Action", "InsertIdeaComment"),
-            data: JSON.stringify({
-                reply: reply
-            }),
-            type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
-            crossBrowser: true,
-            success: function (data, status) {
-                if (data > 0) {
-                    $('<tr><td>'+seq+'</td><td>' + $('#username').attr('data-dept') + '</td><td>' + $('#username').attr('data-name') + '</td><td>' + comment + '</td><td>' + moment().format('YYYY-MM-DD hh:mm:ss') + '</td></tr>').prependTo("#tbReply > tbody");
-                    tbIdea.ajax.reload();
-                }
-                else {
-                    bootbox.alert("Fail");
-                }
-                return false;
-            },
-            error: function (xhr, status, error) {
-                bootbox.alert("Error! " + xhr.status);
-            },
-        });
 
-        $('#comment').val('');
-
-        return false;
-    });
     $('#Reply1').on('click', function () {
         var username = $('#username').val();
         var comment = $('#comment1').val();
@@ -285,9 +131,7 @@
             success: function (data, status) {
                 if (data > 0) {
                     $('<tr><td>' + seq + '</td><td>' + $('#username').attr('data-dept') + '</td><td>' + $('#username').attr('data-name') + '</td><td>' + comment + '</td><td>' + moment().format('YYYY-MM-DD hh:mm:ss') + '</td></tr>').prependTo("#tbReply1 > tbody");
-                    //tbIdea.ajax.reload();
-                    tbNewPrj.ajax.reload();
-                    tbProgress.ajax.reload();
+                    
                 }
                 else {
                     bootbox.alert("Fail");
@@ -303,182 +147,13 @@
 
         return false;
     });
-    $('#frmRegIdea').submit(function (e) {
-        e.preventDefault();
-        var username = $('#username').val();
-        var host = $('#btnRegIdea').attr('data-emp');
-        var action = parseInt($('#btnRegIdea').attr('data-action'));
-        if (!$('#title').val()) {
-            bootbox.alert("Please enter title (Hãy điền tiêu đề)");
-            return false;
-        }
-        var idea = {
-            ID: $('#Reply').attr('data-id'),
-            EMP_ID: $('#username').val(),
-            IDEA_TITLE: $('#title').val(),
-            DETAIL: $('#detail').val(),
-            QUANTITATIVE: $('#quantiative').val(),
-            QUALITATIVE: $('#qualiative').val()
-        };
-        var department = $('#department').val();
-        //var division = $('#division').selectize()[0].selectize.getValue();
-        var division = $('#division').val();
-        if (action == 1) {
-            if (username != host) {
-                bootbox.alert("You cannot modify this idea");
-                return false;
-            }
-            $.ajax({
-                url: $('#hdUrl').val().replace("Action", "RegIdea"),
-                data: JSON.stringify({
-                    idea: idea,
-                    division: division,
-                    department: department,
-                    action: action
-                }),
-                type: 'POST',
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8',
-                crossBrowser: true,
-                success: function (data, status) {
-                    if (data > 0) {
-                        bootbox.alert("Save success");
-                        tbIdea.ajax.reload();
-                    }
-                    else {
-                        bootbox.alert("Fail");
-                    }
-                    return false;
-                },
-                error: function (xhr, status, error) {
-                    bootbox.alert("Error! " + xhr.status);
-                },
-            });
-        }
-        else {
-            $.ajax({
-                url: $('#hdUrl').val().replace("Action", "RegIdea"),
-                data: JSON.stringify({
-                    idea: idea,
-                    division: division,
-                    department: department,
-                    action: action
-                }),
-                type: 'POST',
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8',
-                crossBrowser: true,
-                success: function (data, status) {
-                    if (data > 0) {
-                        bootbox.alert("Register success");
-                        tbIdea.ajax.reload();
-                    }
-                    else {
-                        bootbox.alert("Fail");
-                    }
-                    return false;
-                },
-                error: function (xhr, status, error) {
-                    bootbox.alert("Error! " + xhr.status);
-                },
-            });
-        }
 
-        $("#mdRegIdea").modal('hide');
-        return false;
-    });
-    $('#tbNewIdea').on('click', '.title', function () {
-        var username = $('#username').val();
-        var role = $('#username').attr('data-role');
-        if (username != $(this).attr('data-emp')) {
-            $('#btnSetProject,#btnRegIdea,#btnDelIdea,#btnDelegate').prop('disabled', true);
-            if (role == "2") {
-                $('#btnDelIdea').prop('disabled', false);
-            }
-        }
-        else {
-            $('#btnSetProject,#btnRegIdea,#btnDelIdea,#btnDelegate').prop('disabled', false);
-        }
-        if (!username) {
-            $('#Reply,#Reply1,#btnLike,#btnLike1,#btnDelIdea').prop('disabled', true);
-        }
-        else {
-            $('#Reply,#Reply1,#btnLike,#btnLike1').prop('disabled', false);
-        }
-      
-        var id = $(this).attr('id');
-        $('#Reply').attr('data-id', id);
-        $('#btnDelIdea').attr('data-ideaid', id);
-        $('#btnRegIdea').attr('data-action', 1);
-        $('#tbReply').find("tr:not(:first)").remove();
-        $('#cDept').text($('#username').attr('data-dept'));
-        $('#cName').text($('#username').attr('data-name'));
-        $('#cNow').text(moment().format('YYYY-MM-DD HH:mm:ss'));
-        var numLike = parseInt($(this).parent().parent().find('.like').children().text());
-        $('#btnLike').find('.badge').text(numLike);
-      
-        $('#frmRegIdea')[0].reset();
-        $.ajax({
-            url: $('#hdUrl').val().replace("Action", "GetIdeaReply"),
-            data: JSON.stringify({
-                ID: id
-            }),
-            type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
-            crossBrowser: true,
-            success: function (data, status) {
-                if (data.length > 0) {
-                    for (var i = 0; i < data.length; i++) {
-                        $('#tbReply tr:last').after(data[i]);
-                    }
-                }
 
-                return false;
-            },
-            error: function (xhr, status, error) {
-                bootbox.alert("Error! " + xhr.status);
-            },
-        });
-        $.ajax({
-            url: $('#hdUrl').val().replace("Action", "GetIdeaById"),
-            data: JSON.stringify({
-                ID: id
-            }),
-            type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
-            crossBrowser: true,
-            success: function (data, status) {
-                if (data.length > 0) {
-
-                    $('#btnRegIdea').attr('data-emp', $.trim(data[1].Value));
-                    $('#title').val($.trim(data[2].Value));
-                    $('#detail').val($.trim(data[3].Value));
-                    $('#quantiative').val($.trim(data[4].Value));
-                    $('#qualiative').val($.trim(data[5].Value));
-                    $('#department').val($.trim(data[7].Value));
-
-                    $('#division').val($.trim(data[8].Value));
-                    $('#name').val($.trim(data[9].Value));
-                }
-
-                return false;
-            },
-            error: function (xhr, status, error) {
-                bootbox.alert("Error! " + xhr.status);
-            },
-        });
-        $("#mdRegIdea").modal({
-            backdrop: 'static',
-            keyboard: false
-        });
-        return false;
-    });
-    $('#tbNewPrj,#tbMainDefault').on('click', '.title', function () {
+    $('#tbMainDefault').on('click', '.title', function () {
         var username = $('#username').val();
         var host = $(this).attr('data-emp');
         var role = $('#username').attr('data-role');
+        $('#download,#download1').remove();
         if (!username) {
             $('#Reply,#Reply1,#btnLike,#btnLike1,#btnExport,#btnDelPrj').prop('disabled', true);
         }
@@ -486,6 +161,7 @@
             $('#Reply,#Reply1,#btnLike,#btnLike1,#btnExport').prop('disabled', false);
         }
         if (username != host) {
+            $('#upload').hide();
             $('#btnSaveProcess,#btnDelPrj').prop('disabled', true);
             if (role && parseInt(role) > 0) {
                 $('#btnExport').prop('disabled', false);
@@ -495,6 +171,7 @@
             }
         }
         else {
+            $('#upload').show();
             $('#btnSaveProcess,#btnExport,#btnDelPrj').prop('disabled', false);
         }
         var numLike = parseInt($(this).parent().parent().find('.like').children().text());
@@ -502,7 +179,7 @@
 
         $('#tbReply1').find("tr:not(:first)").remove();
         $('.target,.result').val('');
-        $('#current').text('');
+        //$('#current').text('');
         $('.trPlan').remove();
         $('#trTarget td').remove();
         $('#trResult td').remove();
@@ -510,7 +187,7 @@
         var dt1 = new Date();
         dt1.setFullYear(dt1.getFullYear() - 1);
 
-        $('#trTarget').append('<td>Target</td><td><select id="selCurent1"><option value="' + dt1.getFullYear().toString().substr(-2) + ' total">' + dt1.getFullYear().toString().substr(-2) + ' total</option><option value="' + dt1.getFullYear().toString().substr(-2) + ' 2nd">' + dt1.getFullYear().toString().substr(-2) + ' 2nd</option><option value="' + dt1.getFullYear().toString().substr(-2) + ' 4Q">' + dt1.getFullYear().toString().substr(-2) + ' 4Q</option></select></td>');
+        $('#trTarget').append('<td>Target</td><td><input type="text" id="selCurent1" class="form-control"/></td>');
         $('#trResult').append('<td>Result</td><td><input type="number" step="0.01" id="txtCurrent1" value="" class="form-control"/></td>');
 
         $('#action_plan1').attr('rowspan', 2);
@@ -534,6 +211,7 @@
 
                 var year = parseInt(data[0].PRJ_MONTH.split("-")[0]);
                 $('#prjYear').text(year);
+                $('#prjYear').css("text-align", "center");
                 $('#kpiMonth td').remove();
 
                 var col1 = 0;
@@ -559,10 +237,11 @@
                     }
                     else {
                         $('#prjNYear').attr('colspan', col2);
+                        $('#prjNYear').css("text-align", "center");
                     }
                 }
                 if (data.length > 0) {
-                   
+
                     for (var i = 0; i < data.length; i++) {
                         $.each($(".target"), function () {
                             if ($(this).attr('data-month') == data[i].PRJ_MONTH) {
@@ -590,7 +269,7 @@
                     }
 
                 }
-              
+
                 return false;
             },
             error: function (xhr, status, error) {
@@ -619,7 +298,7 @@
                 bootbox.alert("Error! " + xhr.status);
             },
         });
-       
+
         $.ajax({
             url: $('#hdUrl').val().replace("Action", "GetPlan"),
             data: JSON.stringify({
@@ -634,7 +313,11 @@
                     var rowspan = parseInt($('#action_plan1').attr('rowspan'));
                     $('#action_plan1').attr('rowspan', rowspan + data.length);
                     for (var i = 0; i < data.length; i++) {
-                       
+                        var planContent = '<textarea class="form-control plan">' + $.trim(data[i].PLAN_CONTENTS) + '</textarea></td>';
+                        if (username != host) {
+                            var content = $.trim(data[i].PLAN_CONTENTS).length > 65 ? data[i].PLAN_CONTENTS.substring(0,65) + "(...)" : data[i].PLAN_CONTENTS;
+                            planContent = ' <a class="pop" href="#" title="Plan Detail" data-toggle="popover" data-trigger="focus" data-content="' + data[i].PLAN_CONTENTS + '">' + content + '</a>';
+                        }
                         var complete_dt = moment(data[i].COMPLETE_DATE).format('YYYY-MM-DD') == "0001-01-01" ? "" : moment(data[i].COMPLETE_DATE).format('YYYY-MM-DD');
                         var plan_dt = moment(data[i].PLAN_DATE).format('YYYY-MM-DD') == "0001-01-01" ? "" : moment(data[i].PLAN_DATE).format('YYYY-MM-DD');
                         var tr = '<tr class="trPlan">'
@@ -653,20 +336,21 @@
                     + '<td colspan="1">'
                         + '<input type="text" class="form-control com_dt" value="' + complete_dt + '" /></td>'
                     + '<td colspan="2">'
-                        + '<textarea class="form-control plan">' + $.trim(data[i].PLAN_CONTENTS) + '</textarea></td>'
+                        + planContent + '</td>'
                     + '<td colspan="1">'
                        + '<div class="input-group"><input type="text" class="form-control schedule" value="' + plan_dt + '"/>'
-                       +'<div class="input-group-btn">'
+                       + '<div class="input-group-btn">'
                       + '<button data-id="' + data[i].ID + '" class="btn btn-danger removeplan" type="button">'
-                     +                               '<i class="glyphicon glyphicon-minus-sign"></i>'
-                     +                           '</button>'
-                     +                       '</div>'
-                     +                   '</div></td>'
+                     + '<i class="glyphicon glyphicon-minus-sign"></i>'
+                     + '</button>'
+                     + '</div>'
+                     + '</div></td>'
                 + '</tr>';
-                       
+
                         $('.trPlan1').after(tr);
+                        $('[data-toggle="popover"]').popover();
                     }
-                  
+
                     $('.schedule,.com_dt')
                         .datepicker({
                             format: 'yyyy-mm-dd'
@@ -703,14 +387,25 @@
                     //$('#unit1').selectize()[0].selectize.setValue($.trim(data[5].Value), false);
                     $('#unit1').val($.trim(data[5].Value));
                     $('#remark').val($.trim(data[9].Value));
-                    $('#current').text($.trim(data[10].Value));
+                    //$('#current').text($.trim(data[10].Value));
                     $('#selCurent1').val($.trim(data[10].Value));
                     $('#txtCurrent1').val($.trim(data[11].Value));
-                    $('#selDept1').val($.trim(data[12].Value));
+                    $('#selDept1').val($.trim(data[17].Value));
                     //$('#division1').selectize()[0].selectize.setValue($.trim(data[13].Value), false);
-                    $('#division1').val($.trim(data[13].Value));
+                    $('#division1').val($.trim(data[18].Value));
                     $('#pit1').val($.trim(data[3].Value));
-                    $('#txtName1').val($.trim(data[14].Value));
+                    $('#txtName1').val($.trim(data[7].Value));
+
+                    $('#request').val($.trim(data[14].Value));
+                    $('#request_korea').val($.trim(data[15].Value));
+                    $('#issue_korea').val($.trim(data[13].Value));
+                    $('#issue').val($.trim(data[12].Value));
+                    if (data[16].Value) {
+                        var href = $('#hdUrl1').val().replace("Action", "Download") + "?file=" + data[16].Value;
+
+                        var a = '<a id="download" href="' + href + '")">Download</a>';
+                        $('.upload1').append(a);
+                    }
                 }
 
                 return false;
@@ -734,7 +429,7 @@
         $('<tr class="trNewPlan">'
                                + '<td colspan="4">'
                                     + ' <textarea class="form-control newplan" data-id="" placeholder="Plan">' + plan + '</textarea>'
-                                     
+
                                + ' </td>'
                                + ' <td colspan="2">'
                                 + '   <div class="input-group" style="width:100%">'
@@ -757,7 +452,7 @@
         return false;
     });
     $('#btnAddPlan1').on('click', function () {
-        
+
         var yesno = $('#com1').val();
         var com_dt = $('#com_dt').val();
         //var com_dt = $.trim($('#txtAddSchedule1').val()).length == 0 ? moment().format('YYYY-MM-DD') : $.trim($('#txtAddSchedule1').val());
@@ -772,8 +467,8 @@
         $('<tr class="trPlan">'
                                 + '<td colspan="1">'
                                     + '<select class="form-control complete" data-id="">'
-       
-            +'<option value="' + yesno + '" selected="selected">No</option>'
+
+            + '<option value="' + yesno + '" selected="selected">No</option>'
             + '<option value="1">Yes</option>'
         + '</select>'
     + '</td>'
@@ -843,20 +538,72 @@
         $(this).closest('tr').remove();
         return false;
     });
+   
+    $("input:file#upload1").fileupload({
+        dataType: "json",
+        url: $('#hdUrl1').val().replace("Action", "Upload"),
+        autoUpload: true,
+       
+        //send: function () {
+        //    spinner.spin(target);
+        //},
+        done: function (e, data) {
+            var errors = data.result.Errors;
+            if (errors && errors.length) {
+                alert(errors);
+            } else {
+                alert("Upload Success");
+               
+                $('.upload a').remove(a);
+                var href = $('#hdUrl1').val().replace("Action", "Download")+"?file="+data.result;
+              
+                var a = '<a id="download" href="' + href + '")">Download</a>';
+                $('.upload').append(a);
+               
+            }
+        },
+        always: function () {
+            //spinner.spin(false);
+        }
+    });
+    $("input:file#upload").fileupload({
+        dataType: "json",
+        url: $('#hdUrl1').val().replace("Action", "Upload"),
+        autoUpload: true,
+
+        //send: function () {
+        //    spinner.spin(target);
+        //},
+        done: function (e, data) {
+            var errors = data.result.Errors;
+            if (errors && errors.length) {
+                alert(errors);
+            } else {
+                alert("Upload Success");
+                $('.upload1 a').remove();
+
+                var href = $('#hdUrl1').val().replace("Action", "Download") + "?file=" + data.result;
+
+                var a = '<a id="download1" href="' + href + '")">Download</a>';
+                $('.upload1').append(a);
+
+            }
+        },
+        always: function () {
+            //spinner.spin(false);
+        }
+    });
     $('#frmRegPrj').submit(function (e) {
+     
         e.preventDefault();
         $('#mdRegPrj').modal('hide');
         var username = $('#username').val();
-        if (username != $('#btnRegPrj').attr('data-emp')) {
-            bootbox.alert("You cannot register this project");
-
-            return false;
-        }
+      
         var checkNumber = false;
         var plans = [];
         var kpis = [];
         var project = {
-            EMP_ID: $('#btnRegPrj').attr('data-emp'),
+            EMP_ID: $('#username').val(),
             IDEA_ID: $('#frmRegPrj').attr('data-id'),
             IDEA_TITLE: $('#txtTitle').val(),
             PRJECT_GRADE: $('#pit').val(),
@@ -867,7 +614,7 @@
             NAME: $('#txtName').val(),
             PRJ_CURR: $('#selCurent').val(),
             CURR_VALUE: $('#txtCurrent').val(),
-            ATTACHMENT: $('#download').length > 0 ?  $('#download').attr('href').split('=')[1] : ""
+            ATTACHMENT: $('#download').length > 0 ? $('#download').attr('href').split('=')[1] : ""
         };
         $('.kmonth').each(function (i, obj) {
             if (isNaN($(this).val())) {
@@ -922,18 +669,10 @@
                 success: function (data, status) {
                     if (data > 0) {
                         bootbox.alert(status);
-                        tbIdea.ajax.reload();
-                        tbNewPrj.ajax.reload();
-                        tbProgress.ajax.reload();
+                        location.reload();
                         $('#mdRegPrj').modal('hide');
                     }
-                    if (data == -1) {
-                        bootbox.alert("Cannot send email. Register successfully.");
-                        tbIdea.ajax.reload();
-                        tbNewPrj.ajax.reload();
-                        tbProgress.ajax.reload();
-                        $('#mdRegPrj').modal('hide');
-                    }
+
                     return false;
                 },
                 error: function (xhr, status, error) {
@@ -947,15 +686,18 @@
         return false;
     });
 
-    $('#btnSaveProcess').click(function () {
-      
+    $('#frmProcess').submit(function (e) {
+        e.preventDefault();
         var username = $('#username').val();
-       
+
         if (username != $('#frmProcess').attr('data-emp')) {
             bootbox.alert("You cannot modify this project");
             return false;
         }
-
+        if ( $('#remark').val().length > 120 || $('#request').val().length > 120) {
+            bootbox.alert("Max length 120 characters exceeds");
+            return false;
+        }
         var plans = [];
         var kpis = [];
         var project = {
@@ -965,10 +707,13 @@
             KPI_NAME: $('#txtKPIName1').val(),
             KPI_UNIT: $('#unit1').val(),
             PRJECT_GRADE: $('#pit1').val(),
+            ISSUE: $('#remark').val(),
             REMARK: $('#remark').val(),
+            REQUEST: $('#request').val(),
             NAME: $('#txtName1').val(),
             PRJ_CURR: $('#selCurent1').val(),
-            CURR_VALUE: $('#txtCurrent1').val()
+            CURR_VALUE: $('#txtCurrent1').val(),
+            ATTACHMENT: $('#download1').length > 0 ? $('#download1').attr('href').split('=')[1] : ""
         };
 
         $.each($(".trPlan"), function () {
@@ -985,8 +730,7 @@
 
         $('.target').each(function (i, obj) {
             var index = $(this).index();
-            if (isNaN($(this).val()))
-            {
+            if (isNaN($(this).val())) {
                 bootbox.alert("Please enter valid number");
                 return false;
             }
@@ -1032,8 +776,7 @@
                 success: function (data, status) {
                     if (data > 0) {
                         bootbox.alert(status);
-                        tbNewPrj.ajax.reload();
-                        tbProgress.ajax.reload();
+                        location.reload();
                         $('#mdProcess').modal('hide');
                     }
 
@@ -1091,15 +834,12 @@
                         $('#btnLike1').children('.badge').text(numLike);
                         $('#btnLike1').prop('disabled', true);
                     }
-                    tbIdea.ajax.reload();
-                    tbNewPrj.ajax.reload();
-                    tbProgress.ajax.reload();
                    
                 }
                 else {
                     bootbox.alert("You already liked it");
                 }
-               
+
                 return false;
             },
             error: function (xhr, status, error) {
@@ -1201,41 +941,7 @@
 
         return false;
     });
-    $('#btnDelIdea').on('click', function () {
-       
-        var id = $(this).attr('data-ideaid');
-        if (!id)
-            return false;
-        var cfm = confirm("Are you sure you want to delete this idea?");
-        if (cfm) {
-            $.ajax({
-                url: $('#hdUrl').val().replace("Action", "DeleteIdea"),
-                data: JSON.stringify({
-                    ID: id
-                }),
-                type: 'POST',
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8',
-                crossBrowser: true,
-                success: function (data, status) {
-                    if (data > 0) {
-                        $("#mdRegIdea").modal('hide');
-                        tbIdea.ajax.reload();
-                    }
-                    else {
-                        bootbox.alert("Delete fail");
-                    }
 
-                    return false;
-                },
-                error: function (xhr, status, error) {
-                    bootbox.alert("Error! " + xhr.status);
-                },
-            });
-        }
-        return false;
-    });
-    
     $('#btnDelPrj').on('click', function () {
 
         var id = $('#frmProcess').attr('data-id');
@@ -1255,9 +961,7 @@
                 success: function (data, status) {
                     if (data > 0) {
                         $("#mdProcess").modal('hide');
-                        tbProgress.ajax.reload();
-                        tbNewPrj.ajax.reload();
-                        tbIdea.ajax.reload();
+                        location.reload();
                     }
                     else {
                         bootbox.alert("Delete fail");
@@ -1272,22 +976,18 @@
         }
         return false;
     });
-    $('#btnDelegate').on('click', function () {
 
-        var emp_id = $('#txtDelegate').val();
-        var id = $('#btnDelIdea').attr('data-ideaid');
-      
-        if (!emp_id) {
-            alert('Please enter Employee ID');
-            return false;
-        }
-        var cfm = confirm("Are you sure you want to delegate this idea?");
-        if (cfm) {
+    $('.translator').click(function () {
+        var id = $('#frmProcess').attr('data-id');
+        var issue_korea = $('#issue_korea').val();
+        var request_korea = $('#request_korea').val();
+        if (id) {
             $.ajax({
-                url: $('#hdUrl').val().replace("Action", "Delegate"),
+                url: $('#hdUrl1').val().replace("Action", "UpdateTranslate"),
                 data: JSON.stringify({
                     ID: id,
-                    EMP_ID: emp_id
+                    ISSUE: issue_korea,
+                    REQUEST: request_korea
                 }),
                 type: 'POST',
                 dataType: 'json',
@@ -1295,12 +995,10 @@
                 crossBrowser: true,
                 success: function (data, status) {
                     if (data > 0) {
-                        bootbox.alert(status);
-                        tbIdea.ajax.reload();
-                        $('#mdRegIdea').modal('hide');
+                        alert(status);
                     }
                     else {
-                        bootbox.alert("Delegate fail");
+                        bootbox.alert("Delete fail");
                     }
 
                     return false;
@@ -1311,33 +1009,5 @@
             });
         }
         return false;
-    });
-
-    $("input:file#upload1").fileupload({
-        dataType: "json",
-        url: $('#hdUrl1').val().replace("Action", "Upload"),
-        autoUpload: true,
-
-        //send: function () {
-        //    spinner.spin(target);
-        //},
-        done: function (e, data) {
-            var errors = data.result.Errors;
-            if (errors && errors.length) {
-                alert(errors);
-            } else {
-                alert("Upload Success");
-
-
-                var href = $('#hdUrl1').val().replace("Action", "Download") + "?file=" + data.result;
-
-                var a = '<a id="download" href="' + href + '")">Download</a>';
-                $('.upload').append(a);
-
-            }
-        },
-        always: function () {
-            //spinner.spin(false);
-        }
     });
 });
