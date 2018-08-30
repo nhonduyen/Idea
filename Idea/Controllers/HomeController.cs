@@ -37,11 +37,11 @@ namespace Idea.Controllers
                 var em = employeeManager.Select(EMP.EMP_ID);
                 if (em.Count > 0)
                     return Json(-1);
-                result = employeeManager.Insert(EMP.EMP_ID, "123", EMP.EMP_NAME, EMP.DIVISION, EMP.DEPARTMENT, EMP.EMAIL,EMP.ROLE);
+                result = employeeManager.Insert(EMP.EMP_ID, "123", EMP.EMP_NAME, EMP.DIVISION, EMP.DEPARTMENT, EMP.EMAIL, EMP.ROLE);
             }
             else
             {
-                result = employeeManager.Update(EMP.EMP_ID, EMP.EMP_NAME, EMP.DIVISION, EMP.DEPARTMENT, EMP.EMAIL,EMP.ROLE);
+                result = employeeManager.Update(EMP.EMP_ID, EMP.EMP_NAME, EMP.DIVISION, EMP.DEPARTMENT, EMP.EMAIL, EMP.ROLE);
             }
             return Json(result);
         }
@@ -95,24 +95,24 @@ namespace Idea.Controllers
             ViewBag.Divisions = employeeManager.GetDivision();
             ViewBag.Departments = employeeManager.GetDepartment();
 
-            var from = DateTime.Now.AddMonths(-2);
-            var to = from.AddMonths(11);
-            var colspan1 = 0;
-            var colspan2 = 0;
-            for (DateTime d = from; d <= to; d = d.AddMonths(1))
-            {
-                if (d.Year == from.Year)
-                    colspan1++;
-                if (d.Year == to.Year)
-                    colspan2++;
-            }
-            if (from.Year == to.Year)
-            {
-                colspan1 = 12;
-                colspan2 = 0;
-            }
-            ViewBag.Colspan1 = colspan1;
-            ViewBag.Colspan2 = colspan2;
+            //var from = DateTime.Now.AddMonths(-2);
+            //var to = from.AddMonths(11);
+            //var colspan1 = 0;
+            //var colspan2 = 0;
+            //for (DateTime d = from; d <= to; d = d.AddMonths(1))
+            //{
+            //    if (d.Year == from.Year)
+            //        colspan1++;
+            //    if (d.Year == to.Year)
+            //        colspan2++;
+            //}
+            //if (from.Year == to.Year)
+            //{
+            //    colspan1 = 12;
+            //    colspan2 = 0;
+            //}
+            ViewBag.Colspan1 = 12;
+            ViewBag.Colspan2 = 0;
             return View();
         }
 
@@ -172,7 +172,7 @@ namespace Idea.Controllers
                             mailer.Send();
                         }
                     }
-                     
+
                     catch
                     {
                         return Json(affectedRows);
@@ -204,7 +204,7 @@ namespace Idea.Controllers
             string existID = prj.IsExist(Project.IDEA_ID);
             if (string.IsNullOrEmpty(existID))
             {
-              // generate id
+                // generate id
                 if (string.IsNullOrWhiteSpace(Project.IDEA_ID))
                 {
                     Project.IDEA_ID = idea.GenerateId();
@@ -252,7 +252,7 @@ namespace Idea.Controllers
 
         }
 
-        
+
         [HttpPost]
         public JsonResult GetIdea(DataTableParameters dataTableParameters, string div, string dep)
         {
@@ -260,8 +260,8 @@ namespace Idea.Controllers
 
             var resultSet = new DataTableResultSet();
             resultSet.draw = dataTableParameters.Draw;
-            var lst = idea.SelectPaging(dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1,div,dep);
-            resultSet.recordsTotal = resultSet.recordsFiltered = idea.GetCount(div,dep);
+            var lst = idea.SelectPaging(dataTableParameters.Start + 1, dataTableParameters.Start + dataTableParameters.Length + 1, div, dep);
+            resultSet.recordsTotal = resultSet.recordsFiltered = idea.GetCount(div, dep);
 
             foreach (var i in lst)
             {
@@ -271,7 +271,7 @@ namespace Idea.Controllers
                 columns.Add((i.DEPARTMENT == null) ? "" : i.DEPARTMENT.Trim());
                 columns.Add((i.EMP_NAME == null) ? "" : i.EMP_NAME.Trim());
                 columns.Add("<a class='title' href='#' id='" + i.ID + "' data-emp='" + i.EMP_ID.Trim() + "'>" + i.IDEA_TITLE.Trim() + "</a>");
-                //columns.Add((i.DATE == null) ? "" : i.DATE.ToShortDateString());
+                columns.Add((i.DATE == null) ? "" : i.DATE.ToShortDateString());
                 columns.Add("<a href='#' class='rep' title='Reply' data-id='" + i.ID + "' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.REP.ToString() + "</span></a>");
                 columns.Add("<a href='#' class='like' title='Like' data-id='" + i.ID + "' data-table='1' data-trigger='focus'><span class='badge badge-pill badge-primary'>" + i.L.ToString() + "</span></a>");
                 resultSet.data.Add(columns);
@@ -381,7 +381,7 @@ namespace Idea.Controllers
             if (!string.IsNullOrEmpty(existID))
             {
                 result = prj.UpdatePrj(Project.IDEA_ID, Project.EMP_ID, Project.IDEA_TITLE, Project.KPI_NAME, Project.KPI_UNIT,
-                    Project.REMARK, Project.NAME, Project.PRJ_CURR, Project.CURR_VALUE, Project.PRJECT_GRADE,Project.ATTACHMENT,
+                    Project.REMARK, Project.NAME, Project.PRJ_CURR, Project.CURR_VALUE, Project.PRJECT_GRADE, Project.ATTACHMENT,
                     Project.ISSUE, Project.REQUEST);
 
                 if (result > 0)
@@ -538,7 +538,7 @@ namespace Idea.Controllers
                 columns.Add((i.DEPARTMENT == null) ? "" : i.DEPARTMENT.Trim());
                 columns.Add(i.IDEA_TITLE.Trim());
                 columns.Add((i.EMP_NAME == null) ? "" : i.EMP_NAME.Trim());
-                columns.Add((i.LI == null) ? "" : i.LI.ToString());
+                columns.Add((i.numLike == null) ? "" : i.numLike.ToString());
                 columns.Add((i.REP_EMP_NAME == null) ? "" : i.REP_EMP_NAME.ToString());
                 columns.Add((i.COMMENTS == null) ? "" : i.COMMENTS.ToString());
                 resultSet.data.Add(columns);
@@ -569,10 +569,10 @@ namespace Idea.Controllers
             ProjectManager pm = ProjectManager.GetInstance();
             PlanManager plan = PlanManager.GetInstance();
             KpiManager kpi = KpiManager.GetInstance();
-            
+
             plan.DeletePlanByIdeaId(ID);
             kpi.DeleteKPIByIdeaId(ID);
-            pm.DeleteLikeReply(ID); 
+            pm.DeleteLikeReply(ID);
             result = pm.Delete(ID);
             return Json(result);
         }
@@ -615,8 +615,8 @@ namespace Idea.Controllers
             dtb.Columns.Add("DEPARTMENT");
             dtb.Columns.Add("DIVISION");
             dtb.Columns.Add("REP_EMP_NAME");
+            dtb.Columns.Add("LIKE");
             dtb.Columns.Add("COMMENTS");
-            dtb.Columns.Add("LI");
             foreach (var item in list)
             {
                 DataRow r = dtb.NewRow();
@@ -626,7 +626,7 @@ namespace Idea.Controllers
                 r["DIVISION"] = item.DIVISION;
                 r["REP_EMP_NAME"] = item.REP_EMP_NAME;
                 r["COMMENTS"] = item.COMMENTS;
-                r["LI"] = item.LI;
+                r["LIKE"] = item.numLike;
                 dtb.Rows.Add(r);
             }
             // Gọi lại hàm để tạo file excel
@@ -663,7 +663,7 @@ namespace Idea.Controllers
             dtb.Columns.Add("DIVISION");
             dtb.Columns.Add("REP_EMP_NAME");
             dtb.Columns.Add("COMMENTS");
-            dtb.Columns.Add("LI");
+            dtb.Columns.Add("LIKE");
             foreach (var item in list)
             {
                 DataRow r = dtb.NewRow();
@@ -673,7 +673,7 @@ namespace Idea.Controllers
                 r["DIVISION"] = item.DIVISION;
                 r["REP_EMP_NAME"] = item.REP_EMP_NAME;
                 r["COMMENTS"] = item.COMMENTS;
-                r["LI"] = item.LI;
+                r["LIKE"] = item.numLike;
                 dtb.Rows.Add(r);
             }
             // Gọi lại hàm để tạo file excel
@@ -736,9 +736,9 @@ namespace Idea.Controllers
                 ws.Cells["L1"].Value = EMP.EMP_NAME.Trim();
                 ws.Cells["B2"].Value = Project.IDEA_TITLE.Trim();
                 ws.Cells["L2"].Value = Project.PRJECT_GRADE;
-                ws.Cells["B19"].Value = Project.REMARK.Trim();
-                ws.Cells["D3"].Value = Project.KPI_NAME.Trim();
-                ws.Cells["L3"].Value = Project.KPI_UNIT.Trim();
+                ws.Cells["B19"].Value = Project.REMARK == null ? Project.REMARK : Project.REMARK.Trim();
+                ws.Cells["D3"].Value = Project.KPI_NAME == null ? Project.KPI_NAME : Project.KPI_NAME.Trim();
+                ws.Cells["L3"].Value = Project.KPI_UNIT == null ? Project.KPI_UNIT : Project.KPI_UNIT.Trim();
                 ws.Cells["C4"].Value = Project.PRJ_CURR;
                 ws.Cells["C6"].Value = Project.PRJ_CURR;
                 ws.Cells["C7"].Value = Project.CURR_VALUE;
@@ -771,8 +771,8 @@ namespace Idea.Controllers
                     ws.Cells["D4:O4"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     ws.Cells["D4"].Value = year1;
                 }
-               
-                var firstMonth = new DateTime(Convert.ToInt32(year1), Convert.ToInt32(KPIs[0].PRJ_MONTH.Substring(5, 2)), 1);
+                var firstMonth = new DateTime(Convert.ToInt32(year1),1, 1);
+                //var firstMonth = new DateTime(Convert.ToInt32(year1), Convert.ToInt32(KPIs[0].PRJ_MONTH.Substring(5, 2)), 1);
                 for (var i = 'D'; i <= 'O'; i++)
                 {
                     ws.Cells[i + 5.ToString()].Value = firstMonth.Month;
@@ -783,7 +783,7 @@ namespace Idea.Controllers
                             ws.Cells[i + 6.ToString()].Value = kpi.TARGET_VALUE;
                             ws.Cells[i + 7.ToString()].Value = kpi.RESULT_VALUE;
                         }
-                     
+
                     }
                     firstMonth = firstMonth.AddMonths(1);
                 }
@@ -793,9 +793,9 @@ namespace Idea.Controllers
                 {
                     var complete = item.COMPLETE_YN == 0 ? "NO" : "YES";
                     ws.Cells["B" + seq.ToString()].Value = complete;
-                    ws.Cells["C" + seq.ToString()].Value = item.COMPLETE_DATE == null ? "" : item.COMPLETE_DATE.ToString("yyyy-MM-dd");
+                    ws.Cells["C" + seq.ToString()].Value = item.COMPLETE_DATE == DateTime.MinValue ? "" : item.COMPLETE_DATE.ToString("yyyy-MM-dd");
                     ws.Cells["E" + seq.ToString()].Value = item.PLAN_CONTENTS.Trim();
-                    ws.Cells["N" + seq.ToString()].Value = item.PLAN_DATE == null ? "" : item.PLAN_DATE.ToString("yyyy-MM-dd");
+                    ws.Cells["N" + seq.ToString()].Value = item.PLAN_DATE == DateTime.MinValue ? "" : item.PLAN_DATE.ToString("yyyy-MM-dd");
                     seq++;
                 }
                 //buffer = package.Stream as MemoryStream;

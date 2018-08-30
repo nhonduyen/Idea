@@ -17,13 +17,7 @@
     <title>PROJECT MANAGEMENT</title>
 
     <!-- Bootstrap core CSS -->
-
-    <link rel="stylesheet" href="@Url.Content("~/Content/bt/bootstrap.min.css")" />
-    <link rel="stylesheet" href="@Url.Content("~/Content/bt/datepicker.css")" />
-    <link rel="stylesheet" href="@Url.Content("~/Content/site.css")" />
-    <!-- DataTables CSS -->
-    <link href="@Url.Content("~/Content/bt/dataTables.bootstrap.css")" rel="stylesheet">
-    <!-- DataTables Responsive CSS -->
+     @Styles.Render("~/Content/bundle")
 </head>
 
 <body>
@@ -47,7 +41,7 @@
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
                     <li id="lhome">
-                        <a href="@Url.Action("Index", "Home")">Main</a>
+                        <a href="@Url.Action("Index", "Home")">Idea</a>
                     </li>
                     <li id="lprj">
                         <a href="@Url.Action("Index", "Project1")">Project</a>
@@ -108,29 +102,7 @@
             <span>Copyright &copy; 2018 - POSCO VST</span>
         </div>
     </footer>
-    <script src="@Url.Content("~/Scripts/Include/modernizr-3.5.0.min.js")"></script>
-    <script src="@Url.Content("~/Scripts/Include/plugins.js")"></script>
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="@Url.Content("~/Scripts/Include/jquery-1.11.3.min.js")"></script>
-    <script src="@Url.Content("~/Scripts/Include/bootstrap.min.js")"></script>
-    <script src="@Url.Content("~/Scripts/Include/bootstrap-datepicker.js")"></script>
-
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="@Url.Content("~/Scripts/Include/ie10-viewport-bug-workaround.js")"></script>
-    <!-- DataTables JavaScript -->
-    <script src="@Url.Content("~/Scripts/Include/jquery.dataTables.min.js")"></script>
-    <script src="@Url.Content("~/Scripts/Include/dataTables.bootstrap.js")"></script>
-    <script src="@Url.Content("~/Scripts/Include/bootbox.min.js")"></script>
-    <script src="@Url.Content("~/Scripts/Include/moment.min.js")"></script>
-    <script src="@Url.Content("~/Scripts/Include/jquery.placeholder.min.js")"></script>
-    <script src="@Url.Content("~/Scripts/Include/jquery.ui.widget.js")"></script>
-    <script src="@Url.Content("~/Scripts/Include/jquery.iframe-transport.js")"></script>
-    <script src="@Url.Content("~/Scripts/Include/jquery.fileupload.js")"></script>
-    <!--[if lt IE 10]>
-        <script src="~/Scripts/Include/jquery.xdr-transport.js"></script>
-    <![endif]-->
+     @Scripts.Render("~/Scripts/bundle")
     @RenderSection("Scripts", false)
 </body>
 
@@ -178,7 +150,6 @@
 }
 <script>
     $(document).ready(function () {
-        $('input, textarea').placeholder();
         $('.dropdown ul li').hover(function () {
             $(this).addClass('active');
         }, function () {

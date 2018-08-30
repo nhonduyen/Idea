@@ -320,6 +320,14 @@
             QUANTITATIVE: $('#quantiative').val(),
             QUALITATIVE: $('#qualiative').val()
         };
+        if (!idea.IDEA_TITLE) {
+            alert('Please enter idea title');
+            return false;
+        }
+        if (!idea.DETAIL) {
+            alert('Please enter idea detail');
+            return false;
+        }
         var department = $('#department').val();
         //var division = $('#division').selectize()[0].selectize.getValue();
         var division = $('#division').val();
@@ -356,32 +364,37 @@
             });
         }
         else {
-            $.ajax({
-                url: $('#hdUrl').val().replace("Action", "RegIdea"),
-                data: JSON.stringify({
-                    idea: idea,
-                    division: division,
-                    department: department,
-                    action: action
-                }),
-                type: 'POST',
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8',
-                crossBrowser: true,
-                success: function (data, status) {
-                    if (data > 0) {
-                        bootbox.alert("Register success");
-                        tbIdea.ajax.reload();
-                    }
-                    else {
-                        bootbox.alert("Fail");
-                    }
-                    return false;
-                },
-                error: function (xhr, status, error) {
-                    bootbox.alert("Error! " + xhr.status);
-                },
-            });
+            if (idea.IDEA_TITLE && idea.DETAIL) {
+                $.ajax({
+                    url: $('#hdUrl').val().replace("Action", "RegIdea"),
+                    data: JSON.stringify({
+                        idea: idea,
+                        division: division,
+                        department: department,
+                        action: action
+                    }),
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    crossBrowser: true,
+                    success: function (data, status) {
+                        if (data > 0) {
+                            bootbox.alert("Register success");
+                            tbIdea.ajax.reload();
+                        }
+                        else {
+                            bootbox.alert("Fail");
+                        }
+                        return false;
+                    },
+                    error: function (xhr, status, error) {
+                        bootbox.alert("Error! " + xhr.status);
+                    },
+                });
+            }
+            else {
+                alert('Please enter title and detail');
+            }
         }
 
         $("#mdRegIdea").modal('hide');
@@ -762,10 +775,7 @@
         var com_dt = $('#com_dt').val();
         //var com_dt = $.trim($('#txtAddSchedule1').val()).length == 0 ? moment().format('YYYY-MM-DD') : $.trim($('#txtAddSchedule1').val());
         var plan = $.trim($('#txtAddPlan1').val());
-        if (!plan) {
-            alert('Please enter plan');
-            return false;
-        }
+       
         var schedule = $.trim($('#txtAddSchedule1').val());
         var rowspan = parseInt($('#action_plan1').attr('rowspan')) + 1;
         $('#action_plan1').attr('rowspan', rowspan);
@@ -869,6 +879,14 @@
             CURR_VALUE: $('#txtCurrent').val(),
             ATTACHMENT: $('#download').length > 0 ?  $('#download').attr('href').split('=')[1] : ""
         };
+        if (!project.IDEA_TITLE) {
+            alert('Please enter project title');
+            return false;
+        }
+        if (!project.KPI_NAME) {
+            alert('Please enter kpi name');
+            return false;
+        }
         $('.kmonth').each(function (i, obj) {
             if (isNaN($(this).val())) {
                 bootbox.alert("Please enter valid number");
@@ -1317,7 +1335,23 @@
         dataType: "json",
         url: $('#hdUrl1').val().replace("Action", "Upload"),
         autoUpload: true,
+        add: function (e, data) {
+            var uploadErrors = [];
+            var fileType = data.originalFiles[0].name.split('.').pop(), allowdtypes = 'xls,xlsx';
+            if (allowdtypes.indexOf(fileType) < 0) {
+                uploadErrors.push('Invalid file type. Only excel file allowed');
 
+            }
+            if (data.originalFiles[0]['size'].length && data.originalFiles[0]['size'] > 5000000) {
+                uploadErrors.push('Filesize is too big. Maximum is 5 Mb');
+
+            }
+            if (uploadErrors.length > 0) {
+                alert(uploadErrors.join("\n"));
+            } else {
+                data.submit();
+            }
+        },
         //send: function () {
         //    spinner.spin(target);
         //},

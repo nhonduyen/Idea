@@ -17,22 +17,22 @@ namespace Idea.Controllers
             ViewBag.Divisions = employeeManager.GetDivision();
             ViewBag.Departments = employeeManager.GetDepartment();
 
-            var from1 = DateTime.Now.AddMonths(-2);
-            var to1 = from1.AddMonths(11);
-            var colspan1 = 0;
-            var colspan2 = 0;
-            for (DateTime d = from1; d <= to1; d = d.AddMonths(1))
-            {
-                if (d.Year == from1.Year)
-                    colspan1++;
-                if (d.Year == to1.Year)
-                    colspan2++;
-            }
-            if (from1.Year == to1.Year)
-            {
-                colspan1 = 12;
-                colspan2 = 0;
-            }
+            //var from1 = DateTime.Now.AddMonths(-2);
+            //var to1 = from1.AddMonths(11);
+            //var colspan1 = 0;
+            //var colspan2 = 0;
+            //for (DateTime d = from1; d <= to1; d = d.AddMonths(1))
+            //{
+            //    if (d.Year == from1.Year)
+            //        colspan1++;
+            //    if (d.Year == to1.Year)
+            //        colspan2++;
+            //}
+            //if (from1.Year == to1.Year)
+            //{
+            //    colspan1 = 12;
+            //    colspan2 = 0;
+            //}
             var projects = prj.GetProject( div, dept, grade,page);
             var total = prj.GetSearchCount(div, dept, grade);
             Dictionary<string, object> kpis = new Dictionary<string, object>();
@@ -71,8 +71,8 @@ namespace Idea.Controllers
                 kpis.Add(item.IDEA_ID, lst);
 
             }
-            ViewBag.Colspan1 = colspan1;
-            ViewBag.Colspan2 = colspan2;
+            ViewBag.Colspan1 = 12;
+            ViewBag.Colspan2 = 0;
             ViewBag.PRJ = projects;
             ViewBag.KPI = kpis;
             ViewBag.Total = total;
@@ -82,7 +82,6 @@ namespace Idea.Controllers
         [HttpPost]
         public JsonResult Upload()
         {
-            ProjectManager pm = ProjectManager.GetInstance();
             var file = Request.Files[0];
             var path = Server.MapPath("~/Upload/" + DateTime.Now.ToString("yyyyMMdd") + "/");
             if (!Directory.Exists(path))

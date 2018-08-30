@@ -33,18 +33,42 @@
 
     //        });
 
-    $.fn.dataTable.ext.search.push(
-    function (settings, data, dataIndex) {
-        var div = $('#filterDivsion').val();
-        var grade = $('#filterGrade').val();
-        var dep = $('#filterDepartment').val();
-        if (div || dep || grade) {
-            return true;
-        }
-        return false;
+    function getParameterByName(name) {
+        var url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
-);
-
+    if ($('#filterDivsion').val()) {
+        $('#filterDepartment').find("option:gt(0)").remove();
+        var dept = getParameterByName('dept');
+        $.ajax({
+            url: $('#hdUrl1').val().replace("Action", "GetDepartment"),
+            data: JSON.stringify({
+                DIV: $('#filterDivsion').val()
+            }),
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            crossBrowser: true,
+            success: function (data, status) {
+                for (var i = 0; i < data.length; i++) {
+                    $('#filterDepartment').append($('<option>', {
+                        value: $.trim(data[i].DEPARTMENT),
+                        text: data[i].DEPARTMENT
+                    }));
+                }
+                $('#filterDepartment').val(dept);
+                return false;
+            },
+            error: function (xhr, status, error) {
+                bootbox.alert("Error! " + xhr.status);
+            },
+        });
+    }
     $('#filterDivsion,#filterGrade,#filterDepartment').on('change', function () {
         if ($(this).attr('id') == 'filterDivsion') {
             $('#filterDepartment').find("option:gt(0)").remove();
@@ -72,13 +96,13 @@
                 },
             });
         }
-       // tbProgress.draw();
+        // tbProgress.draw();
         return false;
     });
     $('#btnUpload').on('click', function () {
         var username = $('#username').val();
         var emp = $('#btnRegIdea').attr('data-emp');
-        
+
         if (!username) {
             $('#Reply,#Reply1,#btnLike,#btnLike1').prop('disabled', true);
         }
@@ -131,7 +155,7 @@
             success: function (data, status) {
                 if (data > 0) {
                     $('<tr><td>' + seq + '</td><td>' + $('#username').attr('data-dept') + '</td><td>' + $('#username').attr('data-name') + '</td><td>' + comment + '</td><td>' + moment().format('YYYY-MM-DD hh:mm:ss') + '</td></tr>').prependTo("#tbReply1 > tbody");
-                    
+
                 }
                 else {
                     bootbox.alert("Fail");
@@ -147,8 +171,15 @@
 
         return false;
     });
-
-
+    $('#tbProcess').on('click', '.pop', function (e) {
+        e.preventDefault();
+        $(this).popover({
+            placement: "auto",
+            container: "body"
+        }).popover('show');
+        return false;
+    });
+    
     $('#tbMainDefault').on('click', '.title', function () {
         var username = $('#username').val();
         var host = $(this).attr('data-emp');
@@ -174,6 +205,7 @@
             $('#upload').show();
             $('#btnSaveProcess,#btnExport,#btnDelPrj').prop('disabled', false);
         }
+        $('#btnExport').prop('disabled', false);
         var numLike = parseInt($(this).parent().parent().find('.like').children().text());
         $('#btnLike1').find('.badge').text(numLike);
 
@@ -184,10 +216,8 @@
         $('#trTarget td').remove();
         $('#trResult td').remove();
         $('#prjNYear').remove();
-        var dt1 = new Date();
-        dt1.setFullYear(dt1.getFullYear() - 1);
-
-        $('#trTarget').append('<td>Target</td><td><input type="text" id="selCurent1" class="form-control"/></td>');
+        var k = new Date().getFullYear() - 1;
+        $('#trTarget').append('<td>Target</td><td><select id="selCurent1" class="form-control"><option></option><option value="' + k.toString().substr(-2) + ' Total">' + k.toString().substr(-2) + ' total</option><option value="' + k.toString().substr(-2) + ' 2nd">' + k.toString().substr(-2) + ' 2nd</option><option value="' + k.toString().substr(-2) + ' 4Q">' + k.toString().substr(-2) + ' 4Q</option><option value="' + k.toString().substr(-2) + ' Dec">' + k.toString().substr(-2) + ' Dec</option></select></td>');
         $('#trResult').append('<td>Result</td><td><input type="number" step="0.01" id="txtCurrent1" value="" class="form-control"/></td>');
 
         $('#action_plan1').attr('rowspan', 2);
@@ -206,8 +236,8 @@
             contentType: 'application/json; charset=utf-8',
             crossBrowser: true,
             success: function (data, status) {
-                var date = new Date(data[0].PRJ_MONTH + "-01");
-                var date1 = new Date(date.getFullYear() + 1, date.getMonth(), 1);
+                var date = new Date(new Date().getFullYear(), 0, 1);
+                var date1 = new Date(date.getFullYear(), 11, 1);
 
                 var year = parseInt(data[0].PRJ_MONTH.split("-")[0]);
                 $('#prjYear').text(year);
@@ -315,7 +345,7 @@
                     for (var i = 0; i < data.length; i++) {
                         var planContent = '<textarea class="form-control plan">' + $.trim(data[i].PLAN_CONTENTS) + '</textarea></td>';
                         if (username != host) {
-                            var content = $.trim(data[i].PLAN_CONTENTS).length > 65 ? data[i].PLAN_CONTENTS.substring(0,65) + "(...)" : data[i].PLAN_CONTENTS;
+                            var content = $.trim(data[i].PLAN_CONTENTS).length > 65 ? data[i].PLAN_CONTENTS.substring(0, 65) + "(...)" : data[i].PLAN_CONTENTS;
                             planContent = ' <a class="pop" href="#" title="Plan Detail" data-toggle="popover" data-trigger="focus" data-content="' + data[i].PLAN_CONTENTS + '">' + content + '</a>';
                         }
                         var complete_dt = moment(data[i].COMPLETE_DATE).format('YYYY-MM-DD') == "0001-01-01" ? "" : moment(data[i].COMPLETE_DATE).format('YYYY-MM-DD');
@@ -335,7 +365,7 @@
                     + '</td>'
                     + '<td colspan="1">'
                         + '<input type="text" class="form-control com_dt" value="' + complete_dt + '" /></td>'
-                    + '<td colspan="2">'
+                    + '<td colspan="2" class="tdPlan">'
                         + planContent + '</td>'
                     + '<td colspan="1">'
                        + '<div class="input-group"><input type="text" class="form-control schedule" value="' + plan_dt + '"/>'
@@ -348,9 +378,9 @@
                 + '</tr>';
 
                         $('.trPlan1').after(tr);
-                        $('[data-toggle="popover"]').popover();
-                    }
 
+                    }
+                    
                     $('.schedule,.com_dt')
                         .datepicker({
                             format: 'yyyy-mm-dd'
@@ -358,7 +388,7 @@
                             $(this).datepicker('hide');
                         });
                 }
-
+               
                 return false;
             },
             error: function (xhr, status, error) {
@@ -381,7 +411,7 @@
                     $('#frmProcess').attr('data-id', $.trim(data[0].Value));
                     $('#frmProcess').attr('data-emp', $.trim(data[1].Value));
                     $('#frmProcess').attr('data-date', moment(data[8].Value).format("YYYY-MM-DD"));
-
+                    $('#lbDate').text(moment(data[8].Value).format("YYYY-MM-DD"))
                     $('#title1').val($.trim(data[2].Value));
                     $('#txtKPIName1').val($.trim(data[4].Value));
                     //$('#unit1').selectize()[0].selectize.setValue($.trim(data[5].Value), false);
@@ -394,7 +424,7 @@
                     //$('#division1').selectize()[0].selectize.setValue($.trim(data[13].Value), false);
                     $('#division1').val($.trim(data[18].Value));
                     $('#pit1').val($.trim(data[3].Value));
-                    $('#txtName1').val($.trim(data[7].Value));
+                    $('#txtName1').val($.trim(data[19].Value));
 
                     $('#request').val($.trim(data[14].Value));
                     $('#request_korea').val($.trim(data[15].Value));
@@ -457,10 +487,7 @@
         var com_dt = $('#com_dt').val();
         //var com_dt = $.trim($('#txtAddSchedule1').val()).length == 0 ? moment().format('YYYY-MM-DD') : $.trim($('#txtAddSchedule1').val());
         var plan = $.trim($('#txtAddPlan1').val());
-        if (!plan) {
-            alert('Please enter plan');
-            return false;
-        }
+      
         var schedule = $.trim($('#txtAddSchedule1').val());
         var rowspan = parseInt($('#action_plan1').attr('rowspan')) + 1;
         $('#action_plan1').attr('rowspan', rowspan);
@@ -538,12 +565,28 @@
         $(this).closest('tr').remove();
         return false;
     });
-   
+
     $("input:file#upload1").fileupload({
         dataType: "json",
         url: $('#hdUrl1').val().replace("Action", "Upload"),
         autoUpload: true,
-       
+        add: function (e, data) {
+            var uploadErrors = [];
+            var fileType = data.originalFiles[0].name.split('.').pop(), allowdtypes = 'xls,xlsx';
+            if (allowdtypes.indexOf(fileType) < 0) {
+                uploadErrors.push('Invalid file type. Only excel file allowed');
+
+            }
+            if (data.originalFiles[0]['size'].length && data.originalFiles[0]['size'] > 5000000) {
+                uploadErrors.push('Filesize is too big. Maximum is 5 Mb');
+
+            }
+            if (uploadErrors.length > 0) {
+                alert(uploadErrors.join("\n"));
+            } else {
+                data.submit();
+            }
+        },
         //send: function () {
         //    spinner.spin(target);
         //},
@@ -553,13 +596,13 @@
                 alert(errors);
             } else {
                 alert("Upload Success");
-               
+
                 $('.upload a').remove(a);
-                var href = $('#hdUrl1').val().replace("Action", "Download")+"?file="+data.result;
-              
+                var href = $('#hdUrl1').val().replace("Action", "Download") + "?file=" + data.result;
+
                 var a = '<a id="download" href="' + href + '")">Download</a>';
                 $('.upload').append(a);
-               
+
             }
         },
         always: function () {
@@ -570,7 +613,23 @@
         dataType: "json",
         url: $('#hdUrl1').val().replace("Action", "Upload"),
         autoUpload: true,
+        add: function (e, data) {
+            var uploadErrors = [];
+            var fileType = data.originalFiles[0].name.split('.').pop(), allowdtypes = 'xls,xlsx';
+            if (allowdtypes.indexOf(fileType) < 0) {
+                uploadErrors.push('Invalid file type. Only excel file allowed');
 
+            }
+            if (data.originalFiles[0]['size'].length && data.originalFiles[0]['size'] > 5000000) {
+                uploadErrors.push('Filesize is too big. Maximum is 5 Mb');
+
+            }
+            if (uploadErrors.length > 0) {
+                alert(uploadErrors.join("\n"));
+            } else {
+                data.submit();
+            }
+        },
         //send: function () {
         //    spinner.spin(target);
         //},
@@ -594,11 +653,11 @@
         }
     });
     $('#frmRegPrj').submit(function (e) {
-     
+
         e.preventDefault();
         $('#mdRegPrj').modal('hide');
         var username = $('#username').val();
-      
+
         var checkNumber = false;
         var plans = [];
         var kpis = [];
@@ -616,9 +675,17 @@
             CURR_VALUE: $('#txtCurrent').val(),
             ATTACHMENT: $('#download').length > 0 ? $('#download').attr('href').split('=')[1] : ""
         };
+        if (!project.IDEA_TITLE) {
+            alert('Please enter project title');
+            return false;
+        }
+        if (!project.KPI_NAME) {
+            alert('Please enter kpi name');
+            return false;
+        }
         $('.kmonth').each(function (i, obj) {
             if (isNaN($(this).val())) {
-                bootbox.alert("Please enter valid number");
+                alert("Please enter valid number");
                 return false;
             }
             else {
@@ -667,8 +734,9 @@
                 contentType: 'application/json; charset=utf-8',
                 crossBrowser: true,
                 success: function (data, status) {
+                    bootbox.alert(status);
                     if (data > 0) {
-                        bootbox.alert(status);
+
                         location.reload();
                         $('#mdRegPrj').modal('hide');
                     }
@@ -685,7 +753,10 @@
         }
         return false;
     });
-
+    $('#btnExport').click(function () {
+        window.location = $(this).attr('data-url') + "?IDEA_ID=" + $('#IDEA_ID').val();
+        return false;
+    });
     $('#frmProcess').submit(function (e) {
         e.preventDefault();
         var username = $('#username').val();
@@ -694,8 +765,8 @@
             bootbox.alert("You cannot modify this project");
             return false;
         }
-        if ( $('#remark').val().length > 120 || $('#request').val().length > 120) {
-            bootbox.alert("Max length 120 characters exceeds");
+        if ($('#remark').val().length > 500 || $('#request').val().length > 500) {
+            alert("Max length 500 characters exceeds");
             return false;
         }
         var plans = [];
@@ -715,7 +786,14 @@
             CURR_VALUE: $('#txtCurrent1').val(),
             ATTACHMENT: $('#download1').length > 0 ? $('#download1').attr('href').split('=')[1] : ""
         };
-
+        if (!project.IDEA_TITLE) {
+            alert('Please enter project title');
+            return false;
+        }
+        if (!project.KPI_NAME) {
+            alert('Please enter kpi name');
+            return false;
+        }
         $.each($(".trPlan"), function () {
             var plan = {
                 ID: $(this).find('.complete').attr('data-id'),
@@ -731,7 +809,7 @@
         $('.target').each(function (i, obj) {
             var index = $(this).index();
             if (isNaN($(this).val())) {
-                bootbox.alert("Please enter valid number");
+                alert("Please enter valid number");
                 return false;
             }
             else {
@@ -751,7 +829,7 @@
         });
         $('.result').each(function (j, obj) {
             if (isNaN($(this).val())) {
-                bootbox.alert("Please enter valid number");
+                alert("Please enter valid number");
                 return false;
             }
             for (var i = 0; i < kpis.length; i++) {
@@ -774,16 +852,17 @@
                 contentType: 'application/json; charset=utf-8',
                 crossBrowser: true,
                 success: function (data, status) {
+                    bootbox.alert(status);
                     if (data > 0) {
-                        bootbox.alert(status);
+
                         location.reload();
-                        $('#mdProcess').modal('hide');
+
                     }
 
                     return false;
                 },
                 error: function (xhr, status, error) {
-                    bootbox.alert("Error! " + xhr.status);
+                    bootbox.alert("Error! " + xhr.status + error);
                 },
             });
         }
@@ -834,7 +913,7 @@
                         $('#btnLike1').children('.badge').text(numLike);
                         $('#btnLike1').prop('disabled', true);
                     }
-                   
+
                 }
                 else {
                     bootbox.alert("You already liked it");
@@ -887,7 +966,8 @@
                     e.popover({
                         content: names,
                         html: true,
-                        placement: "left"
+
+                        placement: 'auto'
                     }).popover('show');
                 }
 
@@ -928,7 +1008,7 @@
                     e.popover({
                         content: names,
                         html: true,
-                        placement: "left"
+                        placement: 'auto'
                     }).popover('show');
                 }
 

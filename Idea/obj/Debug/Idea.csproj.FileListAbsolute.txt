@@ -60,3 +60,5 @@ D:\Duyen\Project\Idea\Idea\bin\System.Web.WebPages.Razor.xml
 D:\Duyen\Project\Idea\Idea\obj\Debug\Idea.dll
 D:\Duyen\Project\Idea\Idea\obj\Debug\Idea.pdb
 D:\Duyen\Project\Idea\Idea\obj\Debug\Idea.csprojResolveAssemblyReference.cache
+D:\websever\Idea\Idea\bin\EPPlus.dll
+D:\websever\Idea\Idea\bin\EPPlus.xml

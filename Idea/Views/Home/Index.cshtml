@@ -69,6 +69,7 @@
                 <th>Department(Phòng)</th>
                 <th>Name(Tên)</th>
                 <th>Title(Tiêu đề)</th>
+                <th>Date(Ngày)</th>
                 <th style="vertical-align: middle;" id="mainRep"><span class="glyphicon glyphicon-comment"></span></th>
                 <th style="vertical-align: middle;" id="mainLike"><span class="glyphicon glyphicon-heart"></span></th>
             </tr>
@@ -342,12 +343,16 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" placeholder="Tháng/Quý trước" class="form-control" id="selCurent" />
-
+                                                            <select id="selCurent" class="form-control">
+                                                                <option></option>
+                                                                <option value="@(DateTime.Now.AddYears(-1).ToString("yy") + " Total")">@(DateTime.Now.AddYears(-1).ToString("yy") + " Total")</option>
+                                                                <option value="@(DateTime.Now.AddYears(-1).ToString("yy") + " 2nd")">@(DateTime.Now.AddYears(-1).ToString("yy") + " 2nd")</option>
+                                                                <option value="@(DateTime.Now.AddYears(-1).ToString("yy") + " Dec")">@(DateTime.Now.AddYears(-1).ToString("yy") + " Dec")</option>
+                                                            </select>
                                                         </td>
-                                                        @for (DateTime i = DateTime.Now.AddMonths(-2); i <= DateTime.Now.AddMonths(9); i = i.AddMonths(1))
+                                                        @for (int i = 1; i <= 12; i++)
                                                         {
-                                                            <td>@i.ToString("MM")</td>
+                                                            <td>@i</td>
                                                         }
 
                                                     </tr>
@@ -355,10 +360,10 @@
                                                         <td>
                                                             <input type="text" placeholder="Kết quả" id="txtCurrent" data-id="" class="form-control" />
                                                         </td>
-                                                        @for (DateTime i = DateTime.Now.AddMonths(-2); i <= DateTime.Now.AddMonths(9); i = i.AddMonths(1))
+                                                        @for (int i = 1; i <= 12; i++)
                                                         {
                                                             <td>
-                                                                <input type="number" min="0" step="0.01" data-month="@i.ToString("yyyy-MM")" data-id="" class="form-control kmonth"/>
+                                                                <input type="number" min="0" step="0.01" data-month="@(i > 10 ? DateTime.Now.ToString("yyyy-") + i.ToString() : DateTime.Now.ToString("yyyy-0") + i.ToString())" data-id="" class="form-control kmonth"/>
                                                             </td>
                                                         }
 

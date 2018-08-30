@@ -51,11 +51,11 @@ WHERE RowNum >= @start   AND RowNum < @end ORDER BY RowNum;");
         {
             var condition = string.Empty;
             if (!string.IsNullOrWhiteSpace(div))
-                condition += "AND DIVISION='" + div + "' ";
+                condition += "AND DIVISION LIKE '%" + div + "%' ";
             if (!string.IsNullOrWhiteSpace(dep))
-                condition += "AND DEPARTMENT='" + dep + "' ";
+                condition += "AND DEPARTMENT LIKE '%" + dep + "%' ";
             if (!string.IsNullOrWhiteSpace(grade))
-                condition += "AND PRJECT_GRADE='" + grade + "' ";
+                condition += "AND PRJECT_GRADE LIKE '%" + grade + "%' ";
             var sql = string.Format(@"SELECT COUNT(1) AS CNT
 FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE 1=1 {0}",condition);
            
@@ -69,10 +69,10 @@ FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE 1=1 {0}",c
         }
         public dynamic GetProject( string div = "", string dept = "", string grade = "", int page=0)
         {
-            var start = (page-1) * 10 + 1;
-            var end = start + 10 - 1;
+            var start = (page-1) * 5 + 1;
+            var end = start + 5 - 1;
             var sql = string.Format(@"SELECT * FROM(SELECT ROW_NUMBER() OVER (order by IDEA_ID desc) AS ROWNUM, P.IDEA_ID,P.EMP_ID,E.EMP_NAME,E.DIVISION,E.DEPARTMENT,P.IDEA_TITLE,P.NAME,
-P.PRJECT_GRADE,P.KPI_UNIT,P.KPI_NAME,
+P.PRJECT_GRADE,P.KPI_UNIT,P.KPI_NAME,P.INS_DT,
 (SELECT COUNT(1) FROM PRJ_REPLY AS PR WHERE PR.IDEA_ID=P.IDEA_ID) AS REP,
 (SELECT COUNT(1) FROM PRJ_LIKE AS L WHERE L.IDEA_ID=P.IDEA_ID) AS L
 FROM PROJECT AS P INNER JOIN EMPLOYEE AS E ON E.EMP_ID=P.EMP_ID WHERE 

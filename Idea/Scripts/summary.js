@@ -41,7 +41,7 @@
                }
 
            });
-    var tbNewPrj = $('#tbNewPrj').DataTable(
+    var tbNewPrj = $('#tbMainDefault').DataTable(
            {
                sort: false,
                "processing": true,
